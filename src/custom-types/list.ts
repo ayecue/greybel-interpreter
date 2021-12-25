@@ -115,6 +115,8 @@ export default class CustomList extends CustomObjectType {
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
+		} else {
+			return null;
 		}
 		
 		return origin;

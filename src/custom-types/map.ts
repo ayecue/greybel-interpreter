@@ -120,6 +120,8 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
+		} else {
+			return null;
 		}
 		
 		return origin;

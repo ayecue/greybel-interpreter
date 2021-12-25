@@ -115,6 +115,8 @@ export class Scope {
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
+		} else {
+			return null;
 		}
 		
 		return origin;
