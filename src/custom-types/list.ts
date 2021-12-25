@@ -29,6 +29,7 @@ export class CustomListIterator implements Iterator<any> {
 }
 
 export default class CustomList extends CustomObjectType {
+	static intrinsics: Map<string, Function> = new Map();
 	value: any[];
 
 	static isNumber(value: string): boolean {

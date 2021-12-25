@@ -1,0 +1,15 @@
+a = 30
+b = 20
+
+print(a / b)
+print(a * b)
+print(a - b)
+print(a + b)
+print(a << b)
+print(a >> b)
+print(a >>> (a << b) >> a)
+print(a | b)
+print(a & b)
+print(a ^ b)
+print(a and b)
+print(a or b)
