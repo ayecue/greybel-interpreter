@@ -268,7 +268,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			const target = resourceHandler.getTargetRelativeTo(
 				context.target,
 				// @ts-ignore: FileSystemDirectory is always a string
-				(item.fileSystemDirectory as ASTLiteral).raw
+				(item.fileSystemDirectory as ASTLiteral).value
 			);
 			const code = context.resourceHandler.get(target);
 			const parser = new CodeParser(code);
