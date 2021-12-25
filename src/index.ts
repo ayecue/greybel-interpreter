@@ -28,5 +28,8 @@ export { default as CustomMap } from './custom-types/map';
 export { default as CustomList } from './custom-types/list';
 export * from './resource';
 export * from './context';
+export * from './types/operation';
+export * from './types/expression';
+export * from './types/custom-type';
 export { default as CPS, CPSMap, CPSMapContext, CPSMapType } from './cps';
 export { default as Interpreter, InterpreterOptions } from './interpreter';

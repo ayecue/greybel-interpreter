@@ -5,6 +5,8 @@ import CustomString from './custom-types/string';
 import CustomNil from './custom-types/nil';
 import CustomMap from './custom-types/map';
 import CustomList from './custom-types/list';
+import { Operation } from './types/operation';
+import { Expression } from './types/expression';
 import { CustomObjectType, Callable } from './types/custom-type';
 import { Parser as CodeParser } from 'greybel-core';
 import CPS from './cps';
@@ -186,6 +188,7 @@ export class Debugger {
 		return this.breakpoint;
 	}
 
+	//needs fix
 	next(): Debugger {
 		const me = this;
 		me.nextStep = true;
@@ -215,7 +218,7 @@ export class Debugger {
 		});
 	}
 
-	interact(operationContext: OperationContext) {
+	interact(operationContext: OperationContext, item: Operation | Expression) {
 		const me = this;
 		console.warn("Debugger is not setup.");
 		console.info(operationContext);
