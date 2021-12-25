@@ -15,6 +15,7 @@ export enum ContextType {
 	API = 'API',
 	GLOBAL = 'GLOBAL',
 	FUNCTION = 'FUNCTION',
+	INJECTION = 'INJECTION',
 	LOOP = 'LOOP',
 	MAP = 'MAP',
 	CALL = 'CALL'
@@ -188,7 +189,6 @@ export class Debugger {
 		return this.breakpoint;
 	}
 
-	//needs fix
 	next(): Debugger {
 		const me = this;
 		me.nextStep = true;
@@ -204,11 +204,11 @@ export class Debugger {
 
 		return new Promise((resolve) => {
 			const check = () => {
-				if (me.breakpoint) {
+				if (!me.breakpoint) {
 					resolve();
 				} else if (me.nextStep) {
-					resolve();
 					me.nextStep = false;
+					resolve();
 				} else {
 					setImmediate(check);
 				}
@@ -232,13 +232,13 @@ export class Debugger {
 		try {
 			const parser = new CodeParser(code);
 			const chunk = parser.parseChunk();
-			const topOperation = new TopOperation(null, {
-				body: me.lastContext.cps.visit(chunk)
-			});
-			const context = me.lastContext.fork('CALL', 'TEMPORARY');
-			const result = await topOperation.run(context);
+			const item = me.lastContext.cps.visit(chunk);
+			const context = me.lastContext.fork(
+				ContextType.INJECTION,
+				ContextState.TEMPORARY
+			);
 
-			console.log(result);
+			await item.run(context);
 		} catch (err) {
 			console.error(err);
 		}

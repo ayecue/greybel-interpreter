@@ -1,7 +1,10 @@
 import { Operation } from '../types/operation';
 import { ASTBase } from 'greybel-core';
 import { Expression } from '../types/expression';
-import { OperationContext } from '../context';
+import {
+	OperationContext,
+	ContextType
+} from '../context';
 
 export default class BodyOperation extends Operation {
 	stack: any[];
@@ -18,18 +21,18 @@ export default class BodyOperation extends Operation {
 		const dbgr = operationContext.debugger;
 		let isEOL = () => false;
 
-		if (operationContext.type === 'LOOP') {
+		if (operationContext.type === ContextType.LOOP ) {
 			const context = operationContext.getMemory('loopContext');
 
 			isEOL = () => context.isBreak || context.isContinue;
-		} else if (operationContext.type === 'FUNCTION') {
+		} else if (operationContext.type === ContextType.FUNCTION) {
 			const context = operationContext.getMemory('functionContext');
 
 			isEOL = () => context.isReturn;
 		}
 
 		for (let entity of me.stack) {
-			if (dbgr.getBreakpoint()) {
+			if (operationContext.type !== ContextType.INJECTION && dbgr.getBreakpoint()) {
 				dbgr.interact(operationContext, entity);
 				await dbgr.resume();
 			}
