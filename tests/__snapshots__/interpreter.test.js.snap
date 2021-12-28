@@ -110,8 +110,8 @@ CustomList {
   "value": Array [
     CustomMap {
       "isInstance": false,
-      "value": Object {
-        "another": CustomString {
+      "value": Map {
+        "another" => CustomString {
           "value": "123",
         },
       },
@@ -173,9 +173,9 @@ exports[`interpreter default scripts unary.src 1`] = `true`;
 
 exports[`interpreter default scripts unary.src 2`] = `null`;
 
-exports[`interpreter default scripts unary.src 3`] = `false`;
+exports[`interpreter default scripts unary.src 3`] = `true`;
 
-exports[`interpreter default scripts unary.src 4`] = `false`;
+exports[`interpreter default scripts unary.src 4`] = `true`;
 
 exports[`interpreter default scripts unary.src 5`] = `
 CustomNumber {

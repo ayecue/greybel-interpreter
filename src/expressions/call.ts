@@ -3,74 +3,64 @@ import {
 	ASTCallStatement,
 	ASTCallExpression
 } from 'greybel-core';
+import { ASTType } from 'greyscript-core';
 import { Expression } from '../types/expression';
 import { Operation } from '../types/operation';
 import { isCustomValue, cast, isCustomMap } from '../typer';
-import { OperationContext } from '../context';
+import { OperationContext, ContextType, ContextState } from '../context';
+
+export class ExpressionSegment {
+	path: any;
+	args: any[];
+
+	constructor(path: any, args: any[]) {
+		const me = this;
+		me.path = path;
+		me.args = args;
+	}
+
+	resolveArgs(operationContext: OperationContext): Promise<any> {
+		const me = this;
+
+		return Promise.all(me.args.map(async (item: any): Promise<any> => {
+			if (isCustomValue(item)) {
+				return item;
+			}
+			return item.get(operationContext);
+		}));
+	}
+}
 
 export default class CallExpression extends Expression {
-	constructor(ast: ASTBase, visit: Function) {
+	expr: ExpressionSegment;
+
+	constructor(ast: any, visit: Function) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTBase): any {
-			let expression;
-			let base;
-
-			switch (node.type) {
-				case 'CallStatement':
-					const callStatement = <ASTCallStatement>node;
-					expression = buildExpression(callStatement.expression);
-					break;
-				case 'CallExpression':
-					const callExpression = <ASTCallExpression>node;
-					expression = {
-						type: 'call',
-						path: buildExpression(callExpression.base),
-						args: callExpression.arguments.map((arg) => {
-							return visit(arg);
-						})
-					};
-					break;
-				default:
-					expression = visit(node);
+		const buildExpression = function(node: any): ExpressionSegment {
+			if (ASTType.CallStatement === node.type) {
+				return buildExpression(node.expression as ASTCallExpression);
 			}
 
-			return expression;
+			return new ExpressionSegment(
+				visit(node.base),
+				node.arguments.map((item: ASTBase) => visit(item))
+			);
 		};
 
 		me.ast = ast;
 		me.expr = buildExpression(ast);
 	}
 
-	get(operationContext: OperationContext, parentExpr: any): any {
+	get(operationContext: OperationContext, parentExpr: any): Promise<any> {
 		const me = this;
-		const opc = operationContext.fork('CALL', 'TEMPORARY');
-		const resolveArgs = function(...args: any[]) {
-			return Promise.all(args.map(async (item: any): Promise<any> => {
-				if (isCustomValue(item)) {
-					return item;
-				}
-				return item.get(opc);
-			}));
-		};
-		const evaluate = async function(node: any): Promise<any> {
+		const opc = operationContext.fork(ContextType.CALL, ContextState.TEMPORARY);
+		const evaluate = async function(node: ExpressionSegment): Promise<any> {
 			if (node instanceof Expression) {
 				return node.get(opc);
 			}
 
-			const args = await resolveArgs(...node.args);
-
-			if (node.path?.type === 'call') {
-				const callResult = await evaluate(node.path);
-
-				if (callResult instanceof Operation) {
-					opc.setMemory('args', args);
-					return callResult.run(opc);
-				} else {
-					operationContext.debugger.raise('Unexpected handle result', me, callResult);
-				}
-			}
-
+			const args = await node.resolveArgs(operationContext);
 			const pathExpr = await node.path.get(opc, me.expr);
 
 			operationContext.debugger.debug('CallExpression', 'pathExpr', pathExpr);

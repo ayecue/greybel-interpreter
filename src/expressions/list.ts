@@ -8,36 +8,33 @@ import CustomList from '../custom-types/list';
 import { isCustomValue } from '../typer';
 import { OperationContext } from '../context';
 
+export class ExpressionSegment {
+	values: any[];
+
+	constructor(values: any[]) {
+		this.values = values;
+	}
+}
+
 export default class ListExpression extends Expression {
-	constructor(ast: ASTBase, visit: Function) {
+	expr: ExpressionSegment;
+
+	constructor(ast: ASTListConstructorExpression, visit: Function) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTBase): any {
-			let expression;
-
-			switch (node.type) {
-				case 'ListConstructorExpression':
-					const listExpression = <ASTListConstructorExpression>node;
-
-					expression = {
-						type: 'list',
-						values: listExpression.fields.map((item: ASTListValue) => {
-							return visit(item.value);
-						})
-					};
-					break;
-				default:
-					expression = visit(node);
-			}
-
-			return expression;
+		const buildExpression = function(node: ASTListConstructorExpression): ExpressionSegment {
+			return new ExpressionSegment(
+				node.fields.map((item: ASTListValue) => {
+					return visit(item.value);
+				})
+			);
 		};
 
 		me.ast = ast;
 		me.expr = buildExpression(ast);
 	}
 
-	get(operationContext: OperationContext, parentExpr: any): any {
+	get(operationContext: OperationContext, parentExpr: any): Promise<CustomList> {
 		const me = this;
 		const evaluate = async function(node: any[]): Promise<CustomList> {
 			const traverselPath = [].concat(node);

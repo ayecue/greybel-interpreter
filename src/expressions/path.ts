@@ -5,6 +5,7 @@ import {
 	ASTIdentifier,
 	ASTSliceExpression
 } from 'greybel-core';
+import { ASTType } from 'greyscript-core';
 import { Operation } from '../types/operation';
 import { Expression } from '../types/expression';
 import { OperationContext } from '../context';
@@ -21,58 +22,94 @@ export interface PathEvaluationResult {
 	path: string[];
 }
 
+export class SliceSegment {
+	left: any;
+	right: any;
+
+	constructor(left: any, right: any) {
+		this.left = left;
+		this.right = right;
+	}
+}
+
+export class IndexSegment {
+	value: any;
+
+	constructor(value: any) {
+		this.value = value;
+	}
+}
+
+export class PathSegment {
+	value: string;
+
+	constructor(value: string) {
+		this.value = value;
+	}
+}
+
+export class ExpressionSegment {
+	value: any[];
+
+	constructor() {
+		this.value = [];
+	}
+
+	append(val: any): ExpressionSegment {
+		const me = this;
+
+		if (val instanceof ExpressionSegment) {
+			me.value = me.value.concat(val.value);
+			return me;
+		}
+
+		me.value = me.value.concat(val);
+		return me;
+	}
+}
+
 export default class PathExpression extends Expression {
+	expr: ExpressionSegment;
+
 	constructor(ast: ASTBase, visit: Function) {
 		super();
 		const me = this;
-		const append = function(expr: any, v: any): any[] {
-			if (Array.isArray(v)) {
-				return expr.concat(v);
-			}
-			
-			return expr.concat([v]);
-		};
-		const buildExpression = function(node: ASTBase): any[] {
-			let expression: any[] = [];
+		const buildExpression = function(node: ASTBase): ExpressionSegment {
+			let expression = new ExpressionSegment();
 
 			switch (node.type) {
-				case 'MemberExpression':
+				case ASTType.MemberExpression:
 					const memberExpression = <ASTMemberExpression>node;
 
-					expression = append(expression, buildExpression(memberExpression.base));
-					expression = append(expression, buildExpression(memberExpression.identifier));
+					expression.append(buildExpression(memberExpression.base));
+					expression.append(buildExpression(memberExpression.identifier));
 
 					break;
-				case 'IndexExpression':
+				case ASTType.IndexExpression:
 					const indexExpression = <ASTIndexExpression>node;
 
-					expression = append(expression, buildExpression(indexExpression.base));
+					expression.append(buildExpression(indexExpression.base));
 
 					if (indexExpression.index?.type === 'SliceExpression') {
-						const sliceExpression = <ASTSliceExpression>indexExpression.index
-						expression = append(expression, {
-							type: 'slice',
-							left: visit(sliceExpression.left),
-							right: visit(sliceExpression.right)
-						});
+						const sliceExpression = <ASTSliceExpression>indexExpression.index;
+						expression.append(new SliceSegment(
+							visit(sliceExpression.left),
+							visit(sliceExpression.right)
+						));
 					} else {
-						expression = append(expression, {
-							type: 'index',
-							value: visit(indexExpression.index)
-						});
+						expression.append(new IndexSegment(
+							visit(indexExpression.index)
+						));
 					}
 
 					break;
-				case 'Identifier':
+				case ASTType.Identifier:
 					const identifier = <ASTIdentifier>node;
 
-					expression = append(expression, {
-						type: 'path',
-						value: identifier.name
-					});
+					expression.append(new PathSegment(identifier.name));
 					break;
 				default:
-					expression = append(expression, visit(node));
+					expression.append(visit(node));
 			}
 
 			return expression;
@@ -82,18 +119,10 @@ export default class PathExpression extends Expression {
 		me.expr = buildExpression(ast);
 	}
 
-	isCustomValueCall(): boolean {
-		return isCustomValue(this.expr[0]);
-	}
-
-	getByIndex(index: number): any {
-		return this.expr[index];
-	}
-
 	async get(operationContext: OperationContext, parentExpr: any): Promise<any> {
 		const me = this;
-		const evaluate = async function(node: any[]): Promise<PathEvaluationResult> {
-			const traverselPath = [].concat(node);
+		const evaluate = async function(node: ExpressionSegment): Promise<PathEvaluationResult> {
+			const traverselPath = [].concat(node.value);
 			let traversedPath = [];
 			let position = 0;
 			let handle;
@@ -106,7 +135,7 @@ export default class PathExpression extends Expression {
 					handle = await current.get(operationContext, me.expr);
 				} else if (current instanceof Operation) {
 					handle = await current.get(operationContext);
-				} else if (current?.type === 'path') {
+				} else if (current instanceof PathSegment) {
 					if (current.value === 'self' && position === 0) {
 						const functionContext = operationContext.getMemory('functionContext');
 
@@ -130,7 +159,7 @@ export default class PathExpression extends Expression {
 							}
 						}
 					}
-				} else if (current?.type === 'index') {
+				} else if (current instanceof IndexSegment) {
 					current = current.value;
 
 					if (isCustomValue(current)) {
@@ -141,11 +170,13 @@ export default class PathExpression extends Expression {
 					} else {
 						operationContext.debugger.raise('Unexpected index', me, current);
 					}
-				} else if (current?.type === 'slice') {
+				} else if (current instanceof SliceSegment) {
 					if (!handle) {
 						handle = await operationContext.get(traversedPath);
 						traversedPath = [];
-					} else if (!isCustomList(handle) && !isCustomString(handle)) {
+					}
+
+					if (!isCustomList(handle) && !isCustomString(handle)) {
 						operationContext.debugger.raise('Invalid type for slice', me, handle);
 					}
 
@@ -209,7 +240,7 @@ export default class PathExpression extends Expression {
 				const callable = await operationContext.getCallable(resultExpr.path);
 
 				return cast(await callable.origin.call(callable.context));
-			} else if (value?.isOperation) {
+			} else if (value instanceof Operation) {
 				return value.run(operationContext);
 			}
 

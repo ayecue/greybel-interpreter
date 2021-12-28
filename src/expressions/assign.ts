@@ -8,27 +8,26 @@ import { OperationContext } from '../context';
 import { CustomObjectType } from '../types/custom-type';
 import { isCustomValue, isCustomMap } from '../typer';
 
+export class ExpressionSegment {
+	left: any;
+	right: any;
+
+	constructor(left: any, right: any) {
+		const me = this;
+		me.left = left;
+		me.right = right;
+	}
+}
+
 export default class AssignExpression extends Expression {
-	constructor(ast: ASTBase, visit: Function) {
+	constructor(ast: ASTAssignmentStatement, visit: Function) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTBase): any {
-			let expression;
-			let base;
-
-			switch (node.type) {
-				case 'AssignmentStatement':
-					const assignmentStatement = <ASTAssignmentStatement>node;
-					expression = {
-						left: buildExpression(assignmentStatement.variable),
-						right: buildExpression(assignmentStatement.init)
-					};
-					break;
-				default:
-					expression = visit(node);
-			}
-
-			return expression;
+		const buildExpression = function(node: ASTAssignmentStatement): ExpressionSegment {
+			return new ExpressionSegment(
+				visit(node.variable),
+				visit(node.init)
+			);
 		};
 
 		me.ast = ast;
@@ -37,7 +36,7 @@ export default class AssignExpression extends Expression {
 
 	async get(operationContext: OperationContext, parentExpr: any): Promise<any> {
 		const me = this;
-		const evaluate = async function(node: any): Promise<any> {
+		const evaluate = async function(node: ExpressionSegment): Promise<any> {
 			if (!(node.left instanceof Expression)) {
 				operationContext.debugger.raise('Unexpected left assignment', me, node.left);
 			}

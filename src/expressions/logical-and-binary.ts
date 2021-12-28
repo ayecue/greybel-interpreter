@@ -1,9 +1,12 @@
 import {
 	ASTBase,
-	ASTEvaluationExpression
+	ASTEvaluationExpression,
+	Operator
 } from 'greybel-core';
+import { ASTType } from 'greyscript-core';
 import { Expression } from '../types/expression';
 import { OperationContext } from '../context';
+import CustomList from '../custom-types/list';
 import {
 	isCustomValue,
 	cast,
@@ -11,142 +14,139 @@ import {
 	isCustomString,
 	isCustomNumber
 } from '../typer';
+import { CustomType } from '../types/custom-type';
 
-const toPrimitive = (v: any): any => {
-	if (isCustomValue(v)) {
-		return v.valueOf();
-	}
-
-	return v;
+export const toPrimitive = (v: CustomType | any): any => {
+	return isCustomValue(v) ? v.valueOf() : v;
 };
 
-const multiplyString = (a: string, b: number): string => {
-	a = a.valueOf() || '';
-	b = b.valueOf();
+export const multiplyString = (a: CustomType, b: CustomType): string => {
+	const aVal = a.valueOf() || '';
+	const bVal = b.valueOf();
 
-	return new Array(b)
-		.fill(a)
+	return new Array(bVal)
+		.fill(aVal)
 		.join('');
 };
 
-const OPERATIONS: { [key: string]: (a: any, b: any) => any } = {
-	'+': (a: any, b: any): any => {
+export type OperationMap = {
+	[key: string]: (a: CustomType, b: CustomType) => any
+};
+
+export const OPERATIONS: OperationMap = {
+	[Operator.Plus]: (a: CustomType, b: CustomType): any => {
 		if (isCustomList(a) || isCustomList(b)) {
-			return a.concat(b);
+			return (a as CustomList).concat(b as CustomList);
 		}
 
-		if (isCustomString(a)) {
-			a = a.valueOf() || '';
-		} else {
-			a = toPrimitive(a);
-		}
+		const aVal = isCustomString(a) ? (a.valueOf() || '') : toPrimitive(a);
+		const bVal = isCustomString(b) ? (b.valueOf() || '') : toPrimitive(b);
 
-		if (isCustomString(b)) {
-			b = b.valueOf() || '';
-		} else {
-			b = toPrimitive(b);
-		}
-
-		return a + b;
+		return aVal + bVal;
 	},
-	'-': (a: any, b: any): any => toPrimitive(a) - toPrimitive(b),
-	'/': (a: any, b: any): any => toPrimitive(a) / toPrimitive(b),
-	'*': (a: any, b: any): any => {
+	[Operator.Minus]: (a: CustomType, b: CustomType): any => toPrimitive(a) - toPrimitive(b),
+	[Operator.Slash]: (a: CustomType, b: CustomType): any => toPrimitive(a) / toPrimitive(b),
+	[Operator.Asterik]: (a: CustomType, b: CustomType): any => {
 		if (isCustomString(a) && isCustomNumber(b)) {
 			return multiplyString(a, b);
 		} else if (isCustomString(b) && isCustomNumber(a)) {
 			return multiplyString(b, a);
 		}
 
-		a = toPrimitive(a);
-		b = toPrimitive(b);
+		const aVal = toPrimitive(a);
+		const bVal = toPrimitive(b);
 
-		return a * b;
+		return aVal * bVal;
 	},
-	'^': (a: any, b: any): any => toPrimitive(a) ^ toPrimitive(b),
-	'|': (a: any, b: any): any => toPrimitive(a) | toPrimitive(b),
-	'<': (a: any, b: any): any => toPrimitive(a) < toPrimitive(b),
-	'>': (a: any, b: any): any => toPrimitive(a) > toPrimitive(b),
-	'<<': (a: any, b: any): any => toPrimitive(a) << toPrimitive(b),
-	'>>': (a: any, b: any): any => toPrimitive(a) >> toPrimitive(b),
-	'>>>': (a: any, b: any): any => toPrimitive(a) >>> toPrimitive(b),
-	'&': (a: any, b: any): any => toPrimitive(a) & toPrimitive(b),
-	'%': (a: any, b: any): any => toPrimitive(a) % toPrimitive(b),
-	'>=': (a: any, b: any): any => toPrimitive(a) >= toPrimitive(b),
-	'==': (a: any, b: any): any => toPrimitive(a) == toPrimitive(b),
-	'<=': (a: any, b: any): any => toPrimitive(a) <= toPrimitive(b),
-	'!=': (a: any, b: any): any => toPrimitive(a) != toPrimitive(b),
-	'and': (a: any, b: any): any => toPrimitive(a) && toPrimitive(b),
-	'or': (a: any, b: any): any => toPrimitive(a) || toPrimitive(b)
+	[Operator.Xor]: (a: CustomType, b: CustomType): any => toPrimitive(a) ^ toPrimitive(b),
+	[Operator.BitwiseOr]: (a: CustomType, b: CustomType): any => toPrimitive(a) | toPrimitive(b),
+	[Operator.LessThan]: (a: CustomType, b: CustomType): any => toPrimitive(a) < toPrimitive(b),
+	[Operator.GreaterThan]: (a: CustomType, b: CustomType): any => toPrimitive(a) > toPrimitive(b),
+	[Operator.LeftShift]: (a: CustomType, b: CustomType): any => toPrimitive(a) << toPrimitive(b),
+	[Operator.RightShift]: (a: CustomType, b: CustomType): any => toPrimitive(a) >> toPrimitive(b),
+	[Operator.UnsignedRightShift]: (a: CustomType, b: CustomType): any => toPrimitive(a) >>> toPrimitive(b),
+	[Operator.BitwiseAnd]: (a: CustomType, b: CustomType): any => toPrimitive(a) & toPrimitive(b),
+	[Operator.PercentSign]: (a: CustomType, b: CustomType): any => toPrimitive(a) % toPrimitive(b),
+	[Operator.GreaterThanOrEqual]: (a: CustomType, b: CustomType): any => toPrimitive(a) >= toPrimitive(b),
+	[Operator.Equal]: (a: CustomType, b: CustomType): any => toPrimitive(a) == toPrimitive(b),
+	[Operator.LessThanOrEqual]: (a: CustomType, b: CustomType): any => toPrimitive(a) <= toPrimitive(b),
+	[Operator.NotEqual]: (a: CustomType, b: CustomType): any => toPrimitive(a) != toPrimitive(b),
+	[Operator.And]: (a: CustomType, b: CustomType): any => toPrimitive(a) && toPrimitive(b),
+	[Operator.Or]: (a: CustomType, b: CustomType): any => toPrimitive(a) || toPrimitive(b)
 };
 
+export class ExpressionSegment {
+	type: string;
+	operator: string;
+	left: any;
+	right: any;
+
+	constructor(type: string, operator: string, left: any, right: any) {
+		const me = this;
+		me.type = type;
+		me.operator = operator;
+		me.left = left;
+		me.right = right;
+	}
+}
+
 export default class LogicalAndBinaryExpression extends Expression {
-	constructor(ast: ASTBase, visit: Function) {
+	expr: ExpressionSegment;
+
+	constructor(ast: ASTEvaluationExpression, visit: Function) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTBase): any {
-			let expression;
-
-			switch (node.type) {
-				case 'LogicalExpression':
-				case 'BinaryExpression':
-					const evaluationExpression = <ASTEvaluationExpression>node;
-
-					expression = {
-						type: evaluationExpression.type,
-						operator: evaluationExpression.operator,
-						left: buildExpression(evaluationExpression.left),
-						right: buildExpression(evaluationExpression.right)
-					};
-					break;
-				default:
-					const op = visit(node);
-					expression = op;
-			}
-
-			return expression;
+		const buildExpression = function(node: ASTEvaluationExpression): ExpressionSegment | any {
+			return new ExpressionSegment(
+				node.type,
+				node.operator,
+				visit(node.left),
+				visit(node.right)
+			);
 		};
 
 		me.ast = ast;
 		me.expr = buildExpression(ast);
 	}
 
-	get(operationContext: OperationContext): any {
+	get(operationContext: OperationContext): Promise<any> {
 		const me = this;
-		const evaluate = async function(node: any): Promise<any> {
+		const resolve = (value: any): Promise<any> => {
+			if (isCustomValue(value)) {
+				return value;
+			}
+
+			return value.get(operationContext);
+		};
+		const evaluate = async (node: ExpressionSegment): Promise<any> => {
 			let left;
 			let right;
 
 			switch(node.type) {
-				case 'BinaryExpression':
-					left = await evaluate(node.left);
-					right = await evaluate(node.right);
+				case ASTType.BinaryExpression:
+					left = await resolve(node.left);
+					right = await resolve(node.right);
 
 					return cast(OPERATIONS[node.operator](left, right));
-				case 'LogicalExpression':
-					left = await evaluate(node.left);
+				case ASTType.LogicalExpression:
+					left = await resolve(node.left);
 
 					if (isCustomList(left) && !left.valueOf()) {
 						left = false;
 					}
 
-					if (node.operator === 'and' && !toPrimitive(left)) {
+					if (node.operator === Operator.And && !toPrimitive(left)) {
 						return false;
-					} else if (node.operator === 'or' && toPrimitive(left)) {
+					} else if (node.operator === Operator.Or && toPrimitive(left)) {
 						return true;
 					}
 
-					right = await evaluate(node.right);
+					right = await resolve(node.right);
 					
 					return OPERATIONS[node.operator](left, right);
-				default: 
+				default:
+					operationContext.debugger.raise('Unexpected expression type', me, node);
 			}
-
-			if (isCustomValue(node)) {
-				return node;
-			}
-
-			return node.get(operationContext);
 		};
 
 		operationContext.debugger.debug('LogicalAndBinaryExpression', 'get', 'expr', me.expr);

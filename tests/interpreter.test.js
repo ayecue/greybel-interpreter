@@ -9,11 +9,11 @@ const path = require('path');
 const testFolder = path.resolve(__dirname, 'scripts');
 
 let printMock;
-const pseudoAPI = {
-	print: function(customValue) {
-		printMock(customValue);
-	}
-};
+const pseudoAPI = new Map();
+
+pseudoAPI.set('print', (customValue) => {
+	printMock(customValue);
+});
 
 CustomString.intrinsics.set('len', function() {
 	return this.value.length;

@@ -1,5 +1,5 @@
 import { Operation } from '../types/operation';
-import { OperationContext } from '../context';
+import { OperationContext, ContextType, ContextState } from '../context';
 import { ASTBase } from 'greybel-core';
 import BodyOperation from './body';
 
@@ -19,10 +19,8 @@ export default class TopOperation extends Operation {
 
 	async run(operationContext: OperationContext): Promise<void> {
 		const me = this;
-		const opc = operationContext.fork('GLOBAL', 'DEFAULT');
-		opc.extend({
-			globals: opc.scope
-		});
+		const opc = operationContext.fork(ContextType.GLOBAL, ContextState.DEFAULT);
+		opc.scope.refs.set('globals', opc.scope);
 		await me.body.run(opc);
 	}
 }

@@ -6,8 +6,9 @@ import TopOperation from './operations/top';
 import { cast } from './typer';
 
 export interface InterpreterOptions {
-	target: string;
-	api?: { [key: string]: any };
+	target?: string;
+	code?: string;
+	api?: Map<string, any>;
 	params?: any[];
 	resourceHandler?: ResourceHandler;
 	debugger?: Debugger;
@@ -15,7 +16,8 @@ export interface InterpreterOptions {
 
 export default class Interpreter {
 	target: string;
-	api: { [key: string]: any };
+	code: string;
+	api: Map<string, any>
 	params: any[];
 	resourceHandler: ResourceHandler;
 	debugger: Debugger;
@@ -23,18 +25,24 @@ export default class Interpreter {
 	constructor(options: InterpreterOptions) {
 		const me = this;
 
-		me.target = options.target;
 		me.resourceHandler = options.resourceHandler || new ResourceProvider().getHandler();
 		me.debugger = options.debugger || new Debugger();
 
-		me.api = options.api || {};
+		me.api = options.api || new Map();
 		me.params = options.params || [];
+
+		if (options.target) {
+			me.target = options.target;
+			me.code = me.resourceHandler.get(options.target);
+		} else {
+			me.target = 'unknown';
+			me.code = options.code;
+		}
 	}
 
 	digest(): Promise<any> {
 		const me = this;
-		const code = me.resourceHandler.get(me.target);
-		const parser = new CodeParser(code);
+		const parser = new CodeParser(me.code);
 		const chunk = parser.parseChunk();
 		const cps = new CPS({
 			target: me.target,
@@ -49,10 +57,8 @@ export default class Interpreter {
 			body: cps.visit(chunk)
 		});
 		
-		mainContext.extend({
-			...me.api,
-			params: cast(me.params)
-		});
+		mainContext.extend(me.api); 
+		mainContext.scope.refs.set('params', cast(me.params));
 
 		return topOperation.run(mainContext)
 			.catch((err) => {

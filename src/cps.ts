@@ -287,7 +287,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			return new CustomBoolean(item.value);
 		},
 		'EmptyExpression': function(item: ASTBase) {},
-		'BinaryExpression': function(item) {
+		'BinaryExpression': function(item: ASTEvaluationExpression) {
 			return new LogicalAndBinaryExpression(item, visit);
 		},
 		'BinaryNegatedExpression': function(item: ASTUnaryExpression): BinaryNegatedExpression {

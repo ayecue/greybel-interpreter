@@ -41,13 +41,15 @@ export class CustomMapIterator implements Iterator<CustomMapIterableItem> {
 
 export default class CustomMap extends CustomObjectType implements Iterable<CustomMapIterableItem> {
 	static intrinsics: Map<string, Function> = new Map();
-	value: any;
+	value: Map<string, any>;
 	isInstance: boolean;
 
-	constructor(value: any) {
+	constructor(value: Map<string, any>) {
 		super();
 		const me = this;
-		me.value = value;
+		me.value = new Map([
+			...value.entries()
+		]);
 		me.isInstance = false;
 	}
 
@@ -55,16 +57,16 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		return new CustomMapIterator(this.value);
 	}
 
-	extend(value: { [key: string]: any }): CustomMap {
+	extend(value: Map<string, any>): CustomMap {
 		const me = this;
-		me.value = {
-			...me.value,
-			...value
-		};
+		me.value = new Map([
+			...me.value.entries(),
+			...value.entries()
+		]);
 		return me;
 	}
 
-	async set(path: any[], value: any): Promise<void> {
+	async set(path: string[], value: any): Promise<void> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.value;
@@ -73,11 +75,11 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		let origin = refs;
 
 		if (current != null) {
-			if (current in origin) {
-				origin = origin[current];
+			if (origin.has(current)) {
+				origin = origin.get(current);
 
 				if (origin instanceof CustomObjectType) {
-					return origin.set(traversalPath.concat([last]), value);
+					return origin.set(traversalPath.concat(last), value);
 				}
 			} else {
 				throw new Error(`Cannot set path ${path.join('.')}`);
@@ -86,16 +88,16 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 
 		if (origin) {
 			if (value instanceof FunctionOperationBase) {
-				origin[last] = value.fork(me);
+				origin.set(last, value.fork(me));
 			} else {
-				origin[last] = value;
+				origin.set(last, value);
 			}
 		} else {
 			throw new Error(`Cannot set path ${path.join('.')}`);
 		}
 	}
 
-	async get (path: any[]): Promise<any> {
+	async get (path: string[]): Promise<any> {
 		const me = this;
 
 		if (path.length === 0) {
@@ -109,8 +111,8 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		let origin = refs;
 
 		if (currentValue != null) {
-			if (currentValue in origin) {
-				origin = origin[currentValue];
+			if (origin.has(currentValue)) {
+				origin = origin.get(currentValue);
 
 				if (traversalPath.length > 0 && origin instanceof CustomObjectType) {
 					return origin.get(traversalPath);
@@ -127,7 +129,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		return origin;
 	}
 
-	async getCallable(path: any[]): Promise<Callable> {
+	async getCallable(path: string[]): Promise<Callable> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.value;
@@ -136,9 +138,9 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		let context;
 
 		if (current != null) {
-			if (current in origin) {
+			if (origin.has(current)) {
 				context = origin;
-				origin = origin[current];
+				origin = origin.get(current);
 
 				if (origin instanceof CustomObjectType) {
 					return origin.getCallable(traversalPath);
@@ -168,8 +170,8 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		const key = method[0].valueOf();
 
 		if (method.length > 1) {
-			if (me.value[key]) {
-				return me.value[key].callMethod(method.slice(1), ...args);
+			if (me.value.has(key)) {
+				return me.value.get(key).callMethod(method.slice(1), ...args);
 			}
 
 			throw new Error(`Unexpected method path`);
@@ -184,19 +186,18 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 
 	createInstancefunction(): CustomMap {
 		const me = this;
-		const value: any = {};
+		const value: Map<string, any> = new Map();
 		const newInstance = new CustomMap(value);
 
 		newInstance.isInstance = true;
 		
-		Object.keys(me.value).forEach((key: string) => {
-			const item = me.value[key];
-
-			if (item instanceof FunctionOperationBase) {
-				value[key] = item.fork(newInstance);
-			} else {
-				value[key] = item;
-			}
+		me.value.forEach((item: any, key: string) => {
+			value.set(
+				key,
+				item instanceof FunctionOperationBase
+					? item.fork(newInstance)
+					: item
+			);
 		});
 		
 		return newInstance;
@@ -204,21 +205,13 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 
 	getType(): string {
 		const me = this;
-		const value = me.value;
-
-		if (value.classID) {
-			return value.classID;
-		}
-
-		return 'map';
+		return me.value.get('classID') || 'map';
 	}
 
-	valueOf(): { [key: string]: any } | null {
+	valueOf(): CustomMap | null {
 		const me = this;
 		const value = me.value;
-		return Object
-			.keys(value)
-			.length === 0 ? null : me;
+		return value.size === 0 ? null : me;
 	}
 
 	toString(): string {

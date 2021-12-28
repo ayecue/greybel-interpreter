@@ -26,33 +26,31 @@ export enum ContextState {
 	DEFAULT = 'DEFAULT'
 }
 
-export type ScopeRefs = { [key: string]: any };
-
 export class Scope {
 	context: OperationContext;
-	refs: ScopeRefs;
+	refs: Map<string, any>;
 
 	constructor(context: OperationContext) {
 		const me = this;
 
 		me.context = context;
-		me.refs = {};
+		me.refs = new Map();
 	}
 
-	valueOf(): ScopeRefs {
+	valueOf(): Map<string, any> {
 		return this.refs;
 	}
 
-	extend(map: ScopeRefs = {}): Scope {
+	extend(map: Map<string, any> = new Map()): Scope {
 		const me = this;
-		me.refs = {
-			...me.refs,
-			...map
-		};
+		me.refs = new Map([
+			...me.refs.entries(),
+			...map.entries()
+		]);
 		return me;
 	}
 
-	async set(path: any[], value: any): Promise<void> {
+	async set(path: string[], value: any): Promise<void> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.refs;
@@ -61,8 +59,8 @@ export class Scope {
 		let origin = refs;
 
 		if (current != null) {
-			if (current in origin) {
-				origin = origin[current];
+			if (origin.has(current)) {
+				origin = origin.get(current);
 
 				if (
 					origin instanceof CustomObjectType ||
@@ -85,13 +83,13 @@ export class Scope {
 			!(origin instanceof CustomNumber) &&
 			!(origin instanceof CustomNil)
 		) {
-			origin[last] = value; 
+			origin.set(last, value); 
 		} else {
 			throw new Error(`Cannot set path ${path.join('.')}`);
 		}
 	}
 
-	async get(path: any[]): Promise<any> {
+	async get(path: string[]): Promise<any> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.refs;
@@ -100,9 +98,9 @@ export class Scope {
 		let origin = refs;
 
 		if (current != null) {
-			if (current in origin) {
+			if (origin.has(current)) {
 				context = origin;
-				origin = origin[current];
+				origin = origin.get(current);
 				
 				if (
 					traversalPath.length > 0 &&
@@ -125,7 +123,7 @@ export class Scope {
 		return origin;
 	}
 
-	async getCallable(path: any[]): Promise<Callable> {
+	async getCallable(path: string[]): Promise<Callable> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.refs;
@@ -134,9 +132,9 @@ export class Scope {
 		let context;
 
 		if (current != null) {
-			if (current in origin) {
+			if (origin.has(current)) {
 				context = origin;
-				origin = origin[current];
+				origin = origin.get(current);
 
 				if (
 					origin instanceof CustomObjectType ||
@@ -277,11 +275,11 @@ export class OperationContext {
 		me.cps = options.cps;
 	}
 
-	valueOf(): ScopeRefs {
+	valueOf(): Map<string, any> {
 		return this.scope.valueOf();
 	}
 
-	extend(map: ScopeRefs): OperationContext {
+	extend(map: Map<string, any>): OperationContext {
 		const me = this;
 		if (me.state === ContextState.TEMPORARY) {
 			me.previous?.extend(map);
@@ -339,9 +337,7 @@ export class OperationContext {
 		});
 
 		if (me.type === ContextType.FUNCTION || me.type === ContextType.GLOBAL) {
-			opc.extend({
-				locals: opc.scope
-			});
+			opc.scope.refs.set('locals', opc.scope);
 		}
 
 		if (type !== ContextType.FUNCTION) {

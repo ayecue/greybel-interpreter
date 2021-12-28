@@ -188,12 +188,10 @@ export default class CustomList extends CustomObjectType {
 		return 'list';
 	}
 
-	valueOf(): { [key: string]: any } | null {
+	valueOf(): CustomList | null {
 		const me = this;
 		const value = me.value;
-		return Object
-			.keys(value)
-			.length === 0 ? null : me;
+		return value.length === 0 ? null : me;
 	}
 
 	toString(): string {

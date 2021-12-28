@@ -1,46 +1,48 @@
 import {
 	ASTBase,
-	ASTUnaryExpression
+	ASTUnaryExpression,
+	Operator
 } from 'greybel-core';
 import { Expression } from '../types/expression';
 import { OperationContext } from '../context';
 import { isCustomValue, cast } from '../typer';
+import { CustomType } from '../types/custom-type';
 
-const toPrimitive = (v: any): any => {
-	if (isCustomValue(v)) {
-		return v.valueOf();
+export const toPrimitive = (v: CustomType | any): any => {
+	return isCustomValue(v) ? v.valueOf() : v;
+};
+
+export type OperationMap = {
+	[key: string]: (a: CustomType) => any
+};
+
+const OPERATIONS: OperationMap = {
+	[Operator.Plus]: (a: CustomType): any => toPrimitive(a),
+	[Operator.Minus]: (a: CustomType): any => -toPrimitive(a)
+};
+
+export class ExpressionSegment {
+	operator: string;
+	arg: any;
+
+	constructor(operator: string, arg: any) {
+		const me = this;
+		me.operator = operator;
+		me.arg = arg;
 	}
-
-	return v;
-};
-
-const OPERATIONS: { [key: string]: (a: any) => any } = {
-	'+': (a: any): any => toPrimitive(a),
-	'-': (a: any): any => -toPrimitive(a)
-};
+}
 
 export default class BinaryNegatedExpression extends Expression {
-	constructor(ast: ASTBase, visit: Function) {
+	expr: ExpressionSegment;
+
+	constructor(ast: ASTUnaryExpression, visit: Function) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTBase): any {
-			let expression;
-
-			switch (node.type) {
-				case 'BinaryNegatedExpression':
-					const unaryExpression = <ASTUnaryExpression>node;
-					expression = {
-						type: unaryExpression.type,
-						operator: unaryExpression.operator,
-						arg: buildExpression(unaryExpression.argument)
-					};
-					break;
-				default:
-					const op = visit(node);
-					expression = op;
-			}
-
-			return expression;
+		const buildExpression = function(node: ASTUnaryExpression): ExpressionSegment {
+			return new ExpressionSegment(
+				node.operator,
+				visit(node.argument)
+			);
 		};
 
 		me.ast = ast;
@@ -49,20 +51,12 @@ export default class BinaryNegatedExpression extends Expression {
 
 	get(operationContext: OperationContext): any {
 		const me = this;
-		const evaluate = async function(node: any): Promise<any> {
-			switch(node.type) {
-				case 'BinaryNegatedExpression':
-					const arg = await evaluate(node.arg);
+		const evaluate = async function(node: ExpressionSegment): Promise<any> {
+			const arg = isCustomValue(node.arg)
+				? node.arg
+				: await node.arg.get(operationContext);
 
-					return cast(OPERATIONS[node.operator](arg));
-				default: 
-			}
-
-			if (isCustomValue(node)) {
-				return node;
-			}
-
-			return node.get(operationContext);
+			return cast(OPERATIONS[node.operator](arg));
 		};
 
 		operationContext.debugger.debug('BinaryNegatedExpression', 'get', 'expr', me.expr);
