@@ -181,7 +181,7 @@ export default class CustomList extends CustomObjectType {
 			throw new Error(`Cannot access ${member} in list`);
 		}
 
-		return CustomList.intrinsics.get(member).call(me, ...args);
+		return CustomList.intrinsics.get(member)(me, ...args);
 	}
 
 	getType(): string {

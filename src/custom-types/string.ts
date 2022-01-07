@@ -83,7 +83,7 @@ export default class CustomString extends CustomLiteralType {
 			throw new Error(`Cannot access ${member} in string`);
 		}
 
-		return CustomString.intrinsics.get(member).call(me, ...args);
+		return CustomString.intrinsics.get(member)(me, ...args);
 	}
 
 	getType(): string {

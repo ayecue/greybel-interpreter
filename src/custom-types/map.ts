@@ -181,7 +181,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 			throw new Error(`Cannot access ${key} in map`);
 		}
 
-		return CustomMap.intrinsics.get(key).call(me, ...args);
+		return CustomMap.intrinsics.get(key)(me, ...args);
 	}
 
 	createInstancefunction(): CustomMap {
