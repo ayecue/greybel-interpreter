@@ -64,6 +64,10 @@ describe('interpreter', function() {
 					});
 					let success = false;
 
+					pseudoAPI.set('exit', () => {
+						interpreter.exit();
+					});
+
 					try {
 						await interpreter.digest();
 						success = true;

@@ -230,6 +230,12 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts exit.src 1`] = `
+CustomNumber {
+  "value": 123,
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",

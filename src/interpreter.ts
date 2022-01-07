@@ -21,6 +21,7 @@ export default class Interpreter {
 	params: any[];
 	resourceHandler: ResourceHandler;
 	debugger: Debugger;
+	context: OperationContext | null;
 
 	constructor(options: InterpreterOptions) {
 		const me = this;
@@ -30,6 +31,7 @@ export default class Interpreter {
 
 		me.api = options.api || new Map();
 		me.params = options.params || [];
+		me.context = null;
 
 		if (options.target) {
 			me.target = options.target;
@@ -60,10 +62,22 @@ export default class Interpreter {
 		mainContext.extend(me.api); 
 		mainContext.scope.refs.set('params', cast(me.params));
 
+		me.context = mainContext;
+
 		return topOperation.run(mainContext)
 			.catch((err) => {
 				console.error(err);
 				throw err;
 			});
+	}
+
+	exit() {
+		const me = this;
+
+		if (me.context == null) {
+			throw new Error('Unexpected exit signal.');
+		}
+
+		me.context.processState.exit = true;
 	}
 }

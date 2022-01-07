@@ -243,6 +243,10 @@ export class Debugger {
 	}
 }
 
+export interface OperationContextProcessState {
+	exit: boolean;
+}
+
 export interface OperationContextOptions {
 	isProtected?: boolean;
 	type?: string;
@@ -250,6 +254,7 @@ export interface OperationContextOptions {
 	previous?: OperationContext;
 	debugger?: Debugger;
 	cps?: CPS;
+	processState?: OperationContextProcessState;
 }
 
 export class OperationContext {
@@ -261,6 +266,7 @@ export class OperationContext {
 	isProtected: boolean;
 	memory: Map<string, any>;
 	cps: CPS | null;
+	processState: OperationContextProcessState;
 
 	constructor(options: OperationContextOptions) {
 		const me = this;
@@ -273,6 +279,9 @@ export class OperationContext {
 		me.memory = new Map();
 		me.debugger = options.debugger || new Debugger();
 		me.cps = options.cps;
+		me.processState = options.processState || {
+			exit: false
+		};
 	}
 
 	valueOf(): Map<string, any> {
@@ -333,7 +342,8 @@ export class OperationContext {
 			type,
 			state,
 			debugger: me.debugger,
-			cps: me.cps
+			cps: me.cps,
+			processState: me.processState
 		});
 
 		if (me.type === ContextType.FUNCTION || me.type === ContextType.GLOBAL) {

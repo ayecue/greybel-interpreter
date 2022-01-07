@@ -42,7 +42,7 @@ export default class BodyOperation extends Operation {
 			} else {
 				await entity.run(operationContext);
 			}
-			if (isEOL()) break;
+			if (isEOL() || operationContext.processState.exit) break;
 		}
 	}
 }
