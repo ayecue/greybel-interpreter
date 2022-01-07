@@ -15,12 +15,12 @@ pseudoAPI.set('print', (customValue) => {
 	printMock(customValue);
 });
 
-CustomString.intrinsics.set('len', function() {
-	return this.value.length;
+CustomString.intrinsics.set('len', function(list) {
+	return list.value.length;
 });
 
-CustomList.intrinsics.set('push', function(value) {
-	return this.value.push(value);
+CustomList.intrinsics.set('push', function(list, value) {
+	return list.value.push(value);
 });
 
 class TestDebugger extends Debugger {
