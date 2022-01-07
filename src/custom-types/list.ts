@@ -53,10 +53,16 @@ export default class CustomList extends CustomObjectType {
 		return new CustomList(this.value.slice(a.valueOf(), b.valueOf()));
 	}
 
-	toIndex(value: string): number {
+	toIndex(value: string): number | null {
 		const me = this;
 		const casted = Number(value);
-		return casted < 0 ? me.value.length + casted : casted;
+		const result = casted < 0 ? me.value.length + casted : casted;
+
+		if (result < 0) {
+			return null;
+		}
+
+		return result;
 	}
 
 	async set(path: any[], value: any): Promise<void> {
@@ -68,8 +74,10 @@ export default class CustomList extends CustomObjectType {
 		let origin = refs;
 
 		if (current != null) {
-			if (current in origin) {
-				origin = origin[current];
+			const index = me.toIndex(current);
+
+			if (origin.hasOwnProperty(index)) {
+				origin = origin[index];
 
 				if (origin instanceof CustomObjectType) {
 					return origin.set(traversalPath.concat([last]), value);
@@ -80,10 +88,16 @@ export default class CustomList extends CustomObjectType {
 		}
 
 		if (origin) {
+			const setterIndex = me.toIndex(last);
+
+			if (!origin.hasOwnProperty(setterIndex)) {
+				throw new Error(`Index error (list index ${setterIndex} out of range)`);
+			}
+
 			if (value instanceof FunctionOperation) {
-				origin[last] = value.fork(me);
+				origin[setterIndex] = value.fork(me);
 			} else {
-				origin[last] = value;
+				origin[setterIndex] = value;
 			}
 		} else {
 			throw new Error(`Cannot set path ${path.join('.')}`);
@@ -104,8 +118,10 @@ export default class CustomList extends CustomObjectType {
 		let origin = refs;
 
 		if (currentValue != null) {
-			if (currentValue in origin) {
-				origin = origin[currentValue];
+			const index = me.toIndex(current);
+
+			if (origin.hasOwnProperty(index)) {
+				origin = origin[index];
 
 				if (traversalPath.length > 0 && origin instanceof CustomObjectType) {
 					return origin.get(traversalPath);
@@ -131,9 +147,11 @@ export default class CustomList extends CustomObjectType {
 		let context;
 
 		if (current != null) {
-			if (current in origin) {
+			const index = me.toIndex(current);
+
+			if (origin.hasOwnProperty(index)) {
 				context = origin;
-				origin = origin[current];
+				origin = origin[index];
 
 				if (origin instanceof CustomObjectType) {
 					return origin.getCallable(traversalPath);

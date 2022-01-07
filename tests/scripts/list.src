@@ -1,0 +1,8 @@
+myList = []
+myList.push("foo")
+myList.push("bar")
+print(myList[1])
+print(myList[-1])
+print(myList[-2])
+myList[-1] = "changed"
+print(myList[-1])

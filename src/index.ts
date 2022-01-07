@@ -8,6 +8,7 @@ export { default as BinaryNegatedExpression } from './expressions/binary-negated
 export { default as ArgumentOperation } from './operations/argument';
 export { default as WhileOperation } from './operations/while';
 export { default as ForOperation } from './operations/for';
+export { default as FunctionOperation } from './operations/function';
 export { default as ReturnOperation } from './operations/return';
 export { default as NewOperation } from './operations/new';
 export { default as NotOperation } from './operations/not';
@@ -31,5 +32,21 @@ export * from './context';
 export * from './types/operation';
 export * from './types/expression';
 export * from './types/custom-type';
-export { default as CPS, CPSMap, CPSMapContext, CPSMapType } from './cps';
-export { default as Interpreter, InterpreterOptions } from './interpreter';
+export {
+	default as CPS,
+	CPSMap,
+	CPSMapContext,
+	CPSMapType
+} from './cps';
+export {
+	default as Interpreter,
+	InterpreterOptions
+} from './interpreter';
+export {
+	isCustomValue,
+	isCustomMap,
+	isCustomList,
+	isCustomString,
+	isCustomNumber,
+	cast as toCustomValue
+} from './typer';

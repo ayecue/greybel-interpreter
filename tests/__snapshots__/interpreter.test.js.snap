@@ -64,6 +64,30 @@ exports[`interpreter default scripts binary-expressions.src 11`] = `20`;
 
 exports[`interpreter default scripts binary-expressions.src 12`] = `true`;
 
+exports[`interpreter default scripts list.src 1`] = `
+CustomString {
+  "value": "bar",
+}
+`;
+
+exports[`interpreter default scripts list.src 2`] = `
+CustomString {
+  "value": "bar",
+}
+`;
+
+exports[`interpreter default scripts list.src 3`] = `
+CustomString {
+  "value": "foo",
+}
+`;
+
+exports[`interpreter default scripts list.src 4`] = `
+CustomString {
+  "value": "changed",
+}
+`;
+
 exports[`interpreter default scripts negation.src 1`] = `
 CustomNumber {
   "value": 2,
