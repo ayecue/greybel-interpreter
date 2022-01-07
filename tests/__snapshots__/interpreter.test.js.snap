@@ -64,6 +64,172 @@ exports[`interpreter default scripts binary-expressions.src 11`] = `20`;
 
 exports[`interpreter default scripts binary-expressions.src 12`] = `true`;
 
+exports[`interpreter default scripts cast.src 1`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "was" => CustomNumber {
+      "value": 1,
+    },
+    "foo" => CustomBoolean {
+      "value": false,
+    },
+    "bar" => CustomString {
+      "value": "xxx",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts cast.src 2`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "was" => CustomNumber {
+      "value": 1,
+    },
+    "foo" => CustomBoolean {
+      "value": false,
+    },
+    "bar" => CustomString {
+      "value": "xxx",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts cast.src 3`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "was",
+    },
+    CustomBoolean {
+      "value": false,
+    },
+    CustomNumber {
+      "value": 4,
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts cast.src 4`] = `
+CustomString {
+  "value": "was",
+}
+`;
+
+exports[`interpreter default scripts cast.src 5`] = `
+CustomNumber {
+  "value": 61.23,
+}
+`;
+
+exports[`interpreter default scripts cast.src 6`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts cast.src 7`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts cast.src 8`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "bar",
+    },
+    CustomString {
+      "value": "foo",
+    },
+    CustomBoolean {
+      "value": false,
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts cast.src 9`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "foo" => CustomNumber {
+      "value": 2,
+    },
+    "bar" => CustomNumber {
+      "value": 123,
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts cast.src 10`] = `
+CustomString {
+  "value": "was321",
+}
+`;
+
+exports[`interpreter default scripts cast.src 11`] = `
+CustomString {
+  "value": "wasfoo",
+}
+`;
+
+exports[`interpreter default scripts cast.src 12`] = `
+CustomNumber {
+  "value": 1,
+}
+`;
+
+exports[`interpreter default scripts cast.src 13`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts cast.src 14`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts cast.src 15`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts cast.src 16`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts cast.src 17`] = `
+CustomNumber {
+  "value": 1,
+}
+`;
+
+exports[`interpreter default scripts cast.src 18`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts cast.src 19`] = `
+CustomString {
+  "value": "abcabcabcabcabc",
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",

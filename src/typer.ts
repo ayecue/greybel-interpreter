@@ -51,16 +51,17 @@ export const cast = function(value: any): any {
 			value = value.map(cast);
 
 			return new CustomList(value);
+		} else if (value instanceof Map) {
+			return new CustomMap(value);
 		}
 
-		value = Object.entries(value).reduce((result, [key, item]) => {
-			return {
-				...result,
-				[key]: cast(item)
-			};
-		}, {});
+		const result: Map<string, any> = new Map();
 
-		return new CustomMap(value);
+		Object.entries(value).forEach(([key, item]) => {
+			result.set(key, cast(item));
+		});
+
+		return new CustomMap(result);
 	} else if (type === 'function') {
 		return value;
 	}

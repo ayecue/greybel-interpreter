@@ -1,0 +1,51 @@
+//automatic casting
+value = valueOfTest({
+	"was": 1,
+	"foo": false,
+	"bar": "xxx"
+})
+casted = mapToObject(value)
+
+print(value)
+print(casted)
+
+value = valueOfTest([
+	"was",
+	false,
+	4
+])
+
+print(value)
+
+value = valueOfTest("was")
+
+print(value)
+
+value = valueOfTest(61.23)
+
+print(value)
+
+value = valueOfTest(true)
+
+print(value)
+
+value = valueOfTest(null)
+
+print(value)
+
+//operators
+print(["bar"] + ["foo", false])
+print({ "foo": 2 } + { "bar": 123 })
+print("was" + 321)
+print("was" + "foo")
+print(true + false)
+
+print(["bar"] - ["foo", false])
+print({ "foo": 2 } - { "bar": 123 })
+print("was" - 321)
+print("was" - "foo")
+print(true - false)
+
+//multiply
+print(["was", "foo"] * 5)
+print("abc" * 5)

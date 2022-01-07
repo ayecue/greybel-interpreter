@@ -2,7 +2,8 @@ const {
 	Interpreter,
 	Debugger,
 	CustomString,
-	CustomList
+	CustomList,
+	CustomMap
 } = require('../dist');
 const fs = require('fs');
 const path = require('path');
@@ -13,6 +14,23 @@ const pseudoAPI = new Map();
 
 pseudoAPI.set('print', (customValue) => {
 	printMock(customValue);
+});
+
+pseudoAPI.set('valueOfTest', (customValue) => {
+	return customValue.valueOf();
+});
+
+pseudoAPI.set('mapToObject', (customValue) => {
+	if (customValue instanceof CustomMap) {
+		const result = {};
+
+		customValue.value.forEach((v, k) => {
+			result[k] = v;
+		});
+
+		return result;
+	}
+	return null;
 });
 
 CustomString.intrinsics.set('len', function(list) {

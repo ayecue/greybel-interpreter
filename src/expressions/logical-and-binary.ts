@@ -7,9 +7,11 @@ import { ASTType } from 'greyscript-core';
 import { Expression } from '../types/expression';
 import { OperationContext } from '../context';
 import CustomList from '../custom-types/list';
+import CustomMap from '../custom-types/map';
 import {
 	isCustomValue,
 	cast,
+	isCustomMap,
 	isCustomList,
 	isCustomString,
 	isCustomNumber
@@ -35,7 +37,9 @@ export type OperationMap = {
 
 export const OPERATIONS: OperationMap = {
 	[Operator.Plus]: (a: CustomType, b: CustomType): any => {
-		if (isCustomList(a) || isCustomList(b)) {
+		if (isCustomMap(a) && isCustomMap(b)) {
+			return (a as CustomMap).extend((b as CustomMap).value);
+		} else if (isCustomList(a) && isCustomList(b)) {
 			return (a as CustomList).concat(b as CustomList);
 		}
 
@@ -127,7 +131,9 @@ export default class LogicalAndBinaryExpression extends Expression {
 					left = await resolve(node.left);
 					right = await resolve(node.right);
 
-					return cast(OPERATIONS[node.operator](left, right));
+					const result = OPERATIONS[node.operator](left, right);
+
+					return cast(Number.isNaN(result) ? null : result);
 				case ASTType.LogicalExpression:
 					left = await resolve(node.left);
 
