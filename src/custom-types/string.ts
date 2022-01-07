@@ -96,7 +96,7 @@ export default class CustomString extends CustomLiteralType {
 	}
 
 	toString(): string {
-		return `"${this.value.toString()}"`;
+		return this.value;
 	}
 
 	fork(): CustomString {
