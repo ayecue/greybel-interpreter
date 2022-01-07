@@ -127,7 +127,7 @@ export default class CustomList extends CustomObjectType {
 					return origin.get(traversalPath);
 				}
 			} else if (path.length === 1 && CustomList.intrinsics.has(currentValue)) {
-				return CustomList.intrinsics.get(currentValue);
+				return CustomList.intrinsics.get(currentValue).bind(null, me);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
@@ -158,7 +158,7 @@ export default class CustomList extends CustomObjectType {
 				}
 			} else if (path.length === 1 && CustomList.intrinsics.has(current)) {
 				return {
-					origin: CustomList.intrinsics.get(current),
+					origin: CustomList.intrinsics.get(current).bind(null, me),
 					context: me
 				};
 			} else {

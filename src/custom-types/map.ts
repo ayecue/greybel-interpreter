@@ -118,7 +118,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 					return origin.get(traversalPath);
 				}
 			} else if (path.length === 1 && CustomMap.intrinsics.has(currentValue)) {
-				return CustomMap.intrinsics.get(currentValue);
+				return CustomMap.intrinsics.get(currentValue).bind(null, me);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
@@ -147,7 +147,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 				}
 			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
 				return {
-					origin: CustomMap.intrinsics.get(current),
+					origin: CustomMap.intrinsics.get(current).bind(null, me),
 					context: me
 				};
 			} else {
