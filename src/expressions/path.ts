@@ -225,7 +225,7 @@ export default class PathExpression extends Expression {
 					if (value instanceof Operation) {
 						return value.run(operationContext);
 					} else if (value instanceof Function) {
-						return await value.call(context);
+						return cast(await value.call(context));
 					}
 
 					return value;

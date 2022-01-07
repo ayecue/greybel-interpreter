@@ -73,7 +73,7 @@ export default class CallExpression extends Expression {
 						opc.setMemory('args', args);
 						return callable.origin.run(opc);
 					} else if (callable.origin instanceof Function) {
-						return callable.origin.call(pathExpr.handle, ...args);
+						return cast(await callable.origin.call(pathExpr.handle, ...args));
 					}
 
 					operationContext.debugger.raise('Unexpected handle call', me, callable);
