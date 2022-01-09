@@ -16,7 +16,7 @@ export interface InterpreterOptions {
 
 export default class Interpreter {
 	target: string;
-	code: string;
+	code: string | null;
 	api: Map<string, any>
 	params: any[];
 	resourceHandler: ResourceHandler;
@@ -35,16 +35,17 @@ export default class Interpreter {
 
 		if (options.target) {
 			me.target = options.target;
-			me.code = me.resourceHandler.get(options.target);
+			me.code = null;
 		} else {
 			me.target = 'unknown';
 			me.code = options.code;
 		}
 	}
 
-	digest(): Promise<any> {
+	async digest(): Promise<any> {
 		const me = this;
-		const parser = new CodeParser(me.code);
+		const code = me.code || (await me.resourceHandler.get(me.target));
+		const parser = new CodeParser(code);
 		const chunk = parser.parseChunk();
 		const cps = new CPS({
 			target: me.target,
@@ -56,7 +57,7 @@ export default class Interpreter {
 			cps
 		});
 		const topOperation = new TopOperation(null, {
-			body: cps.visit(chunk)
+			body: await cps.visit(chunk)
 		});
 		
 		mainContext.extend(me.api); 

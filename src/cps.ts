@@ -67,22 +67,22 @@ export interface CPSMapContext {
 
 export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContext): CPSMapType {
 	return {
-		'AssignmentStatement': function(item: ASTAssignmentStatement): AssignExpression {
-			return new AssignExpression(item, visit);
+		'AssignmentStatement': function(item: ASTAssignmentStatement): Promise<AssignExpression> {
+			return new AssignExpression(item).prepare(visit);
 		},
-		'MemberExpression': function(item: ASTMemberExpression): PathExpression {
-			return new PathExpression(item, visit);
+		'MemberExpression': function(item: ASTMemberExpression): Promise<PathExpression> {
+			return new PathExpression(item).prepare(visit);
 		},
-		'FunctionDeclaration': function(item: ASTFunctionStatement): FunctionOperation {
+		'FunctionDeclaration': async function(item: ASTFunctionStatement): Promise<FunctionOperation> {
 			const args = new ArgumentOperation(item.parameters);
 			const body = new BodyOperation(item.body);
 
 			for (let parameterItem of item.parameters) {
-				args.stack.push(visit(parameterItem));
+				args.stack.push(await visit(parameterItem));
 			}
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new FunctionOperation(item, {
@@ -90,29 +90,31 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				body
 			});
 		},
-		'MapConstructorExpression': function(item: ASTMapConstructorExpression): MapExpression {
-			return new MapExpression(item, visit);
+		'MapConstructorExpression': function(item: ASTMapConstructorExpression): Promise<MapExpression> {
+			return new MapExpression(item).prepare(visit);
 		},
-		'Identifier': function(item: ASTIdentifier): PathExpression {
-			return new PathExpression(item, visit);
+		'Identifier': function(item: ASTIdentifier): Promise<PathExpression> {
+			return new PathExpression(item).prepare(visit);
 		},
-		'ReturnStatement': function(item: ASTReturnStatement): ReturnOperation {
-			const arg = visit(item.argument);
+		'ReturnStatement': async function(item: ASTReturnStatement): Promise<ReturnOperation> {
+			const arg = await visit(item.argument);
 
 			return new ReturnOperation(item, {
 				arg
 			});
 		},
-		'NumericLiteral': function(item: ASTLiteral): CustomNumber {
-			// @ts-ignore: Key is always a literal
-			return new CustomNumber(item.value);
+		'NumericLiteral': function(item: ASTLiteral): Promise<CustomNumber> {
+			return Promise.resolve(
+				// @ts-ignore: Key is always a literal
+				new CustomNumber(item.value)
+			);
 		},
-		'WhileStatement': function(item: ASTWhileStatement): WhileOperation {
+		'WhileStatement': async function(item: ASTWhileStatement): Promise<WhileOperation> {
 			const body = new BodyOperation(item.body);
-			const condition = visit(item.condition);
+			const condition = await visit(item.condition);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new WhileOperation(item, {
@@ -120,31 +122,33 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				condition
 			});
 		},
-		'StringLiteral': function(item: ASTLiteral): CustomString {
-			// @ts-ignore: Key is always a literal
-			return new CustomString(item.value);
+		'StringLiteral': function(item: ASTLiteral): Promise<CustomString> {
+			return Promise.resolve(
+				// @ts-ignore: Key is always a literal
+				new CustomString(item.value)
+			);
 		},
-		'IndexExpression': function(item: ASTIndexExpression): PathExpression {
-			return new PathExpression(item, visit);
+		'IndexExpression': function(item: ASTIndexExpression): Promise<PathExpression> {
+			return new PathExpression(item).prepare(visit);
 		},
 		'FeatureEnvarExpression': function(_item: ASTBase) {
 			throw new Error('Not supported');
 		},
-		'IfShortcutStatement': function(item: ASTIfStatement): IfStatementOperation {
+		'IfShortcutStatement': async function(item: ASTIfStatement): Promise<IfStatementOperation> {
 			const op = new IfStatementOperation(item);
 
 			for (let clausesItem of item.clauses) {
-				op.clauses.push(visit(clausesItem));
+				op.clauses.push(await visit(clausesItem));
 			}
 
 			return op;
 		},
-		'IfShortcutClause': function(item: ASTIfClause): IfOperation {
+		'IfShortcutClause': async function(item: ASTIfClause): Promise<IfOperation> {
 			const body = new BodyOperation(item.body);
-			const condition = visit(item.condition);
+			const condition = await visit(item.condition);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new IfOperation(item, {
@@ -152,12 +156,12 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				body
 			});
 		},
-		'ElseifShortcutClause': function(item: ASTIfClause): ElseIfOperation {
+		'ElseifShortcutClause': async function(item: ASTIfClause): Promise<ElseIfOperation> {
 			const body = new BodyOperation(item.body);
-			const condition = visit(item.condition);
+			const condition = await visit(item.condition);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new ElseIfOperation(item, {
@@ -165,27 +169,29 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				condition
 			});
 		},
-		'ElseShortcutClause': function(item: ASTElseClause): ElseOperation {
+		'ElseShortcutClause': async function(item: ASTElseClause): Promise<ElseOperation> {
 			const body = new BodyOperation(item.body);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new ElseOperation(item, {
 				body
 			});
 		},
-		'NilLiteral': function(item: ASTLiteral): CustomNil {
-			return new CustomNil();
+		'NilLiteral': function(item: ASTLiteral): Promise<CustomNil> {
+			return Promise.resolve(
+				new CustomNil()
+			);
 		},
-		'ForGenericStatement': function(item: ASTForGenericStatement): ForOperation {
+		'ForGenericStatement': async function(item: ASTForGenericStatement): Promise<ForOperation> {
 			const body = new BodyOperation(item.body);
-			const variable = visit(item.variable);
-			const iterator = visit(item.iterator);
+			const variable = await visit(item.variable);
+			const iterator = await visit(item.iterator);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new ForOperation(item, {
@@ -194,21 +200,21 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				iterator
 			});
 		},
-		'IfStatement': function(item: ASTIfStatement): IfStatementOperation {
+		'IfStatement': async function(item: ASTIfStatement): Promise<IfStatementOperation> {
 			const op = new IfStatementOperation(item);
 
 			for (let clausesItem of item.clauses) {
-				op.clauses.push(visit(clausesItem));
+				op.clauses.push(await visit(clausesItem));
 			}
 
 			return op;
 		},
-		'IfClause': function(item: ASTIfClause): IfOperation {
+		'IfClause': async function(item: ASTIfClause): Promise<IfOperation> {
 			const body = new BodyOperation(item.body);
-			const condition = visit(item.condition);
+			const condition = await visit(item.condition);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new IfOperation(item, {
@@ -216,12 +222,12 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				condition
 			});
 		},
-		'ElseifClause': function(item: ASTIfClause): ElseIfOperation {
+		'ElseifClause': async function(item: ASTIfClause): Promise<ElseIfOperation> {
 			const body = new BodyOperation(item.body);
-			const condition = visit(item.condition);
+			const condition = await visit(item.condition);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new ElseIfOperation(item, {
@@ -229,33 +235,37 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				condition
 			});
 		},
-		'ElseClause': function(item: ASTElseClause): ElseOperation {
+		'ElseClause': async function(item: ASTElseClause): Promise<ElseOperation> {
 			const body = new BodyOperation(item.body);
 
 			for (let bodyItem of item.body) {
-				body.stack.push(visit(bodyItem));
+				body.stack.push(await visit(bodyItem));
 			}
 
 			return new ElseOperation(item, {
 				body
 			});
 		},
-		'NegationExpression': function(item: ASTUnaryExpression): NotOperation {
-			const arg = visit(item.argument);
+		'NegationExpression': async function(item: ASTUnaryExpression): Promise<NotOperation> {
+			const arg = await visit(item.argument);
 
 			return new NotOperation(item, { arg });
 		},
-		'ContinueStatement': function(item: ASTBase): ContinueOperation {
-			return new ContinueOperation(item);
+		'ContinueStatement': function(item: ASTBase): Promise<ContinueOperation> {
+			return Promise.resolve(
+				new ContinueOperation(item)
+			);
 		},
-		'BreakStatement': function(item: ASTBase): BreakOperation {
-			return new BreakOperation(item);
+		'BreakStatement': function(item: ASTBase): Promise<BreakOperation> {
+			return Promise.resolve(
+				new BreakOperation(item)
+			);
 		},
-		'CallExpression': function(item: ASTCallExpression): CallExpression {
-			return new CallExpression(item, visit);
+		'CallExpression': function(item: ASTCallExpression): Promise<CallExpression> {
+			return new CallExpression(item).prepare(visit);
 		},
-		'CallStatement': function(item: ASTCallStatement): CallExpression {
-			return new CallExpression(item, visit);
+		'CallStatement': function(item: ASTCallStatement): Promise<CallExpression> {
+			return new CallExpression(item).prepare(visit);
 		},
 		'FeatureImportExpression': function(_item: ASTBase) {
 			throw new Error('Not supported');
@@ -263,41 +273,45 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 		'FeatureIncludeExpression': function(_item: ASTBase) {
 			throw new Error('Not supported');
 		},
-		'ImportCodeExpression': function(item: ASTImportCodeExpression): any {
+		'ImportCodeExpression': async function(item: ASTImportCodeExpression): Promise<BodyOperation> {
 			const resourceHandler = context.resourceHandler;
-			const target = resourceHandler.getTargetRelativeTo(
+			const target = await resourceHandler.getTargetRelativeTo(
 				context.target,
 				// @ts-ignore: FileSystemDirectory is always a string
 				(item.fileSystemDirectory as ASTLiteral).value
 			);
-			const code = context.resourceHandler.get(target);
+			const code = await context.resourceHandler.get(target);
 			const parser = new CodeParser(code);
 			const chunk = parser.parseChunk();
 
 			return visit(chunk);
 		},
-		'FeatureDebuggerExpression': function(item: ASTBase): DebuggerOperation {
-			return new DebuggerOperation(item);
+		'FeatureDebuggerExpression': function(item: ASTBase): Promise<DebuggerOperation> {
+			return Promise.resolve(
+				new DebuggerOperation(item)
+			);
 		},
-		'ListConstructorExpression': function(item: ASTListConstructorExpression): ListExpression {
-			return new ListExpression(item, visit);
+		'ListConstructorExpression': function(item: ASTListConstructorExpression): Promise<ListExpression> {
+			return new ListExpression(item).prepare(visit);
 		},
-		'BooleanLiteral': function(item: ASTLiteral): CustomBoolean {
-			// @ts-ignore: Key is always a literal
-			return new CustomBoolean(item.value);
+		'BooleanLiteral': function(item: ASTLiteral): Promise<CustomBoolean> {
+			return Promise.resolve(
+				// @ts-ignore: Key is always a literal
+				new CustomBoolean(item.value)
+			);
 		},
 		'EmptyExpression': function(item: ASTBase) {},
-		'BinaryExpression': function(item: ASTEvaluationExpression) {
-			return new LogicalAndBinaryExpression(item, visit);
+		'BinaryExpression': function(item: ASTEvaluationExpression): Promise<LogicalAndBinaryExpression> {
+			return new LogicalAndBinaryExpression(item).prepare(visit);
 		},
-		'BinaryNegatedExpression': function(item: ASTUnaryExpression): BinaryNegatedExpression {
-			return new BinaryNegatedExpression(item, visit);
+		'BinaryNegatedExpression': function(item: ASTUnaryExpression): Promise<BinaryNegatedExpression> {
+			return new BinaryNegatedExpression(item).prepare(visit);
 		},
-		'LogicalExpression': function(item: ASTEvaluationExpression): LogicalAndBinaryExpression {
-			return new LogicalAndBinaryExpression(item, visit);
+		'LogicalExpression': function(item: ASTEvaluationExpression): Promise<LogicalAndBinaryExpression> {
+			return new LogicalAndBinaryExpression(item).prepare(visit);
 		},
-		'UnaryExpression': function(item: ASTUnaryExpression): ReferenceOperation | NewOperation {
-			const arg = visit(item.argument);
+		'UnaryExpression': async function(item: ASTUnaryExpression): Promise<ReferenceOperation | NewOperation> {
+			const arg = await visit(item.argument);
 			let op;
 
 			if ('@' === item.operator) {
@@ -310,11 +324,11 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 
 			return op;
 		},
-		'Chunk': function(item: ASTChunk): BodyOperation {
+		'Chunk': async function(item: ASTChunk): Promise<BodyOperation> {
 			const op = new BodyOperation(item.body);
 
 			for (let bodyItem of item.body) {
-				op.stack.push(visit(bodyItem));
+				op.stack.push(await visit(bodyItem));
 			}
 
 			return op;
@@ -330,7 +344,7 @@ export default class CPS {
 		me.cpsMap = CPSMap(me.visit.bind(me), context);
 	}
 
-	visit(o: ASTBase): any {
+	async visit(o: ASTBase): Promise<any> {
 		const me = this;
 		if (o == null) return '';
 		if (o.type == null) {
@@ -342,7 +356,7 @@ export default class CPS {
 			console.error('Error ast:', o);
 			throw new Error('Type does not exist ' + o.type);
 		}
-		const result = fn.call(me, o);
+		const result = await fn.call(me, o);
 		return result;
 	}
 }

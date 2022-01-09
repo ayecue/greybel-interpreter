@@ -20,18 +20,24 @@ export class ExpressionSegment {
 }
 
 export default class AssignExpression extends Expression {
-	constructor(ast: ASTAssignmentStatement, visit: Function) {
+	constructor(ast: ASTAssignmentStatement) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTAssignmentStatement): ExpressionSegment {
-			return new ExpressionSegment(
-				visit(node.variable),
-				visit(node.init)
-			);
-		};
 
 		me.ast = ast;
-		me.expr = buildExpression(ast);
+		me.expr = null;
+	}
+
+	async prepare(visit: Function): Promise<AssignExpression> {
+		const me = this;
+		const node = me.ast;
+
+		me.expr = new ExpressionSegment(
+			await visit(node.variable),
+			await visit(node.init)
+		);
+
+		return me;
 	}
 
 	async get(operationContext: OperationContext, parentExpr: any): Promise<any> {

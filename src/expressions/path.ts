@@ -71,34 +71,41 @@ export class ExpressionSegment {
 export default class PathExpression extends Expression {
 	expr: ExpressionSegment;
 
-	constructor(ast: ASTBase, visit: Function) {
+	constructor(ast: ASTBase) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTBase): ExpressionSegment {
+
+		me.ast = ast;
+		me.expr = null;
+	}
+
+	async prepare(visit: Function): Promise<PathExpression> {
+		const me = this;
+		const buildExpression = async function(node: ASTBase): Promise<ExpressionSegment> {
 			let expression = new ExpressionSegment();
 
 			switch (node.type) {
 				case ASTType.MemberExpression:
 					const memberExpression = <ASTMemberExpression>node;
 
-					expression.append(buildExpression(memberExpression.base));
-					expression.append(buildExpression(memberExpression.identifier));
+					expression.append(await buildExpression(memberExpression.base));
+					expression.append(await buildExpression(memberExpression.identifier));
 
 					break;
 				case ASTType.IndexExpression:
 					const indexExpression = <ASTIndexExpression>node;
 
-					expression.append(buildExpression(indexExpression.base));
+					expression.append(await buildExpression(indexExpression.base));
 
 					if (indexExpression.index?.type === 'SliceExpression') {
 						const sliceExpression = <ASTSliceExpression>indexExpression.index;
 						expression.append(new SliceSegment(
-							visit(sliceExpression.left),
-							visit(sliceExpression.right)
+							await visit(sliceExpression.left),
+							await visit(sliceExpression.right)
 						));
 					} else {
 						expression.append(new IndexSegment(
-							visit(indexExpression.index)
+							await visit(indexExpression.index)
 						));
 					}
 
@@ -109,14 +116,15 @@ export default class PathExpression extends Expression {
 					expression.append(new PathSegment(identifier.name));
 					break;
 				default:
-					expression.append(visit(node));
+					expression.append(await visit(node));
 			}
 
 			return expression;
 		};
 
-		me.ast = ast;
-		me.expr = buildExpression(ast);
+		me.expr = await buildExpression(me.ast);
+
+		return me;
 	}
 
 	async get(operationContext: OperationContext, parentExpr: any): Promise<any> {

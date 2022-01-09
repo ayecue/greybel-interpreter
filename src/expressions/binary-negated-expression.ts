@@ -35,18 +35,24 @@ export class ExpressionSegment {
 export default class BinaryNegatedExpression extends Expression {
 	expr: ExpressionSegment;
 
-	constructor(ast: ASTUnaryExpression, visit: Function) {
+	constructor(ast: ASTUnaryExpression) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTUnaryExpression): ExpressionSegment {
-			return new ExpressionSegment(
-				node.operator,
-				visit(node.argument)
-			);
-		};
 
 		me.ast = ast;
-		me.expr = buildExpression(ast);
+		me.expr = null;
+	}
+
+	async prepare(visit: Function): Promise<BinaryNegatedExpression> {
+		const me = this;
+		const node = me.ast;
+
+		me.expr = new ExpressionSegment(
+			node.operator,
+			await visit(node.argument)
+		);
+
+		return me;
 	}
 
 	get(operationContext: OperationContext): any {

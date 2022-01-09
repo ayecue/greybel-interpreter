@@ -97,20 +97,26 @@ export class ExpressionSegment {
 export default class LogicalAndBinaryExpression extends Expression {
 	expr: ExpressionSegment;
 
-	constructor(ast: ASTEvaluationExpression, visit: Function) {
+	constructor(ast: ASTEvaluationExpression) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTEvaluationExpression): ExpressionSegment | any {
-			return new ExpressionSegment(
-				node.type,
-				node.operator,
-				visit(node.left),
-				visit(node.right)
-			);
-		};
 
 		me.ast = ast;
-		me.expr = buildExpression(ast);
+		me.expr = null;
+	}
+
+	async prepare(visit: Function): Promise<LogicalAndBinaryExpression> {
+		const me = this;
+		const node = me.ast;
+
+		me.expr = new ExpressionSegment(
+			node.type,
+			node.operator,
+			await visit(node.left),
+			await visit(node.right)
+		);
+
+		return me;
 	}
 
 	get(operationContext: OperationContext): Promise<any> {

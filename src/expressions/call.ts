@@ -34,22 +34,30 @@ export class ExpressionSegment {
 export default class CallExpression extends Expression {
 	expr: ExpressionSegment;
 
-	constructor(ast: any, visit: Function) {
+	constructor(ast: any) {
 		super();
 		const me = this;
-		const buildExpression = function(node: any): ExpressionSegment {
+
+		me.ast = ast;
+		me.expr = null;
+	}
+
+	async prepare(visit: Function): Promise<CallExpression> {
+		const me = this;
+		const buildExpression = async function(node: any): Promise<ExpressionSegment> {
 			if (ASTType.CallStatement === node.type) {
 				return buildExpression(node.expression as ASTCallExpression);
 			}
 
 			return new ExpressionSegment(
-				visit(node.base),
-				node.arguments.map((item: ASTBase) => visit(item))
+				await visit(node.base),
+				await Promise.all(node.arguments.map((item: ASTBase) => visit(item)))
 			);
 		};
 
-		me.ast = ast;
-		me.expr = buildExpression(ast);
+		me.expr = await buildExpression(me.ast);
+
+		return me;
 	}
 
 	get(operationContext: OperationContext, parentExpr: any): Promise<any> {

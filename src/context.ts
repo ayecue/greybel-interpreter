@@ -230,7 +230,7 @@ export class Debugger {
 		try {
 			const parser = new CodeParser(code);
 			const chunk = parser.parseChunk();
-			const item = me.lastContext.cps.visit(chunk);
+			const item = await me.lastContext.cps.visit(chunk);
 			const context = me.lastContext.fork(
 				ContextType.INJECTION,
 				ContextState.TEMPORARY

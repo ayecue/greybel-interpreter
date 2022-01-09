@@ -1,8 +1,8 @@
 export interface ResourceHandler {
-	getTargetRelativeTo(source: string, target: string): string;
-	has(target: string): boolean;
-	get(target: string): string;
-	resolve(target: string): string;
+	getTargetRelativeTo(source: string, target: string): Promise<string>;
+	has(target: string): Promise<boolean>;
+	get(target: string): Promise<string>;
+	resolve(target: string): Promise<string>;
 }
 
 export class ResourceProvider {
@@ -11,19 +11,19 @@ export class ResourceProvider {
 		const path = require('path');
 
 		return {
-			getTargetRelativeTo: (source: string, target: string): string => {
+			getTargetRelativeTo: (source: string, target: string): Promise<string> => {
 				const base = path.resolve(source, '..');
 				const result = path.resolve(base, target);
-				return fs.existsSync(result) ? result : result + '.src';
+				return Promise.resolve(fs.existsSync(result) ? result : result + '.src');
 			},
-			has: (target: string): boolean => {
-				return fs.existsSync(target);
+			has: (target: string): Promise<boolean> => {
+				return Promise.resolve(fs.existsSync(target));
 			},
-			get: (target: string): string => {
-				return fs.readFileSync(target, 'utf8');
+			get: (target: string): Promise<string> => {
+				return Promise.resolve(fs.readFileSync(target, 'utf8'));
 			},
-			resolve: (target: string): string => {
-				return path.resolve(target);
+			resolve: (target: string): Promise<string> => {
+				return Promise.resolve(path.resolve(target));
 			}
 		};
 	}

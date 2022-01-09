@@ -30,23 +30,30 @@ export class ExpressionSegment {
 export default class MapExpression extends Expression {
 	expr: ExpressionSegment;
 
-	constructor(ast: ASTMapConstructorExpression, visit: Function) {
+	constructor(ast: ASTMapConstructorExpression) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTMapConstructorExpression): ExpressionSegment {
-			return new ExpressionSegment(
-				node.fields.map((item: ASTMapKeyString) => {
-					return {
-						key: visit(item.key),
-						value: visit(item.value)
-					};
-				})
-			);
-		};
 
 		me.ast = ast;
-		me.expr = buildExpression(ast);
+		me.expr = null;
 	}
+
+	async prepare(visit: Function): Promise<MapExpression> {
+		const me = this;
+		const node = me.ast;
+
+		me.expr = new ExpressionSegment(
+			await Promise.all(node.fields.map(async (item: ASTMapKeyString) => {
+				return {
+					key: await visit(item.key),
+					value: await visit(item.value)
+				};
+			}))
+		);
+
+		return me;
+	}
+
 
 	get(operationContext: OperationContext, parentExpr: any): Promise<CustomMap> {
 		const me = this;

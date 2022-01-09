@@ -19,19 +19,25 @@ export class ExpressionSegment {
 export default class ListExpression extends Expression {
 	expr: ExpressionSegment;
 
-	constructor(ast: ASTListConstructorExpression, visit: Function) {
+	constructor(ast: ASTListConstructorExpression) {
 		super();
 		const me = this;
-		const buildExpression = function(node: ASTListConstructorExpression): ExpressionSegment {
-			return new ExpressionSegment(
-				node.fields.map((item: ASTListValue) => {
-					return visit(item.value);
-				})
-			);
-		};
 
 		me.ast = ast;
-		me.expr = buildExpression(ast);
+		me.expr = null;
+	}
+
+	async prepare(visit: Function): Promise<ListExpression> {
+		const me = this;
+		const node = me.ast;
+
+		me.expr = new ExpressionSegment(
+			await Promise.all(node.fields.map((item: ASTListValue) => {
+				return visit(item.value);
+			}))
+		);
+
+		return me;
 	}
 
 	get(operationContext: OperationContext, parentExpr: any): Promise<CustomList> {
