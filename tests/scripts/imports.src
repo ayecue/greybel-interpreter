@@ -1,0 +1,7 @@
+#import fooImport from ../fixtures/import-file;
+#include ../fixtures/include-file;
+import_code("my/path":"../fixtures/native-import")
+
+print(fooImport)
+print(includeFileFoo)
+print(nativeImportFoo)

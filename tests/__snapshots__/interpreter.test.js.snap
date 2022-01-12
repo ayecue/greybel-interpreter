@@ -236,6 +236,24 @@ CustomNumber {
 }
 `;
 
+exports[`interpreter default scripts imports.src 1`] = `
+CustomString {
+  "value": "file imported",
+}
+`;
+
+exports[`interpreter default scripts imports.src 2`] = `
+CustomString {
+  "value": "foo imported code",
+}
+`;
+
+exports[`interpreter default scripts imports.src 3`] = `
+CustomString {
+  "value": "foo imported code native",
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",

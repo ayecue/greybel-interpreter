@@ -16,6 +16,7 @@ export enum ContextType {
 	GLOBAL = 'GLOBAL',
 	FUNCTION = 'FUNCTION',
 	INJECTION = 'INJECTION',
+	EXTERNAL = 'EXTERNAL',
 	LOOP = 'LOOP',
 	MAP = 'MAP',
 	CALL = 'CALL'
@@ -231,10 +232,10 @@ export class Debugger {
 			const parser = new CodeParser(code);
 			const chunk = parser.parseChunk();
 			const item = await me.lastContext.cps.visit(chunk);
-			const context = me.lastContext.fork(
-				ContextType.INJECTION,
-				ContextState.TEMPORARY
-			);
+			const context = me.lastContext.fork({
+				type: ContextType.INJECTION,
+				state: ContextState.TEMPORARY
+			});
 
 			await item.run(context);
 		} catch (err) {
@@ -248,6 +249,7 @@ export interface OperationContextProcessState {
 }
 
 export interface OperationContextOptions {
+	target?: string;
 	isProtected?: boolean;
 	type?: string;
 	state?: string;
@@ -257,7 +259,14 @@ export interface OperationContextOptions {
 	processState?: OperationContextProcessState;
 }
 
+export interface OperationContextForkOptions {
+	type: string;
+	state: string;
+	target?: string;
+}
+
 export class OperationContext {
+	target: string;
 	debugger: Debugger;
 	previous: OperationContext | null;
 	type: string;
@@ -271,6 +280,7 @@ export class OperationContext {
 	constructor(options: OperationContextOptions) {
 		const me = this;
 
+		me.target = options.target || 'unknown';
 		me.previous = options.previous || null;
 		me.type = options.type || ContextType.API;
 		me.state = options.state || ContextState.DEFAULT;
@@ -335,9 +345,14 @@ export class OperationContext {
 		return me.scope.getCallable(path);
 	}
 
-	fork(type: string, state: string): OperationContext {
+	fork({
+		type,
+		state,
+		target
+	}: OperationContextForkOptions): OperationContext {
 		const me = this;
 		const opc = new OperationContext({
+			target: target || me.target,
 			previous: me,
 			type,
 			state,

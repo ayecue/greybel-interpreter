@@ -62,7 +62,10 @@ export default class CallExpression extends Expression {
 
 	get(operationContext: OperationContext, parentExpr: any): Promise<any> {
 		const me = this;
-		const opc = operationContext.fork(ContextType.CALL, ContextState.TEMPORARY);
+		const opc = operationContext.fork({
+			type: ContextType.CALL,
+			state: ContextState.TEMPORARY
+		});
 		const evaluate = async function(node: ExpressionSegment): Promise<any> {
 			if (node instanceof Expression) {
 				return node.get(opc);

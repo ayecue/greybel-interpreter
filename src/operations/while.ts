@@ -1,7 +1,7 @@
 import { Operation } from '../types/operation';
 import { ASTBase } from 'greybel-core';
 import { Expression } from '../types/expression';
-import { OperationContext } from '../context';
+import { OperationContext, ContextState, ContextType } from '../context';
 import BodyOperation from './body';
 import { isCustomValue } from '../typer';
 
@@ -24,7 +24,10 @@ export default class WhileOperation extends Operation {
 
 	async run(operationContext: OperationContext) {
 		const me = this;
-		const opc = operationContext.fork('LOOP', 'TEMPORARY');
+		const opc = operationContext.fork({
+			type: ContextType.LOOP,
+			state: ContextState.TEMPORARY
+		});
 		const loopContext = {
 			isBreak: false,
 			isContinue: false

@@ -1,6 +1,6 @@
 import { cast } from '../typer';
 import { Operation } from '../types/operation';
-import { OperationContext } from '../context';
+import { OperationContext, ContextType, ContextState } from '../context';
 import { ASTBase } from 'greybel-core';
 import BodyOperation from './body';
 
@@ -26,7 +26,10 @@ export default class ForOperation extends Operation {
 
 	async run(operationContext: OperationContext): Promise<void> {
 		const me = this;
-		const opc = operationContext.fork('LOOP', 'TEMPORARY');
+		const opc = operationContext.fork({
+			type: ContextType.LOOP,
+			state: ContextState.TEMPORARY
+		});
 		const variable = await me.variable.get(opc, me);
 		const iterator = await me.iterator.get(opc);
 		const loopContext = {

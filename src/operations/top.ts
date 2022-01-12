@@ -19,7 +19,10 @@ export default class TopOperation extends Operation {
 
 	async run(operationContext: OperationContext): Promise<void> {
 		const me = this;
-		const opc = operationContext.fork(ContextType.GLOBAL, ContextState.DEFAULT);
+		const opc = operationContext.fork({
+			type: ContextType.GLOBAL,
+			state: ContextState.DEFAULT
+		});
 		opc.scope.refs.set('globals', opc.scope);
 		await me.body.run(opc);
 	}

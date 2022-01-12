@@ -1,6 +1,6 @@
 import { FunctionOperationBase } from '../types/operation';
 import { v4 as uuidv4 } from 'uuid';
-import { OperationContext } from '../context';
+import { OperationContext, ContextType, ContextState } from '../context';
 import { ASTBase } from 'greybel-core';
 import ArgumentOperation from './argument';
 import BodyOperation from './body';
@@ -52,7 +52,10 @@ export default class FunctionOperation extends FunctionOperationBase {
 
 	async run(operationContext: OperationContext): Promise<any> {
 		const me = this;
-		const opc = operationContext.fork('FUNCTION', 'DEFAULT');
+		const opc = operationContext.fork({
+			type: ContextType.FUNCTION,
+			state: ContextState.DEFAULT
+		});
 		const incArgs = operationContext.getMemory('args');
 		const args = await me.args.get(opc);
 		const argMap = {};

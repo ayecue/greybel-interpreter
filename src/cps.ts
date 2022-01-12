@@ -24,7 +24,8 @@ import {
 	ASTEvaluationExpression,
 	ASTSliceExpression,
 	ASTImportCodeExpression,
-	Parser as CodeParser
+	ASTFeatureIncludeExpression,
+	ASTFeatureImportExpression
 } from 'greybel-core';
 import AssignExpression from './expressions/assign';
 import CallExpression from './expressions/call';
@@ -33,6 +34,8 @@ import LogicalAndBinaryExpression from './expressions/logical-and-binary';
 import MapExpression from './expressions/map';
 import PathExpression from './expressions/path';
 import BinaryNegatedExpression from './expressions/binary-negated-expression';
+import IncludeExpression from './expressions/include';
+import ImportExpression from './expressions/import';
 import ArgumentOperation from './operations/argument';
 import WhileOperation from './operations/while';
 import ForOperation from './operations/for';
@@ -267,13 +270,29 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 		'CallStatement': function(item: ASTCallStatement): Promise<CallExpression> {
 			return new CallExpression(item).prepare(visit);
 		},
-		'FeatureImportExpression': function(_item: ASTBase) {
-			throw new Error('Not supported');
+		'FeatureImportExpression': async function(item: ASTFeatureImportExpression): Promise<ImportExpression> {
+			const resourceHandler = context.resourceHandler;
+			const target = await resourceHandler.getTargetRelativeTo(
+				context.target,
+				// @ts-ignore: FileSystemDirectory is always a string
+				item.path
+			);
+			const code = await context.resourceHandler.get(target);
+
+			return new ImportExpression(item, target, code).prepare(visit);
 		},
-		'FeatureIncludeExpression': function(_item: ASTBase) {
-			throw new Error('Not supported');
+		'FeatureIncludeExpression': async function(item: ASTFeatureIncludeExpression): Promise<IncludeExpression> {
+			const resourceHandler = context.resourceHandler;
+			const target = await resourceHandler.getTargetRelativeTo(
+				context.target,
+				// @ts-ignore: FileSystemDirectory is always a string
+				item.path
+			);
+			const code = await context.resourceHandler.get(target);
+
+			return new IncludeExpression(item, target, code).prepare(visit);
 		},
-		'ImportCodeExpression': async function(item: ASTImportCodeExpression): Promise<BodyOperation> {
+		'ImportCodeExpression': async function(item: ASTImportCodeExpression): Promise<IncludeExpression> {
 			const resourceHandler = context.resourceHandler;
 			const target = await resourceHandler.getTargetRelativeTo(
 				context.target,
@@ -281,10 +300,8 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 				(item.fileSystemDirectory as ASTLiteral).value
 			);
 			const code = await context.resourceHandler.get(target);
-			const parser = new CodeParser(code);
-			const chunk = parser.parseChunk();
 
-			return visit(chunk);
+			return new IncludeExpression(item, target, code).prepare(visit);
 		},
 		'FeatureDebuggerExpression': function(item: ASTBase): Promise<DebuggerOperation> {
 			return Promise.resolve(
