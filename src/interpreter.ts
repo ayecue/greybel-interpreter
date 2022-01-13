@@ -52,6 +52,7 @@ export default class Interpreter {
 			resourceHandler: me.resourceHandler
 		});
 		const mainContext = new OperationContext({
+			target: me.target,
 			isProtected: true,
 			debugger: me.debugger,
 			cps
