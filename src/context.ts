@@ -184,8 +184,8 @@ export class Debugger {
 		return me;
 	}
 
-	getBreakpoint(): boolean {
-		return this.breakpoint;
+	getBreakpoint(operationContext: OperationContext): boolean {
+		return operationContext.type !== ContextType.INJECTION && this.breakpoint;
 	}
 
 	next(): Debugger {
@@ -267,6 +267,7 @@ export interface OperationContextForkOptions {
 
 export class OperationContext {
 	target: string;
+	line: number;
 	debugger: Debugger;
 	previous: OperationContext | null;
 	type: string;
@@ -281,6 +282,7 @@ export class OperationContext {
 		const me = this;
 
 		me.target = options.target || 'unknown';
+		me.line = -1;
 		me.previous = options.previous || null;
 		me.type = options.type || ContextType.API;
 		me.state = options.state || ContextState.DEFAULT;

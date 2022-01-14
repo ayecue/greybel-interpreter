@@ -32,7 +32,9 @@ export default class BodyOperation extends Operation {
 		}
 
 		for (let entity of me.stack) {
-			if (operationContext.type !== ContextType.INJECTION && dbgr.getBreakpoint()) {
+			operationContext.line = entity.ast.line;
+
+			if (dbgr.getBreakpoint(operationContext)) {
 				dbgr.interact(operationContext, entity);
 				await dbgr.resume();
 			}
