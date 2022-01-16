@@ -386,6 +386,154 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts manipulation.src 1`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "see" => CustomString {
+      "value": "124578",
+    },
+    "foo" => CustomNumber {
+      "value": 123,
+    },
+    "bar" => CustomBoolean {
+      "value": true,
+    },
+    "lore" => CustomString {
+      "value": "moo",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 2`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "123456",
+    },
+    CustomString {
+      "value": "xxx",
+    },
+    CustomNumber {
+      "value": 123,
+    },
+    CustomString {
+      "value": "foo",
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 3`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "foo" => CustomNumber {
+      "value": 123,
+    },
+    "bar" => CustomBoolean {
+      "value": true,
+    },
+    "lore" => CustomString {
+      "value": "moo",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 4`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "xxx",
+    },
+    CustomNumber {
+      "value": 123,
+    },
+    CustomString {
+      "value": "foo",
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 5`] = `
+CustomNumber {
+  "value": 123,
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 6`] = `
+CustomString {
+  "value": "foo",
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 7`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "bar" => CustomBoolean {
+      "value": true,
+    },
+    "lore" => CustomString {
+      "value": "moo",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 8`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "xxx",
+    },
+    CustomNumber {
+      "value": 123,
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 9`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "foo" => CustomNumber {
+      "value": 123,
+    },
+    "bar" => CustomBoolean {
+      "value": true,
+    },
+    "lore" => CustomString {
+      "value": "moo",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 10`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "xxx",
+    },
+    CustomNumber {
+      "value": 123,
+    },
+    CustomString {
+      "value": "foo",
+    },
+  ],
+}
+`;
+
 exports[`interpreter default scripts negation.src 1`] = `
 CustomNumber {
   "value": 2,

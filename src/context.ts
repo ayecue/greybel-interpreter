@@ -41,27 +41,14 @@ export class Scope extends CustomMap {
 		const current = traversalPath.shift();
 
 		if (current != null) {
-			if (current === 'globals') {
-				if (me.context.type === ContextType.GLOBAL) {
-					return me.set(traversalPath, value);
-				} else if (me.context.previous && !me.context.previous.isProtected) {
-					return me.context.previous.set(traversalPath, value);
-				} else {
-					throw new Error(`Cannot set globals scope for ${path.join('.')}`);
-				}
-			} else if (current === 'locals') {
-				if (
-					me.context.type === ContextType.GLOBAL || 
-					me.context.type === ContextType.FUNCTION
-				) {
-					return me.set(traversalPath, value);
-				} else if (me.context.previous && !me.context.previous.isProtected) {
-					return me.context.previous.set(traversalPath, value);
-				} else {
-					throw new Error(`Cannot set locals scope for ${path.join('.')}`);
-				}
+			if (current === 'locals') {
+				return me.context.locals.set(traversalPath, value);
+			} else if (current === 'globals') {
+				return me.context.globals.set(traversalPath, value);
+			} else if (me.context.locals != null) {
+				return CustomMap.prototype.set.call(me.context.locals, path, value);
 			} else {
-				return super.set(path, value);
+				throw new Error(`Cannot set path ${path.join('.')}`);
 			}
 		}
 	}
@@ -72,37 +59,22 @@ export class Scope extends CustomMap {
 		const current = traversalPath.shift();
 
 		if (current != null) {
-			if (me.value.has(current)) {
-				return super.get(path);
-			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
-				return CustomMap.intrinsics.get(current).bind(null, me);
+			if (current === 'locals') {
+				return traversalPath.length === 0
+					? Promise.resolve(me.context.locals)
+					: me.context.locals.get(traversalPath);
 			} else if (current === 'globals') {
-				if (me.context.type === ContextType.GLOBAL) {
-					if (path.length === 1) {
-						return Promise.resolve(me);
-					}
-					return me.get(traversalPath);
-				} else if (me.context.previous) {
-					return me.context.previous.get(traversalPath);
-				} else {
-					throw new Error(`Cannot find globals scope for ${path.join('.')}`);
-				}
-			} else if (current === 'locals') {
-				if (
-					me.context.type === ContextType.GLOBAL || 
-					me.context.type === ContextType.FUNCTION
-				) {
-					if (path.length === 1) {
-						return Promise.resolve(me);
-					}
-					return me.get(traversalPath);
-				} else if (me.context.previous) {
-					return me.context.previous.get(traversalPath);
-				} else {
-					throw new Error(`Cannot find locals scope for ${path.join('.')}`);
-				}
-			} else if (me.context.previous) {
-				return me.context.previous.get(path);
+				return traversalPath.length === 0
+					? Promise.resolve(me.context.globals)
+					: me.context.globals.get(traversalPath);
+			} else if (me.context.locals?.value.has(current)) {
+				return CustomMap.prototype.get.call(me.context.locals, path);
+			} else if (me.context.globals?.value.has(current)) {
+				return CustomMap.prototype.get.call(me.context.globals, path);
+			} else if (me.context.api?.value.has(current)) {
+				return CustomMap.prototype.get.call(me.context.api, path);
+			} else if (me.value.has(current)) {
+				return super.get(path);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
@@ -117,48 +89,18 @@ export class Scope extends CustomMap {
 		const current = traversalPath.shift();
 
 		if (current != null) {
-			if (me.value.has(current)) {
-				return super.getCallable(path);
-			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
-				return Promise.resolve({
-					origin: CustomMap.intrinsics.get(current).bind(null, me),
-					context: me
-				});
+			if (current === 'locals') {
+				return me.context.locals.getCallable(traversalPath);
 			} else if (current === 'globals') {
-				if (me.context.type === ContextType.GLOBAL) {
-					if (path.length === 1) {
-						return Promise.resolve({
-							origin: me,
-							context: null
-						});
-					}
-					return me.getCallable(traversalPath);
-				} else if (me.context.previous) {
-					return me.context.previous.getCallable(traversalPath);
-				} else {
-					throw new Error(`Cannot find callable in globals scope for ${path.join('.')}`);
-				}
-			} else if (current === 'locals') {
-				if (
-					me.context.type === ContextType.GLOBAL || 
-					me.context.type === ContextType.FUNCTION
-				) {
-					if (path.length === 1) {
-						return Promise.resolve({
-							origin: me,
-							context: null
-						});
-					}
-					return me.getCallable(traversalPath);
-				} else if (me.context.previous) {
-					return me.context.previous.getCallable(traversalPath);
-				} else {
-					throw new Error(`Cannot find callable in locals scope for ${path.join('.')}`);
-				}
-			} else if (me.context.previous) {
-				return me.context.previous.getCallable(path);
-			} else {
-				throw new Error(`Cannot get callable path ${path.join('.')}`);
+				return me.context.globals.getCallable(traversalPath);
+			} else if (me.context.locals?.value.has(current)) {
+				return CustomMap.prototype.getCallable.call(me.context.locals, path);
+			} else if (me.context.globals?.value.has(current)) {
+				return CustomMap.prototype.getCallable.call(me.context.globals, path);
+			} else if (me.context.api?.value.has(current)) {
+				return CustomMap.prototype.getCallable.call(me.context.api, path);
+			} else {
+				return super.getCallable(path);
 			}
 		}
 
@@ -263,8 +205,8 @@ export interface OperationContextProcessState {
 export interface OperationContextOptions {
 	target?: string;
 	isProtected?: boolean;
-	type?: string;
-	state?: string;
+	type?: ContextType;
+	state?: ContextState;
 	previous?: OperationContext;
 	debugger?: Debugger;
 	cps?: CPS;
@@ -272,8 +214,8 @@ export interface OperationContextOptions {
 }
 
 export interface OperationContextForkOptions {
-	type: string;
-	state: string;
+	type: ContextType;
+	state: ContextState;
 	target?: string;
 }
 
@@ -282,13 +224,17 @@ export class OperationContext {
 	line: number;
 	debugger: Debugger;
 	previous: OperationContext | null;
-	type: string;
-	state: string;
+	type: ContextType;
+	state: ContextState;
 	scope: Scope;
 	isProtected: boolean;
 	memory: Map<string, any>;
 	cps: CPS | null;
 	processState: OperationContextProcessState;
+
+	api: Scope | null;
+	locals: Scope | null;
+	globals: Scope | null;
 
 	constructor(options: OperationContextOptions) {
 		const me = this;
@@ -306,6 +252,42 @@ export class OperationContext {
 		me.processState = options.processState || {
 			exit: false
 		};
+
+		me.api = me.lookupAPI();
+		me.globals = me.lookupGlobals();
+		me.locals = me.lookupLocals();
+	}
+
+	lookupType(validate: (type: ContextType) => boolean): Scope {
+		const me = this;
+
+		if (validate(me.type)) {
+			return me.scope;
+		}
+
+		let current = me.previous;
+
+		while (current) {
+			if (validate(current.type)) {
+				return current.scope;
+			}
+
+			current = current.previous;
+		}
+
+		return null;
+	}
+
+	lookupAPI() {
+		return this.lookupType((type: ContextType) => [ContextType.API].includes(type));
+	}
+
+	lookupGlobals(): Scope {
+		return this.lookupType((type: ContextType) => [ContextType.GLOBAL].includes(type));
+	}
+
+	lookupLocals(): Scope {
+		return this.lookupType((type: ContextType) => [ContextType.GLOBAL, ContextType.FUNCTION].includes(type));
 	}
 
 	valueOf(): CustomMap {

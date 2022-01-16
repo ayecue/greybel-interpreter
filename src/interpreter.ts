@@ -62,7 +62,7 @@ export default class Interpreter {
 		});
 		
 		mainContext.extend(me.api); 
-		await mainContext.set(['params'], cast(me.params));
+		mainContext.scope.value.set('params', cast(me.params));
 
 		me.context = mainContext;
 

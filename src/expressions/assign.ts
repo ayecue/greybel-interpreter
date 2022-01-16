@@ -89,7 +89,7 @@ export default class AssignExpression extends Expression {
 			return true;
 		};
 
-		operationContext.debugger.debug('AssignExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.line, 'AssignExpression', 'get', 'expr', me.expr);
 
 		return await evaluate(me.expr);
 	}

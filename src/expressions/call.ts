@@ -82,7 +82,7 @@ export default class CallExpression extends Expression {
 			const args = await node.resolveArgs(operationContext);
 			const pathExpr = await node.path.get(opc, me.expr);
 
-			operationContext.debugger.debug('CallExpression', 'pathExpr', pathExpr);
+			operationContext.debugger.debug('Line', me.ast.line, 'CallExpression', 'pathExpr', pathExpr);
 
 			if (pathExpr.handle) {
 				if (isCustomMap(pathExpr.handle)) {
@@ -114,7 +114,7 @@ export default class CallExpression extends Expression {
 			return cast(callable.origin);
 		};
 
-		operationContext.debugger.debug('CallExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.line, 'CallExpression', 'get', 'expr', me.expr);
 
 		return evaluate(me.expr);
 	}

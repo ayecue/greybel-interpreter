@@ -33,6 +33,19 @@ pseudoAPI.set('mapToObject', (customValue) => {
 	return null;
 });
 
+pseudoAPI.set('pop', (customValue) => {
+	if (customValue instanceof CustomMap) {
+		const keys = Array.from(customValue.value.keys());
+		const item = customValue.value.get(keys[0]);
+		customValue.value.delete(keys[0]);
+		return item;
+	} else if (customValue instanceof CustomList) {
+		return customValue.value.pop();
+	}
+
+	return null;
+});
+
 CustomString.intrinsics.set('len', function(list) {
 	return list.value.length;
 });
@@ -41,9 +54,13 @@ CustomList.intrinsics.set('push', function(list, value) {
 	return list.value.push(value);
 });
 
+CustomList.intrinsics.set('pop', pseudoAPI.get('pop'));
+
 CustomMap.intrinsics.set('hasIndex', function(map, value) {
 	return map.value.has(value.toString());
 });
+
+CustomMap.intrinsics.set('pop', pseudoAPI.get('pop'));
 
 class TestDebugger extends Debugger {
 	debug() {}

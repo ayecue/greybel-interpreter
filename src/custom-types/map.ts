@@ -186,13 +186,12 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 
 	createInstance(): CustomMap {
 		const me = this;
-		const value: Map<string, any> = new Map();
-		const newInstance = new CustomMap(value);
+		const newInstance = new CustomMap();
 
 		newInstance.isInstance = true;
 		
 		me.value.forEach((item: any, key: string) => {
-			value.set(
+			newInstance.value.set(
 				key,
 				item instanceof FunctionOperationBase
 					? item.fork(newInstance)

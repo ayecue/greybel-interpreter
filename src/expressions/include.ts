@@ -55,7 +55,7 @@ export default class IncludeExpression extends Expression {
 			return true;
 		};
 
-		operationContext.debugger.debug('IncludeExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.line, 'IncludeExpression', 'get', 'expr', me.expr);
 
 		return await evaluate(me.expr);
 	}

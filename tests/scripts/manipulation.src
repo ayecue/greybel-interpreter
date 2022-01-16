@@ -1,0 +1,33 @@
+myMap = {
+	"foo": 123,
+	"bar": true,
+	"lore": "moo"
+}
+
+myList = [
+	"xxx",
+	123,
+	"foo"
+]
+
+myString = "abc lorem ipsum XxXaV"
+
+tempMap = {"see":"124578"} + myMap
+tempList = ["123456"] + myList
+
+print(tempMap)
+print(tempList)
+print(myMap)
+print(myList)
+
+tempMap = {} + myMap
+tempList = [] + myList
+
+print(pop(tempMap))
+print(pop(tempList))
+
+print(tempMap)
+print(tempList)
+
+print(myMap)
+print(myList)
