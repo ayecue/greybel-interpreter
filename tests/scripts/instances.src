@@ -1,0 +1,14 @@
+test = {}
+
+test.classID = "test"
+test.here = "was"
+test.was = function()
+	print(self.here)
+end function
+
+testInstance = new test
+
+testInstance.here = "woo"
+
+test.was()
+testInstance.was()

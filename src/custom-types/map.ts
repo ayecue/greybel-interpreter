@@ -184,7 +184,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		return CustomMap.intrinsics.get(key)(me, ...args);
 	}
 
-	createInstancefunction(): CustomMap {
+	createInstance(): CustomMap {
 		const me = this;
 		const value: Map<string, any> = new Map();
 		const newInstance = new CustomMap(value);
@@ -205,7 +205,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 
 	getType(): string {
 		const me = this;
-		return me.value.get('classID') || 'map';
+		return me.value.get('classID')?.toString() || 'map';
 	}
 
 	valueOf(): CustomMap | null {

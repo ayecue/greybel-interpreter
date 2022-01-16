@@ -350,6 +350,18 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts instances.src 1`] = `
+CustomString {
+  "value": "was",
+}
+`;
+
+exports[`interpreter default scripts instances.src 2`] = `
+CustomString {
+  "value": "woo",
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",
