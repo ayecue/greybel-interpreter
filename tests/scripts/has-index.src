@@ -1,0 +1,42 @@
+globals.test = "was"
+locals.xxx = "moo"
+
+functionBlock = function()
+	globals.foo = "bar"
+	locals.xxx = "1234"
+
+	print(xxx)
+end function
+
+functionBlock()
+
+print(globals.test)
+print(locals.xxx)
+
+print(globals.hasIndex("test"))
+print(locals.hasIndex("xxx"))
+
+print(globals.foo)
+print(globals.hasIndex("foo"))
+
+myGlobalRef = globals
+
+myGlobalRef.bar = "987"
+
+print(globals.bar)
+print(bar)
+print(locals.bar)
+
+anotherFunctionBlock = function()
+	myGlobalRef.innerBar = "inner-bar"
+end function
+
+anotherFunctionBlock()
+
+print(globals.innerBar)
+print(innerBar)
+print(locals.innerBar)
+
+print(globals.locals.globals.test)
+print(globals.locals.globals.hasIndex("test"))
+print(globals.locals.globals.hasIndex("unknown"))

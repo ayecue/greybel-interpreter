@@ -27,133 +27,145 @@ export enum ContextState {
 	DEFAULT = 'DEFAULT'
 }
 
-export class Scope {
+export class Scope extends CustomMap {
 	context: OperationContext;
-	refs: Map<string, any>;
 
 	constructor(context: OperationContext) {
-		const me = this;
-
-		me.context = context;
-		me.refs = new Map();
+		super();
+		this.context = context;
 	}
 
-	valueOf(): Map<string, any> {
-		return this.refs;
-	}
-
-	extend(map: Map<string, any> = new Map()): Scope {
-		const me = this;
-		me.refs = new Map([
-			...me.refs.entries(),
-			...map.entries()
-		]);
-		return me;
-	}
-
-	async set(path: string[], value: any): Promise<void> {
+	set(path: string[], value: any): Promise<void> {
 		const me = this;
 		const traversalPath = [].concat(path);
-		const refs = me.refs;
-		const last = traversalPath.pop();
 		const current = traversalPath.shift();
-		let origin = refs;
 
 		if (current != null) {
-			if (origin.has(current)) {
-				origin = origin.get(current);
-
-				if (
-					origin instanceof CustomObjectType ||
-					origin instanceof Scope
-				) {
-					return origin.set(traversalPath.concat([last]), value);
+			if (current === 'globals') {
+				if (me.context.type === ContextType.GLOBAL) {
+					return me.set(traversalPath, value);
+				} else if (me.context.previous && !me.context.previous.isProtected) {
+					return me.context.previous.set(traversalPath, value);
+				} else {
+					throw new Error(`Cannot set globals scope for ${path.join('.')}`);
 				}
-			} else if (me.context.previous && !me.context.previous.isProtected) {
-				me.context.previous.set(path, value);
-				return;
-			} else if (traversalPath.length > 0) {
-				throw new Error(`Cannot set path ${path.join('.')}`);
+			} else if (current === 'locals') {
+				if (
+					me.context.type === ContextType.GLOBAL || 
+					me.context.type === ContextType.FUNCTION
+				) {
+					return me.set(traversalPath, value);
+				} else if (me.context.previous && !me.context.previous.isProtected) {
+					return me.context.previous.set(traversalPath, value);
+				} else {
+					throw new Error(`Cannot set locals scope for ${path.join('.')}`);
+				}
+			} else {
+				return super.set(path, value);
 			}
 		}
-		
-		if (
-			origin &&
-			!(origin instanceof CustomBoolean) &&
-			!(origin instanceof CustomString) &&
-			!(origin instanceof CustomNumber) &&
-			!(origin instanceof CustomNil)
-		) {
-			origin.set(last, value); 
-		} else {
-			throw new Error(`Cannot set path ${path.join('.')}`);
-		}
 	}
 
-	async get(path: string[]): Promise<any> {
+	get(path: string[]): Promise<any> {
 		const me = this;
 		const traversalPath = [].concat(path);
-		const refs = me.refs;
 		const current = traversalPath.shift();
-		let context;
-		let origin = refs;
 
 		if (current != null) {
-			if (origin.has(current)) {
-				context = origin;
-				origin = origin.get(current);
-				
+			if (me.value.has(current)) {
+				return super.get(path);
+			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
+				return CustomMap.intrinsics.get(current).bind(null, me);
+			} else if (current === 'globals') {
+				if (me.context.type === ContextType.GLOBAL) {
+					if (path.length === 1) {
+						return Promise.resolve(me);
+					}
+					return me.get(traversalPath);
+				} else if (me.context.previous) {
+					return me.context.previous.get(traversalPath);
+				} else {
+					throw new Error(`Cannot find globals scope for ${path.join('.')}`);
+				}
+			} else if (current === 'locals') {
 				if (
-					traversalPath.length > 0 &&
-					(
-						origin instanceof CustomObjectType ||
-						origin instanceof Scope
-					)
+					me.context.type === ContextType.GLOBAL || 
+					me.context.type === ContextType.FUNCTION
 				) {
-					return origin.get(traversalPath);
+					if (path.length === 1) {
+						return Promise.resolve(me);
+					}
+					return me.get(traversalPath);
+				} else if (me.context.previous) {
+					return me.context.previous.get(traversalPath);
+				} else {
+					throw new Error(`Cannot find locals scope for ${path.join('.')}`);
 				}
 			} else if (me.context.previous) {
 				return me.context.previous.get(path);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
-		} else {
-			return null;
 		}
 		
-		return origin;
+		return null;
 	}
 
-	async getCallable(path: string[]): Promise<Callable> {
+	getCallable(path: string[]): Promise<Callable> {
 		const me = this;
 		const traversalPath = [].concat(path);
-		const refs = me.refs;
 		const current = traversalPath.shift();
-		let origin = refs;
-		let context;
 
 		if (current != null) {
-			if (origin.has(current)) {
-				context = origin;
-				origin = origin.get(current);
-
+			if (me.value.has(current)) {
+				return super.getCallable(path);
+			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
+				return Promise.resolve({
+					origin: CustomMap.intrinsics.get(current).bind(null, me),
+					context: me
+				});
+			} else if (current === 'globals') {
+				if (me.context.type === ContextType.GLOBAL) {
+					if (path.length === 1) {
+						return Promise.resolve({
+							origin: me,
+							context: null
+						});
+					}
+					return me.getCallable(traversalPath);
+				} else if (me.context.previous) {
+					return me.context.previous.getCallable(traversalPath);
+				} else {
+					throw new Error(`Cannot find callable in globals scope for ${path.join('.')}`);
+				}
+			} else if (current === 'locals') {
 				if (
-					origin instanceof CustomObjectType ||
-					origin instanceof Scope
+					me.context.type === ContextType.GLOBAL || 
+					me.context.type === ContextType.FUNCTION
 				) {
-					return origin.getCallable(traversalPath);
+					if (path.length === 1) {
+						return Promise.resolve({
+							origin: me,
+							context: null
+						});
+					}
+					return me.getCallable(traversalPath);
+				} else if (me.context.previous) {
+					return me.context.previous.getCallable(traversalPath);
+				} else {
+					throw new Error(`Cannot find callable in locals scope for ${path.join('.')}`);
 				}
 			} else if (me.context.previous) {
 				return me.context.previous.getCallable(path);
 			} else {
-				throw new Error(`Cannot get path ${path.join('.')}`);
+				throw new Error(`Cannot get callable path ${path.join('.')}`);
 			}
 		}
 
-		return {
-			origin: origin,
-			context: context
-		};
+		return Promise.resolve({
+			origin: me,
+			context: null
+		});
 	}
 }
 
@@ -296,7 +308,7 @@ export class OperationContext {
 		};
 	}
 
-	valueOf(): Map<string, any> {
+	valueOf(): CustomMap {
 		return this.scope.valueOf();
 	}
 
@@ -310,22 +322,29 @@ export class OperationContext {
 		return me;
 	}
 
-	async set(path: any[], value: any): Promise<OperationContext> {
+	set(path: any[], value: any): Promise<void> {
 		const me = this;
 		if (me.state === ContextState.TEMPORARY) {
-			await me.previous?.set(path, value);
+			return me.previous?.set(path, value);
 		} else {
-			await me.scope.set(path, value);
+			return me.scope.set(path, value);
 		}
-		return me;
 	}
 
-	get(path: any[]): any {
+	get(path: any[]): Promise<any> {
 		const me = this;
 		if (me.state === ContextState.TEMPORARY) {
 			return me.previous?.get(path);
 		}
 		return me.scope.get(path);
+	}
+
+	getCallable(path: string[]): Promise<Callable> {
+		const me = this;
+		if (me.state === ContextState.TEMPORARY) {
+			return me.previous?.getCallable(path);
+		}
+		return me.scope.getCallable(path);
 	}
 
 	setMemory(key: string, value: any): OperationContext {
@@ -337,14 +356,6 @@ export class OperationContext {
 	getMemory(key: string): any {
 		const me = this;
 		return me.memory.get(key);
-	}
-
-	getCallable(path: string[]): Promise<Callable> {
-		const me = this;
-		if (me.state === ContextState.TEMPORARY) {
-			return me.previous?.getCallable(path);
-		}
-		return me.scope.getCallable(path);
 	}
 
 	fork({
@@ -362,10 +373,6 @@ export class OperationContext {
 			cps: me.cps,
 			processState: me.processState
 		});
-
-		if (me.type === ContextType.FUNCTION || me.type === ContextType.GLOBAL) {
-			opc.scope.refs.set('locals', opc.scope);
-		}
 
 		if (type !== ContextType.FUNCTION) {
 			if (type !== ContextType.LOOP) {

@@ -23,7 +23,6 @@ export default class TopOperation extends Operation {
 			type: ContextType.GLOBAL,
 			state: ContextState.DEFAULT
 		});
-		opc.scope.refs.set('globals', opc.scope);
 		await me.body.run(opc);
 	}
 }

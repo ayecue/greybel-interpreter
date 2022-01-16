@@ -41,6 +41,10 @@ CustomList.intrinsics.set('push', function(list, value) {
 	return list.value.push(value);
 });
 
+CustomMap.intrinsics.set('hasIndex', function(map, value) {
+	return map.value.has(value.toString());
+});
+
 class TestDebugger extends Debugger {
 	debug() {}
 }

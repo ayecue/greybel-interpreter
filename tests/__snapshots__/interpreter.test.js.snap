@@ -236,6 +236,102 @@ CustomNumber {
 }
 `;
 
+exports[`interpreter default scripts has-index.src 1`] = `
+CustomString {
+  "value": "1234",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 2`] = `
+CustomString {
+  "value": "was",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 3`] = `
+CustomString {
+  "value": "moo",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 4`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts has-index.src 5`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts has-index.src 6`] = `
+CustomString {
+  "value": "bar",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 7`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts has-index.src 8`] = `
+CustomString {
+  "value": "987",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 9`] = `
+CustomString {
+  "value": "987",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 10`] = `
+CustomString {
+  "value": "987",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 11`] = `
+CustomString {
+  "value": "inner-bar",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 12`] = `
+CustomString {
+  "value": "inner-bar",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 13`] = `
+CustomString {
+  "value": "inner-bar",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 14`] = `
+CustomString {
+  "value": "was",
+}
+`;
+
+exports[`interpreter default scripts has-index.src 15`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts has-index.src 16`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
 exports[`interpreter default scripts imports.src 1`] = `
 CustomString {
   "value": "file imported",

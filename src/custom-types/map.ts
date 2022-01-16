@@ -44,12 +44,10 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 	value: Map<string, any>;
 	isInstance: boolean;
 
-	constructor(value: Map<string, any>) {
+	constructor(value?: Map<string, any>) {
 		super();
 		const me = this;
-		me.value = new Map([
-			...value.entries()
-		]);
+		me.value = value || new Map();
 		me.isInstance = false;
 	}
 
@@ -66,7 +64,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		return me;
 	}
 
-	async set(path: string[], value: any): Promise<void> {
+	set(path: string[], value: any): Promise<void> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.value;
@@ -97,11 +95,11 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		}
 	}
 
-	async get (path: string[]): Promise<any> {
+	get(path: string[]): Promise<any> {
 		const me = this;
 
 		if (path.length === 0) {
-			return me;
+			return Promise.resolve(me);
 		}
 
 		const traversalPath = [].concat(path);
@@ -118,7 +116,9 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 					return origin.get(traversalPath);
 				}
 			} else if (path.length === 1 && CustomMap.intrinsics.has(currentValue)) {
-				return CustomMap.intrinsics.get(currentValue).bind(null, me);
+				return Promise.resolve(
+					CustomMap.intrinsics.get(currentValue).bind(null, me)
+				);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
@@ -126,10 +126,10 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 			return null;
 		}
 		
-		return origin;
+		return Promise.resolve(origin);
 	}
 
-	async getCallable(path: string[]): Promise<Callable> {
+	getCallable(path: string[]): Promise<Callable> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.value;
@@ -146,19 +146,19 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 					return origin.getCallable(traversalPath);
 				}
 			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
-				return {
+				return Promise.resolve({
 					origin: CustomMap.intrinsics.get(current).bind(null, me),
 					context: me
-				};
+				});
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
 		}
 
-		return {
+		return Promise.resolve({
 			origin: origin,
 			context: context
-		};
+		});
 	}
 
 	callMethod(method: string[], ...args: any[]): any {

@@ -6,8 +6,16 @@ import {
 import { ASTType } from 'greyscript-core';
 import { Expression } from '../types/expression';
 import { Operation } from '../types/operation';
-import { isCustomValue, cast, isCustomMap } from '../typer';
-import { OperationContext, ContextType, ContextState } from '../context';
+import {
+	isCustomValue,
+	cast,
+	isCustomMap
+} from '../typer';
+import { 
+	OperationContext,
+	ContextType,
+	ContextState
+} from '../context';
 
 export class ExpressionSegment {
 	path: any;
