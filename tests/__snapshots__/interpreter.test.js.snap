@@ -230,6 +230,42 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts default-args.src 1`] = `
+CustomNumber {
+  "value": 0,
+}
+`;
+
+exports[`interpreter default scripts default-args.src 2`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts default-args.src 3`] = `
+CustomString {
+  "value": "hello",
+}
+`;
+
+exports[`interpreter default scripts default-args.src 4`] = `
+CustomNumber {
+  "value": 0,
+}
+`;
+
+exports[`interpreter default scripts default-args.src 5`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts default-args.src 6`] = `
+CustomString {
+  "value": "hello",
+}
+`;
+
 exports[`interpreter default scripts exit.src 1`] = `
 CustomNumber {
   "value": 123,

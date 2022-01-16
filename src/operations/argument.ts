@@ -1,6 +1,7 @@
 import { isCustomValue } from '../typer';
 import { Operation } from '../types/operation';
 import { Expression } from '../types/expression';
+import AssignExpression from '../expressions/assign';
 import { ASTBase } from 'greybel-core';
 import { OperationContext } from '../context';
 
@@ -22,6 +23,9 @@ export default class ArgumentOperation extends Operation {
 		for (let entity of stack) {
 			if (isCustomValue(entity)) {
 				args.push(entity);
+			} else if (entity instanceof AssignExpression) {
+				await entity.get(operationContext, me);
+				args.push(await entity.expr.left.get(operationContext));
 			} else if (entity instanceof Expression) {
 				args.push(await entity.get(operationContext, me));
 			} else {

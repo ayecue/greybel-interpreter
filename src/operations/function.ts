@@ -71,7 +71,10 @@ export default class FunctionOperation extends FunctionOperationBase {
 		const max = args.length;
 
 		while (index < max) {
-			await opc.set(args[index].path[0], incArgs[index]);
+			if (incArgs[index]) {
+				await opc.set(args[index].path, incArgs[index]);
+			}
+
 			index++;
 		}
 

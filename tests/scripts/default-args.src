@@ -1,0 +1,12 @@
+myFunction = function()
+	return "hello"
+end function
+
+test = function(arg1 = 0, arg2 = "test", arg3 = myFunction)
+	print(arg1)
+	print(arg2)
+	print(arg3)
+end function
+
+test()
+test("foo", false)
