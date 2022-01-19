@@ -15,7 +15,6 @@ export enum ContextType {
 	API = 'API',
 	GLOBAL = 'GLOBAL',
 	FUNCTION = 'FUNCTION',
-	INJECTION = 'INJECTION',
 	EXTERNAL = 'EXTERNAL',
 	LOOP = 'LOOP',
 	MAP = 'MAP',
@@ -139,7 +138,7 @@ export class Debugger {
 	}
 
 	getBreakpoint(operationContext: OperationContext): boolean {
-		return operationContext.type !== ContextType.INJECTION && this.breakpoint;
+		return !operationContext.injected && this.breakpoint;
 	}
 
 	next(): Debugger {
@@ -188,6 +187,7 @@ export interface OperationContextProcessState {
 export interface OperationContextOptions {
 	target?: string;
 	isProtected?: boolean;
+	injected?: boolean;
 	type?: ContextType;
 	state?: ContextState;
 	previous?: OperationContext;
@@ -200,6 +200,7 @@ export interface OperationContextForkOptions {
 	type: ContextType;
 	state: ContextState;
 	target?: string;
+	injected?: boolean;
 }
 
 export class OperationContext {
@@ -210,10 +211,12 @@ export class OperationContext {
 	type: ContextType;
 	state: ContextState;
 	scope: Scope;
-	isProtected: boolean;
 	memory: Map<string, any>;
 	cps: CPS | null;
 	processState: OperationContextProcessState;
+
+	isProtected: boolean;
+	injected: boolean;
 
 	api: Scope | null;
 	locals: Scope | null;
@@ -229,6 +232,7 @@ export class OperationContext {
 		me.state = options.state || ContextState.DEFAULT;
 		me.scope = new Scope(me);
 		me.isProtected = options.isProtected || false;
+		me.injected = options.injected || false;
 		me.memory = new Map();
 		me.debugger = options.debugger || new Debugger();
 		me.cps = options.cps;
@@ -260,7 +264,7 @@ export class OperationContext {
 
 	setLastActive(opc: OperationContext): OperationContext {
 		const me = this;
-		if (opc.type !== ContextType.INJECTION) {
+		if (!opc.injected) {
 			me.processState.last = opc;
 		}
 		return me;
@@ -389,7 +393,8 @@ export class OperationContext {
 	fork({
 		type,
 		state,
-		target
+		target,
+		injected
 	}: OperationContextForkOptions): OperationContext {
 		const me = this;
 		const opc = new OperationContext({
@@ -399,7 +404,8 @@ export class OperationContext {
 			state,
 			debugger: me.debugger,
 			cps: me.cps,
-			processState: me.processState
+			processState: me.processState,
+			injected: injected || me.injected
 		});
 
 		if (type !== ContextType.FUNCTION) {

@@ -85,8 +85,9 @@ export default class Interpreter extends EventEmitter {
 			const chunk = parser.parseChunk();
 			const body = await me.cps.visit(chunk);
 			const injectionCtx = (context || me.globalContext).fork({
-				type: ContextType.INJECTION,
-				state: ContextState.TEMPORARY
+				type: ContextType.CALL,
+				state: ContextState.TEMPORARY,
+				injected: true
 			});
 
 			await body.run(context);
