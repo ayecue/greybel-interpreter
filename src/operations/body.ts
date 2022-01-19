@@ -32,12 +32,7 @@ export default class BodyOperation extends Operation {
 		}
 
 		for (let entity of me.stack) {
-			operationContext.position = entity.ast.start;
-
-			if (dbgr.getBreakpoint(operationContext)) {
-				dbgr.interact(operationContext, entity);
-				await dbgr.resume();
-			}
+			await operationContext.step(entity.ast);
 
 			if (entity instanceof Expression) {
 				await entity.get(operationContext);

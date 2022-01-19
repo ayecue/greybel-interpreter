@@ -7,7 +7,7 @@ import CustomList from './custom-types/list';
 import { Operation } from './types/operation';
 import { Expression } from './types/expression';
 import { CustomObjectType, Callable } from './types/custom-type';
-import { Parser as CodeParser } from 'greybel-core';
+import { Parser as CodeParser, ASTBase } from 'greybel-core';
 import { ASTPosition } from 'greyscript-core';
 import CPS from './cps';
 
@@ -171,7 +171,7 @@ export class Debugger {
 		});
 	}
 
-	interact(operationContext: OperationContext, item: Operation | Expression) {
+	interact(operationContext: OperationContext, item: ASTBase) {
 		const me = this;
 		console.warn("Debugger is not setup.");
 		console.info(operationContext);
@@ -222,7 +222,7 @@ export interface OperationContextForkOptions {
 
 export class OperationContext {
 	target: string;
-	position: ASTPosition;
+	stackItem: ASTBase | null;
 	debugger: Debugger;
 	previous: OperationContext | null;
 	type: ContextType;
@@ -241,10 +241,7 @@ export class OperationContext {
 		const me = this;
 
 		me.target = options.target || 'unknown';
-		me.position = {
-			line: 0,
-			character: 0
-		};
+		me.stackItem = null;
 		me.previous = options.previous || null;
 		me.type = options.type || ContextType.API;
 		me.state = options.state || ContextState.DEFAULT;
@@ -261,6 +258,20 @@ export class OperationContext {
 		me.api = me.lookupAPI();
 		me.globals = me.lookupGlobals();
 		me.locals = me.lookupLocals();
+	}
+
+	step(item: ASTBase): Promise<void> {
+		const me = this;
+		const dbgr = me.debugger;
+
+		me.stackItem = item;
+
+		if (dbgr.getBreakpoint(me)) {
+			dbgr.interact(me, item);
+			return dbgr.resume();
+		}
+
+		return Promise.resolve();
 	}
 
 	exit(): Promise<OperationContext> {
