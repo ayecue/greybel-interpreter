@@ -118,20 +118,22 @@ describe('interpreter', function() {
 			expect(printMock.mock.calls.length).toBeLessThan(3);
 			printMock = jest.fn();
 
-			interpreter.once('exit', () => {
-				for (const call of printMock.mock.calls) {
-					expect(call[0]).toMatchSnapshot();
-				}
+			setTimeout(() => {
+				interpreter.once('exit', () => {
+					for (const call of printMock.mock.calls) {
+						expect(call[0]).toMatchSnapshot();
+					}
 
-				done();
-			});
+					done();
+				});
 
-			interpreter.digest(`
-				print("123")
-				print("456")
-				print("789")
-				print(test)
-			`);
+				interpreter.digest(`
+					print("123")
+					print("456")
+					print("789")
+					print(test)
+				`);
+			}, 1000);
 		});
 
 		interpreter.digest(`

@@ -162,11 +162,11 @@ export class Debugger {
 					me.nextStep = false;
 					resolve();
 				} else {
-					setImmediate(check);
+					setTimeout(check, 10);
 				}
 			};
 
-			setImmediate(check);
+			setTimeout(check, 10);
 		});
 	}
 
@@ -288,12 +288,16 @@ export class OperationContext {
 			state.exit = true;
 
 			return new Promise((resolve) => {
-				setImmediate(() => {
+				const check = () => {
 					if (!state.pending) {
 						state.exit = false;
 						resolve(me);
+					} else {
+						setTimeout(check, 10);
 					}
-				});
+				};
+
+				setTimeout(check, 10);
 			});
 		}
 

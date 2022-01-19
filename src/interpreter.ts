@@ -134,11 +134,10 @@ export default class Interpreter extends EventEmitter {
 		} catch (err) {
 			me.debugger.raise(err);
 		} finally {
-			me.apiContext.setPending(false);
-
-			setImmediate(() => {
+			setTimeout(() => {
+				me.apiContext.setPending(false);
 				me.emit('exit', me);
-			});
+			}, 100);
 		}
 
 		return me;
