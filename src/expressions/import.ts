@@ -71,7 +71,7 @@ export default class ImportExpression extends Expression {
 			return true;
 		};
 
-		operationContext.debugger.debug('Line', me.ast.line, 'ImportExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.start.line, 'ImportExpression', 'get', 'expr', me.expr);
 
 		return await evaluate(me.expr);
 	}

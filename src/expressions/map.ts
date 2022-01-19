@@ -85,7 +85,7 @@ export default class MapExpression extends Expression {
 			return new CustomMap(map);
 		};
 
-		operationContext.debugger.debug('Line', me.ast.line, 'MapExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.start.line, 'MapExpression', 'get', 'expr', me.expr);
 
 		return evaluate(me.expr.values);
 	}

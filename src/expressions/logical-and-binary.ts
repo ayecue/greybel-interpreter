@@ -161,7 +161,7 @@ export default class LogicalAndBinaryExpression extends Expression {
 			}
 		};
 
-		operationContext.debugger.debug('Line', me.ast.line, 'LogicalAndBinaryExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.start.line, 'LogicalAndBinaryExpression', 'get', 'expr', me.expr);
 
 		return evaluate(me.expr);
 	}

@@ -65,7 +65,7 @@ export default class BinaryNegatedExpression extends Expression {
 			return cast(OPERATIONS[node.operator](arg));
 		};
 
-		operationContext.debugger.debug('Line', me.ast.line, 'BinaryNegatedExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.start.line, 'BinaryNegatedExpression', 'get', 'expr', me.expr);
 
 		return evaluate(me.expr);
 	}

@@ -218,7 +218,7 @@ export default class PathExpression extends Expression {
 			};
 		};
 
-		operationContext.debugger.debug('Line', me.ast.line, 'PathExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.start.line, 'PathExpression', 'get', 'expr', me.expr);
 
 		const resultExpr = await evaluate(me.expr);
 

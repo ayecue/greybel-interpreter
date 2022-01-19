@@ -55,6 +55,11 @@ export default class CallExpression extends Expression {
 		const buildExpression = async function(node: any): Promise<ExpressionSegment> {
 			if (ASTType.CallStatement === node.type) {
 				return buildExpression(node.expression as ASTCallExpression);
+			} else if (ASTType.Identifier === node.type) {
+				return new ExpressionSegment(
+					await visit(node),
+					[]
+				);
 			}
 
 			return new ExpressionSegment(
@@ -82,7 +87,7 @@ export default class CallExpression extends Expression {
 			const args = await node.resolveArgs(operationContext);
 			const pathExpr = await node.path.get(opc, me.expr);
 
-			operationContext.debugger.debug('Line', me.ast.line, 'CallExpression', 'pathExpr', pathExpr);
+			operationContext.debugger.debug('Line', me.ast.start.line, 'CallExpression', 'pathExpr', pathExpr);
 
 			if (pathExpr.handle) {
 				if (isCustomMap(pathExpr.handle)) {
@@ -114,7 +119,7 @@ export default class CallExpression extends Expression {
 			return cast(callable.origin);
 		};
 
-		operationContext.debugger.debug('Line', me.ast.line, 'CallExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.start.line, 'CallExpression', 'get', 'expr', me.expr);
 
 		return evaluate(me.expr);
 	}

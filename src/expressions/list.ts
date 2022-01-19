@@ -60,7 +60,7 @@ export default class ListExpression extends Expression {
 			return new CustomList(list);
 		};
 
-		operationContext.debugger.debug('Line', me.ast.line, 'ListExpression', 'get', 'expr', me.expr);
+		operationContext.debugger.debug('Line', me.ast.start.line, 'ListExpression', 'get', 'expr', me.expr);
 
 		return evaluate(me.expr.values);
 	}
