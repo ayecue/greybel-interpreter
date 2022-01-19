@@ -38,7 +38,14 @@ export default class Interpreter extends EventEmitter {
 
 		me.api = options.api || new Map();
 		me.params = options.params || [];
-		me.target = options.target || 'unknown';
+
+		me.setTarget(options.target || 'unknown');
+	}
+
+	setTarget(target: string): Interpreter {
+		const me = this;
+
+		me.target = target;
 
 		me.cps = new CPS({
 			target: me.target,
@@ -56,6 +63,8 @@ export default class Interpreter extends EventEmitter {
 			type: ContextType.GLOBAL,
 			state: ContextState.DEFAULT
 		});
+
+		return me;
 	}
 
 	async inject(code: string): Promise<Interpreter> {
