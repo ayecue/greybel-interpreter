@@ -138,7 +138,7 @@ export class Debugger {
 	}
 
 	getBreakpoint(operationContext: OperationContext): boolean {
-		return !operationContext.injected && this.breakpoint;
+		return this.breakpoint;
 	}
 
 	next(): Debugger {
@@ -251,12 +251,14 @@ export class OperationContext {
 		const me = this;
 		const dbgr = me.debugger;
 
-		me.stackItem = item;
-		me.setLastActive(me);
+		if (!me.injected) {
+			me.stackItem = item;
+			me.setLastActive(me);
 
-		if (dbgr.getBreakpoint(me)) {
-			dbgr.interact(me, item);
-			return dbgr.resume();
+			if (dbgr.getBreakpoint(me)) {
+				dbgr.interact(me, item);
+				return dbgr.resume();
+			}
 		}
 
 		return Promise.resolve();
