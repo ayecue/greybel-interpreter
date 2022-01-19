@@ -65,7 +65,12 @@ export default class Interpreter extends EventEmitter {
 		const body = await me.cps.visit(chunk);
 
 		try {
-			await body.run(me.globalContext);
+			const context = me.globalContext.fork({
+				type: ContextType.INJECTION,
+				state: ContextState.TEMPORARY
+			});
+
+			await body.run(context);
 		} catch (err) {
 			me.debugger.raise(err);
 		}
@@ -99,7 +104,7 @@ export default class Interpreter extends EventEmitter {
 			me.debugger.raise(err);
 		} finally {
 			me.apiContext.setPending(false);
-			
+
 			setImmediate(() => {
 				me.emit('exit', me);
 			});
