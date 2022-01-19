@@ -67,6 +67,16 @@ export default class Interpreter extends EventEmitter {
 		return me;
 	}
 
+	setDebugger(dbgr: Debugger): Interpreter {
+		const me = this;
+
+		me.debugger = dbgr;
+		me.apiContext.debugger = dbgr;
+		me.globalContext.debugger = dbgr;
+
+		return me;
+	}
+
 	async inject(code: string): Promise<Interpreter> {
 		const me = this;
 		const parser = new CodeParser(code);
