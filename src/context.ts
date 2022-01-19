@@ -1,4 +1,3 @@
-import TopOperation from './operations/top';
 import CustomBoolean from './custom-types/boolean';
 import CustomNumber from './custom-types/number';
 import CustomString from './custom-types/string';
@@ -200,6 +199,7 @@ export class Debugger {
 
 export interface OperationContextProcessState {
 	exit: boolean;
+	pending: boolean;
 }
 
 export interface OperationContextOptions {
@@ -250,12 +250,47 @@ export class OperationContext {
 		me.debugger = options.debugger || new Debugger();
 		me.cps = options.cps;
 		me.processState = options.processState || {
-			exit: false
+			exit: false,
+			pending: false
 		};
 
 		me.api = me.lookupAPI();
 		me.globals = me.lookupGlobals();
 		me.locals = me.lookupLocals();
+	}
+
+	exit(): Promise<OperationContext> {
+		const me = this;
+		const state = me.processState;
+
+		if (state.pending) {
+			state.exit = true;
+
+			return new Promise((resolve) => {
+				setImmediate(() => {
+					if (!state.pending) {
+						state.exit = false;
+						resolve(me);
+					}
+				});
+			});
+		}
+
+		return Promise.reject(new Error('No running process found.'));
+	}
+
+	setPending(pending: boolean): OperationContext {
+		const me = this;
+		me.processState.pending = pending;
+		return me;
+	}
+
+	isExit(): boolean {
+		return this.processState.exit;
+	}
+
+	isPending(): boolean {
+		return this.processState.exit;
 	}
 
 	lookupType(validate: (type: ContextType) => boolean): Scope {

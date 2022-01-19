@@ -103,4 +103,42 @@ describe('interpreter', function() {
 				});
 			});
 	});
+
+	test('should exit', function(done) {
+		const interpreter = new Interpreter({
+			api: pseudoAPI,
+			debugger: new TestDebugger()
+		});
+
+		interpreter.once('start', () => {
+			interpreter.exit();
+		});
+
+		interpreter.once('exit', () => {
+			expect(printMock.mock.calls.length).toBeLessThan(3);
+			printMock = jest.fn();
+
+			interpreter.once('exit', () => {
+				for (const call of printMock.mock.calls) {
+					expect(call[0]).toMatchSnapshot();
+				}
+
+				done();
+			});
+
+			interpreter.digest(`
+				print("123")
+				print("456")
+				print("789")
+				print(test)
+			`);
+		});
+
+		interpreter.digest(`
+			test = "foo"
+			print("123")
+			print("456")
+			print("789")
+		`);
+	});
 });

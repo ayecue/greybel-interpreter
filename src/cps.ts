@@ -50,7 +50,6 @@ import ElseOperation from './operations/else';
 import ContinueOperation from './operations/continue';
 import BreakOperation from './operations/break';
 import BodyOperation from './operations/body';
-import TopOperation from './operations/top';
 import DebuggerOperation from './operations/debugger';
 import FunctionOperation from './operations/function';
 import CustomBoolean from './custom-types/boolean';

@@ -1,29 +1,36 @@
 import CPS from'./cps';
-import { OperationContext, Debugger } from './context';
+import {
+	OperationContext,
+	Debugger,
+	ContextType,
+	ContextState
+} from './context';
 import { Parser as CodeParser } from 'greybel-core';
 import { ResourceProvider, ResourceHandler } from './resource';
-import TopOperation from './operations/top';
 import { cast } from './typer';
+import EventEmitter from 'events';
 
 export interface InterpreterOptions {
 	target?: string;
-	code?: string;
 	api?: Map<string, any>;
 	params?: any[];
 	resourceHandler?: ResourceHandler;
 	debugger?: Debugger;
 };
 
-export default class Interpreter {
+export default class Interpreter extends EventEmitter {
 	target: string;
-	code: string | null;
 	api: Map<string, any>
 	params: any[];
 	resourceHandler: ResourceHandler;
 	debugger: Debugger;
-	context: OperationContext | null;
+	apiContext: OperationContext;
+	globalContext: OperationContext;
+	cps: CPS;
 
 	constructor(options: InterpreterOptions) {
+		super();
+
 		const me = this;
 
 		me.resourceHandler = options.resourceHandler || new ResourceProvider().getHandler();
@@ -31,55 +38,83 @@ export default class Interpreter {
 
 		me.api = options.api || new Map();
 		me.params = options.params || [];
-		me.context = null;
+		me.target = options.target || 'unknown';
 
-		if (options.target) {
-			me.target = options.target;
-			me.code = null;
-		} else {
-			me.target = 'unknown';
-			me.code = options.code;
-		}
-	}
-
-	async digest(): Promise<any> {
-		const me = this;
-		const code = me.code || (await me.resourceHandler.get(me.target));
-		const parser = new CodeParser(code);
-		const chunk = parser.parseChunk();
-		const cps = new CPS({
+		me.cps = new CPS({
 			target: me.target,
 			resourceHandler: me.resourceHandler
 		});
-		const mainContext = new OperationContext({
+
+		me.apiContext = new OperationContext({
 			target: me.target,
 			isProtected: true,
 			debugger: me.debugger,
-			cps
+			cps: me.cps
 		});
-		const topOperation = new TopOperation(null, {
-			body: await cps.visit(chunk)
+
+		me.globalContext = me.apiContext.fork({
+			type: ContextType.GLOBAL,
+			state: ContextState.DEFAULT
 		});
-		
-		mainContext.extend(me.api); 
-		mainContext.scope.value.set('params', cast(me.params));
-
-		me.context = mainContext;
-
-		return topOperation.run(mainContext)
-			.catch((err) => {
-				console.error(err);
-				throw err;
-			});
 	}
 
-	exit() {
+	async inject(code: string): Promise<Interpreter> {
 		const me = this;
+		const parser = new CodeParser(code);
+		const chunk = parser.parseChunk();
+		const body = await me.cps.visit(chunk);
 
-		if (me.context == null) {
-			throw new Error('Unexpected exit signal.');
+		try {
+			await body.run(me.globalContext);
+		} catch (err) {
+			me.debugger.raise(err);
 		}
 
-		me.context.processState.exit = true;
+		return me;
+	}
+
+	async digest(customCode?: string): Promise<Interpreter> {
+		const me = this;
+
+		if (me.apiContext.isPending()) {
+			return Promise.reject(new Error('Process already running.'));
+		}
+
+		const code = customCode || (await me.resourceHandler.get(me.target));
+		const parser = new CodeParser(code);
+		const chunk = parser.parseChunk();
+		const body = await me.cps.visit(chunk);
+
+		me.apiContext.extend(me.api);
+		me.globalContext.scope.value.set('params', cast(me.params));
+
+		me.emit('setup', me);
+
+		try {
+			me.apiContext.setPending(true);
+			const process = body.run(me.globalContext);
+			me.emit('start');
+			await process;
+		} catch (err) {
+			me.debugger.raise(err);
+		} finally {
+			me.apiContext.setPending(false);
+			
+			setImmediate(() => {
+				me.emit('exit', me);
+			});
+		}
+
+		return me;
+	}
+
+	exit(): Promise<OperationContext> {
+		const me = this;
+
+		try {
+			return me.apiContext.exit();
+		} catch (err) {
+			me.debugger.raise(err);
+		}
 	}
 }

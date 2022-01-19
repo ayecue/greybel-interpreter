@@ -19,7 +19,6 @@ export { default as ElseOperation } from './operations/else';
 export { default as ContinueOperation } from './operations/continue';
 export { default as BreakOperation } from './operations/break';
 export { default as BodyOperation } from './operations/body';
-export { default as TopOperation } from './operations/top';
 export { default as DebuggerOperation } from './operations/debugger';
 export { default as CustomBoolean } from './custom-types/boolean';
 export { default as CustomNumber } from './custom-types/number';
