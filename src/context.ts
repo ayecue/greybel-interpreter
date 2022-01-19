@@ -8,6 +8,7 @@ import { Operation } from './types/operation';
 import { Expression } from './types/expression';
 import { CustomObjectType, Callable } from './types/custom-type';
 import { Parser as CodeParser } from 'greybel-core';
+import { ASTPosition } from 'greyscript-core';
 import CPS from './cps';
 
 export enum ContextType {
@@ -221,7 +222,7 @@ export interface OperationContextForkOptions {
 
 export class OperationContext {
 	target: string;
-	line: number;
+	position: ASTPosition;
 	debugger: Debugger;
 	previous: OperationContext | null;
 	type: ContextType;
@@ -240,7 +241,10 @@ export class OperationContext {
 		const me = this;
 
 		me.target = options.target || 'unknown';
-		me.line = -1;
+		me.position = {
+			line: 0,
+			character: 0
+		};
 		me.previous = options.previous || null;
 		me.type = options.type || ContextType.API;
 		me.state = options.state || ContextState.DEFAULT;

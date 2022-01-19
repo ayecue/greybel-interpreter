@@ -32,7 +32,7 @@ export default class BodyOperation extends Operation {
 		}
 
 		for (let entity of me.stack) {
-			operationContext.line = entity.ast.line;
+			operationContext.position = entity.ast.start;
 
 			if (dbgr.getBreakpoint(operationContext)) {
 				dbgr.interact(operationContext, entity);
