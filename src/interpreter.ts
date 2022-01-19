@@ -77,14 +77,14 @@ export default class Interpreter extends EventEmitter {
 		return me;
 	}
 
-	async inject(code: string): Promise<Interpreter> {
+	async inject(code: string, context?: OperationContext): Promise<Interpreter> {
 		const me = this;
-		const parser = new CodeParser(code);
-		const chunk = parser.parseChunk();
-		const body = await me.cps.visit(chunk);
 
 		try {
-			const context = me.globalContext.fork({
+			const parser = new CodeParser(code);
+			const chunk = parser.parseChunk();
+			const body = await me.cps.visit(chunk);
+			const injectionCtx = (context || me.globalContext).fork({
 				type: ContextType.INJECTION,
 				state: ContextState.TEMPORARY
 			});
@@ -92,6 +92,17 @@ export default class Interpreter extends EventEmitter {
 			await body.run(context);
 		} catch (err) {
 			me.debugger.raise(err);
+		}
+
+		return me;
+	}
+
+	async injectInLastContext(code: string): Promise<Interpreter> {
+		const me = this;
+		const last = me.apiContext.getLastActive();
+
+		if (me.apiContext.isPending()) {
+			me.inject(code, last);
 		}
 
 		return me;

@@ -175,32 +175,14 @@ export class Debugger {
 		const me = this;
 		console.warn("Debugger is not setup.");
 		console.info(operationContext);
-		me.lastContext = operationContext;
 		me.breakpoint = false;
-	}
-
-	async run(code: string): Promise<void> {
-		const me = this;
-
-		try {
-			const parser = new CodeParser(code);
-			const chunk = parser.parseChunk();
-			const item = await me.lastContext.cps.visit(chunk);
-			const context = me.lastContext.fork({
-				type: ContextType.INJECTION,
-				state: ContextState.TEMPORARY
-			});
-
-			await item.run(context);
-		} catch (err) {
-			console.error(err);
-		}
 	}
 }
 
 export interface OperationContextProcessState {
 	exit: boolean;
 	pending: boolean;
+	last: OperationContext | null;
 }
 
 export interface OperationContextOptions {
@@ -252,7 +234,8 @@ export class OperationContext {
 		me.cps = options.cps;
 		me.processState = options.processState || {
 			exit: false,
-			pending: false
+			pending: false,
+			last: null
 		};
 
 		me.api = me.lookupAPI();
@@ -265,6 +248,7 @@ export class OperationContext {
 		const dbgr = me.debugger;
 
 		me.stackItem = item;
+		me.setLastActive(me);
 
 		if (dbgr.getBreakpoint(me)) {
 			dbgr.interact(me, item);
@@ -272,6 +256,22 @@ export class OperationContext {
 		}
 
 		return Promise.resolve();
+	}
+
+	setLastActive(opc: OperationContext): OperationContext {
+		const me = this;
+		if (opc.type !== ContextType.INJECTION) {
+			me.processState.last = opc;
+		}
+		return me;
+	}
+
+	getLastActive(): OperationContext | null {
+		return this.processState.last;
+	}
+
+	isExit(): boolean {
+		return this.processState.exit;
 	}
 
 	exit(): Promise<OperationContext> {
@@ -294,18 +294,14 @@ export class OperationContext {
 		return Promise.reject(new Error('No running process found.'));
 	}
 
+	isPending(): boolean {
+		return this.processState.pending;
+	}
+
 	setPending(pending: boolean): OperationContext {
 		const me = this;
 		me.processState.pending = pending;
 		return me;
-	}
-
-	isExit(): boolean {
-		return this.processState.exit;
-	}
-
-	isPending(): boolean {
-		return this.processState.exit;
 	}
 
 	lookupType(validate: (type: ContextType) => boolean): Scope {
