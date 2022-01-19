@@ -90,7 +90,7 @@ export default class Interpreter extends EventEmitter {
 				injected: true
 			});
 
-			await body.run(context);
+			await body.run(injectionCtx);
 		} catch (err) {
 			me.debugger.raise(err);
 		}
