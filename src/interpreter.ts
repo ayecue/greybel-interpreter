@@ -103,7 +103,7 @@ export default class Interpreter extends EventEmitter {
 		const last = me.apiContext.getLastActive();
 
 		if (me.apiContext.isPending()) {
-			me.inject(code, last);
+			return me.inject(code, last);
 		}
 
 		return me;
