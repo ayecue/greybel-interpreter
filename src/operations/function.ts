@@ -4,6 +4,7 @@ import { OperationContext, ContextType, ContextState } from '../context';
 import { ASTBase } from 'greybel-core';
 import ArgumentOperation from './argument';
 import BodyOperation from './body';
+import { cast } from '../typer';
 
 export interface FunctionOperationOptions {
 	args: ArgumentOperation;
@@ -71,7 +72,7 @@ export default class FunctionOperation extends FunctionOperationBase {
 		const max = args.length;
 
 		while (index < max) {
-			if (incArgs[index]) {
+			if (incArgs?.[index]) {
 				await opc.set(args[index].path, incArgs[index]);
 			}
 
@@ -80,6 +81,6 @@ export default class FunctionOperation extends FunctionOperationBase {
 
 		await me.body.run(opc);
 
-		return functionContext.value;
+		return cast(functionContext.value);
 	}
 }

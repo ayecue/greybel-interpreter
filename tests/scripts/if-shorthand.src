@@ -1,0 +1,43 @@
+if (true) then print("true")
+if (false) then print("true") else print("false")
+print("was")
+if (false) then
+	print(false)
+else
+	print(true)
+end if
+
+for (i in ["foo"]) print(i)
+for (b in ["bar"])
+	print(b)
+end for
+
+i = 0
+b = 2
+
+while (i < b) i += 1
+
+
+b = 0
+i = 2
+
+while (b < i)
+	b += 1
+end while
+myFunction = function(v) print(v)
+otherFunction = function(n)
+	print(n)
+end function
+
+myFunction("x1")
+otherFunction("x2")
+
+loom = function(m) return "was"
+
+maybe = function(bar)
+	if (bar) then return "foo"
+end function
+
+print(loom)
+print(maybe(true))
+print(maybe)

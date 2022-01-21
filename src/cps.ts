@@ -267,7 +267,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			return new CallExpression(item).prepare(visit);
 		},
 		'CallStatement': function(item: ASTCallStatement): Promise<CallExpression> {
-			return new CallExpression(item).prepare(visit);
+			return visit(item.expression);
 		},
 		'FeatureImportExpression': async function(item: ASTFeatureImportExpression): Promise<ImportExpression> {
 			const resourceHandler = context.resourceHandler;
@@ -296,7 +296,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			const target = await resourceHandler.getTargetRelativeTo(
 				context.target,
 				// @ts-ignore: FileSystemDirectory is always a string
-				(item.fileSystemDirectory as ASTLiteral).value
+				item.fileSystemDirectory
 			);
 			const code = await context.resourceHandler.get(target);
 

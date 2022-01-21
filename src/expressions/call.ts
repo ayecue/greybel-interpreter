@@ -53,15 +53,6 @@ export default class CallExpression extends Expression {
 	async prepare(visit: Function): Promise<CallExpression> {
 		const me = this;
 		const buildExpression = async function(node: any): Promise<ExpressionSegment> {
-			if (ASTType.CallStatement === node.type) {
-				return buildExpression(node.expression as ASTCallExpression);
-			} else if (ASTType.Identifier === node.type) {
-				return new ExpressionSegment(
-					await visit(node),
-					[]
-				);
-			}
-
 			return new ExpressionSegment(
 				await visit(node.base),
 				await Promise.all(node.arguments.map((item: ASTBase) => visit(item)))

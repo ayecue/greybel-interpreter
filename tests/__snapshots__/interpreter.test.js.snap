@@ -368,6 +368,72 @@ CustomBoolean {
 }
 `;
 
+exports[`interpreter default scripts if-shorthand.src 1`] = `
+CustomString {
+  "value": "true",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 2`] = `
+CustomString {
+  "value": "false",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 3`] = `
+CustomString {
+  "value": "was",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 4`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 5`] = `
+CustomString {
+  "value": "foo",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 6`] = `
+CustomString {
+  "value": "bar",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 7`] = `
+CustomString {
+  "value": "x1",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 8`] = `
+CustomString {
+  "value": "x2",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 9`] = `
+CustomString {
+  "value": "was",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 10`] = `
+CustomString {
+  "value": "foo",
+}
+`;
+
+exports[`interpreter default scripts if-shorthand.src 11`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
 exports[`interpreter default scripts imports.src 1`] = `
 CustomString {
   "value": "file imported",
@@ -644,7 +710,11 @@ CustomString {
 }
 `;
 
-exports[`interpreter default scripts simple-object.src 2`] = `null`;
+exports[`interpreter default scripts simple-object.src 2`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
 exports[`interpreter default scripts slice.src 1`] = `
 CustomList {

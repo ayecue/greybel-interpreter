@@ -45,7 +45,7 @@ export default class MapExpression extends Expression {
 		me.expr = new ExpressionSegment(
 			await Promise.all(node.fields.map(async (item: ASTMapKeyString) => {
 				return {
-					key: await visit(item.key),
+					key: item.key,
 					value: await visit(item.value)
 				};
 			}))
@@ -64,11 +64,7 @@ export default class MapExpression extends Expression {
 				let key: string | number;
 				let value: any;
 
-				if (isCustomValue(current.key)) {
-					key = current.key.valueOf();
-				} else {
-					operationContext.debugger.raise('Unexpected key', me, current.key);
-				}
+				key = current.key;
 
 				if (isCustomValue(current.value)) {
 					value = current.value;

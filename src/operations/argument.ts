@@ -1,9 +1,10 @@
 import { isCustomValue } from '../typer';
 import { Operation } from '../types/operation';
-import { Expression } from '../types/expression';
+import PathExpression from '../expressions/path';
 import AssignExpression from '../expressions/assign';
 import { ASTBase } from 'greybel-core';
 import { OperationContext } from '../context';
+import CustomNil from '../custom-types/nil';
 
 export default class ArgumentOperation extends Operation {
 	stack: any[];
@@ -26,8 +27,10 @@ export default class ArgumentOperation extends Operation {
 			} else if (entity instanceof AssignExpression) {
 				await entity.get(operationContext, me);
 				args.push(await entity.expr.left.get(operationContext));
-			} else if (entity instanceof Expression) {
-				args.push(await entity.get(operationContext, me));
+			} else if (entity instanceof PathExpression) {
+				const arg = await entity.get(operationContext, me);
+				operationContext.set(arg.path, new CustomNil());
+				args.push(arg);
 			} else {
 				operationContext.debugger.raise('Unexpected argument', me, entity);
 			}
