@@ -1,4 +1,4 @@
-import FunctionOperation from '../operations/function';
+import { FunctionOperationBase } from '../types/operation';
 import { CustomLiteralType, CustomObjectType, Callable } from '../types/custom-type';
 
 export class CustomListIterator implements Iterator<any> {
@@ -94,7 +94,7 @@ export default class CustomList extends CustomObjectType {
 				throw new Error(`Index error (list index ${setterIndex} out of range)`);
 			}
 
-			if (value instanceof FunctionOperation) {
+			if (value instanceof FunctionOperationBase) {
 				origin[setterIndex] = value.fork(me);
 			} else {
 				origin[setterIndex] = value;
