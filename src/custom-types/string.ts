@@ -41,7 +41,7 @@ export default class CustomString extends CustomLiteralType {
 	}
 
 	slice(a: CustomLiteralType, b: CustomLiteralType): CustomString {
-		return new CustomString(this.value.slice(a.valueOf(), b.valueOf()));
+		return new CustomString(this.value.slice(a?.valueOf(), b?.valueOf()));
 	}
 
 	[Symbol.iterator]() {

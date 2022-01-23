@@ -50,7 +50,7 @@ export default class CustomList extends CustomObjectType {
 	}
 
 	slice = function(a: CustomLiteralType, b: CustomLiteralType): CustomList {
-		return new CustomList(this.value.slice(a.valueOf(), b.valueOf()));
+		return new CustomList(this.value.slice(a?.valueOf(), b?.valueOf()));
 	}
 
 	toIndex(value: string): number | null {
