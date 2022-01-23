@@ -74,6 +74,8 @@ export class Scope extends CustomMap {
 				return CustomMap.prototype.get.call(me.context.api, path);
 			} else if (me.value.has(current)) {
 				return super.get(path);
+			} else if (me.context.previous) {
+				return CustomMap.prototype.get.call(me.context.previous.scope, path);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
@@ -98,8 +100,12 @@ export class Scope extends CustomMap {
 				return CustomMap.prototype.getCallable.call(me.context.globals, path);
 			} else if (me.context.api?.value.has(current)) {
 				return CustomMap.prototype.getCallable.call(me.context.api, path);
-			} else {
+			} else if (me.value.has(current)) {
 				return super.getCallable(path);
+			} else if (me.context.previous) {
+				return CustomMap.prototype.getCallable.call(me.context.previous.scope, path);
+			} else {
+				throw new Error(`Cannot get callable path ${path.join('.')}`);
 			}
 		}
 

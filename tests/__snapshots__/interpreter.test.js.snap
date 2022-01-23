@@ -67,8 +67,8 @@ CustomNumber {
 `;
 
 exports[`interpreter default scripts binary-expressions.src 12`] = `
-CustomNumber {
-  "value": 30,
+CustomBoolean {
+  "value": true,
 }
 `;
 
@@ -318,13 +318,13 @@ CustomString {
 
 exports[`interpreter default scripts has-index.src 4`] = `
 CustomBoolean {
-  "value": true,
+  "value": false,
 }
 `;
 
 exports[`interpreter default scripts has-index.src 5`] = `
 CustomBoolean {
-  "value": true,
+  "value": false,
 }
 `;
 
@@ -336,7 +336,7 @@ CustomString {
 
 exports[`interpreter default scripts has-index.src 7`] = `
 CustomBoolean {
-  "value": true,
+  "value": false,
 }
 `;
 
@@ -384,7 +384,7 @@ CustomString {
 
 exports[`interpreter default scripts has-index.src 15`] = `
 CustomBoolean {
-  "value": true,
+  "value": false,
 }
 `;
 
@@ -851,8 +851,8 @@ CustomBoolean {
 `;
 
 exports[`interpreter default scripts unary.src 2`] = `
-CustomNil {
-  "value": null,
+CustomBoolean {
+  "value": false,
 }
 `;
 
