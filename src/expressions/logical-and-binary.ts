@@ -140,8 +140,20 @@ export default class LogicalAndBinaryExpression extends Expression {
 
 						return Number.isNaN(binaryResult) ? null : binaryResult;
 					case ASTType.LogicalExpression:
+						let logicalLeft = await evaluate(expr.left);
+
+						if (isCustomList(logicalLeft) && !logicalLeft.valueOf()) {
+							logicalLeft = false;
+						}
+
+						if (expr.operator === Operator.And && !toPrimitive(logicalLeft)) {
+							return false;
+						} else if (expr.operator === Operator.Or && toPrimitive(logicalLeft)) {
+							return true;
+						}
+
 						const logicalResult = OPERATIONS[expr.operator](
-							await evaluate(expr.left),
+							logicalLeft,
 							await evaluate(expr.right)
 						);
 
