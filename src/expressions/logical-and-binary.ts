@@ -119,50 +119,44 @@ export default class LogicalAndBinaryExpression extends Expression {
 		return me;
 	}
 
-	get(operationContext: OperationContext): Promise<any> {
+	async get(operationContext: OperationContext): Promise<any> {
 		const me = this;
-		const resolve = (value: any): Promise<any> => {
-			if (isCustomValue(value)) {
-				return value;
+		const evaluate = async (node: any): Promise<any> => {
+			if (isCustomValue(node)) {
+				return node;
+			} else if (node instanceof LogicalAndBinaryExpression) {
+				const expr = (node as LogicalAndBinaryExpression).expr;
+
+				if (!OPERATIONS[expr.operator]) {
+					operationContext.debugger.raise('Unexpected expression type', me, expr);
+				}
+
+				switch(expr.type) {
+					case ASTType.BinaryExpression:
+						const binaryResult = OPERATIONS[expr.operator](
+							await evaluate(expr.left),
+							await evaluate(expr.right)
+						);
+
+						return Number.isNaN(binaryResult) ? null : binaryResult;
+					case ASTType.LogicalExpression:
+						const logicalResult = OPERATIONS[expr.operator](
+							await evaluate(expr.left),
+							await evaluate(expr.right)
+						);
+
+						return logicalResult;
+					default:
+				}
 			}
 
-			return value.get(operationContext);
-		};
-		const evaluate = async (node: ExpressionSegment): Promise<any> => {
-			let left;
-			let right;
-
-			switch(node.type) {
-				case ASTType.BinaryExpression:
-					left = await resolve(node.left);
-					right = await resolve(node.right);
-
-					const result = OPERATIONS[node.operator](left, right);
-
-					return cast(Number.isNaN(result) ? null : result);
-				case ASTType.LogicalExpression:
-					left = await resolve(node.left);
-
-					if (isCustomList(left) && !left.valueOf()) {
-						left = false;
-					}
-
-					if (node.operator === Operator.And && !toPrimitive(left)) {
-						return false;
-					} else if (node.operator === Operator.Or && toPrimitive(left)) {
-						return true;
-					}
-
-					right = await resolve(node.right);
-					
-					return OPERATIONS[node.operator](left, right);
-				default:
-					operationContext.debugger.raise('Unexpected expression type', me, node);
-			}
+			return node.get(operationContext);
 		};
 
 		operationContext.debugger.debug('Line', me.ast.start.line, 'LogicalAndBinaryExpression', 'get', 'expr', me.expr);
 
-		return evaluate(me.expr);
+		const result = await evaluate(me);
+
+		return cast(result);
 	}
 }

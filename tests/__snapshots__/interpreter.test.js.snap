@@ -60,9 +60,17 @@ CustomNumber {
 }
 `;
 
-exports[`interpreter default scripts binary-expressions.src 11`] = `20`;
+exports[`interpreter default scripts binary-expressions.src 11`] = `
+CustomNumber {
+  "value": 20,
+}
+`;
 
-exports[`interpreter default scripts binary-expressions.src 12`] = `true`;
+exports[`interpreter default scripts binary-expressions.src 12`] = `
+CustomNumber {
+  "value": 30,
+}
+`;
 
 exports[`interpreter default scripts cast.src 1`] = `
 CustomMap {
@@ -363,6 +371,30 @@ CustomBoolean {
 `;
 
 exports[`interpreter default scripts has-index.src 16`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts if-clause.src 1`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts if-clause.src 2`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts if-clause.src 3`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts if-clause.src 4`] = `
 CustomBoolean {
   "value": false,
 }
@@ -745,11 +777,23 @@ CustomList {
 }
 `;
 
-exports[`interpreter default scripts unary.src 1`] = `true`;
+exports[`interpreter default scripts unary.src 1`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
 
-exports[`interpreter default scripts unary.src 2`] = `null`;
+exports[`interpreter default scripts unary.src 2`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
-exports[`interpreter default scripts unary.src 3`] = `true`;
+exports[`interpreter default scripts unary.src 3`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
 
 exports[`interpreter default scripts unary.src 4`] = `true`;
 

@@ -46,7 +46,11 @@ pseudoAPI.set('pop', (customValue) => {
 	return null;
 });
 
-CustomString.intrinsics.set('len', function(list) {
+CustomString.intrinsics.set('len', function(str) {
+	return str.value.length;
+});
+
+CustomList.intrinsics.set('len', function(list) {
 	return list.value.length;
 });
 
