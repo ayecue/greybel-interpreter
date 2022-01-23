@@ -70,28 +70,23 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		const refs = me.value;
 		const last = traversalPath.pop();
 		const current = traversalPath.shift();
-		let origin = refs;
 
 		if (current != null) {
-			if (origin.has(current)) {
-				origin = origin.get(current);
+			if (refs.has(current)) {
+				const sub = refs.get(current);
 
-				if (origin instanceof CustomObjectType) {
-					return origin.set(traversalPath.concat(last), value);
+				if (sub instanceof CustomObjectType) {
+					return sub.set(traversalPath.concat(last), value);
 				}
 			} else {
 				throw new Error(`Cannot set path ${path.join('.')}`);
 			}
 		}
 
-		if (origin) {
-			if (value instanceof FunctionOperationBase) {
-				origin.set(last, value.fork(me));
-			} else {
-				origin.set(last, value);
-			}
+		if (value instanceof FunctionOperationBase) {
+			refs.set(last, value.fork(me));
 		} else {
-			throw new Error(`Cannot set path ${path.join('.')}`);
+			refs.set(last, value);
 		}
 	}
 
@@ -105,45 +100,57 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		const traversalPath = [].concat(path);
 		const refs = me.value;
 		const current = traversalPath.shift();
-		const currentValue = current.valueOf();
-		let origin = refs;
 
-		if (currentValue != null) {
-			if (origin.has(currentValue)) {
-				origin = origin.get(currentValue);
+		if (current != null) {
+			if (refs.has(current)) {
+				const sub = refs.get(current);
 
-				if (traversalPath.length > 0 && origin instanceof CustomObjectType) {
-					return origin.get(traversalPath);
+				if (traversalPath.length > 0 && sub instanceof CustomObjectType) {
+					return sub.get(traversalPath);
 				}
-			} else if (path.length === 1 && CustomMap.intrinsics.has(currentValue)) {
+
+				if (traversalPath.length === 0) {
+					return sub;
+				}
+			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
 				return Promise.resolve(
-					CustomMap.intrinsics.get(currentValue).bind(null, me)
+					CustomMap.intrinsics.get(current).bind(null, me)
 				);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
-		} else {
-			return null;
 		}
 		
-		return Promise.resolve(origin);
+		return Promise.resolve(null);
 	}
 
 	getCallable(path: string[]): Promise<Callable> {
 		const me = this;
+
+		if (path.length === 0) {
+			return Promise.resolve({
+				origin: me.value,
+				context: me
+			});
+		}
+
 		const traversalPath = [].concat(path);
 		const refs = me.value;
 		const current = traversalPath.shift();
-		let origin = refs;
-		let context;
 
 		if (current != null) {
-			if (origin.has(current)) {
-				context = origin;
-				origin = origin.get(current);
+			if (refs.has(current)) {
+				const sub = refs.get(current);
 
-				if (origin instanceof CustomObjectType) {
-					return origin.getCallable(traversalPath);
+				if (sub instanceof CustomObjectType) {
+					return sub.getCallable(traversalPath);
+				}
+
+				if (traversalPath.length === 0) {
+					return Promise.resolve({
+						origin: sub,
+						context: me
+					});
 				}
 			} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
 				return Promise.resolve({
@@ -155,10 +162,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 			}
 		}
 
-		return Promise.resolve({
-			origin: origin,
-			context: context
-		});
+		return Promise.resolve(null);
 	}
 
 	callMethod(method: string[], ...args: any[]): any {
@@ -167,7 +171,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		}
 
 		const me = this;
-		const key = method[0].valueOf();
+		const key = method[0]?.toString();
 
 		if (method.length > 1) {
 			if (me.value.has(key)) {

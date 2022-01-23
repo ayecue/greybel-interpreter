@@ -28,6 +28,13 @@ export class CustomListIterator implements Iterator<any> {
 	}
 }
 
+export function itemAtIndex(list: any[], n: number): number {
+	n = Math.trunc(n) || 0;
+	if (n < 0) n += list.length;
+	if (n < 0 || n >= list.length) return -1;
+	return n;
+}
+
 export default class CustomList extends CustomObjectType {
 	static intrinsics: Map<string, Function> = new Map();
 	value: any[];
@@ -53,54 +60,37 @@ export default class CustomList extends CustomObjectType {
 		return new CustomList(this.value.slice(a?.valueOf(), b?.valueOf()));
 	}
 
-	toIndex(value: string): number | null {
-		const me = this;
-		const casted = Number(value);
-		const result = casted < 0 ? me.value.length + casted : casted;
-
-		if (result < 0) {
-			return null;
-		}
-
-		return result;
-	}
-
 	async set(path: any[], value: any): Promise<void> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const refs = me.value;
 		const last = traversalPath.pop();
 		const current = traversalPath.shift();
-		let origin = refs;
 
 		if (current != null) {
-			const index = me.toIndex(current);
+			const indexResult = itemAtIndex(refs, Number(current));
 
-			if (origin.hasOwnProperty(index)) {
-				origin = origin[index];
+			if (refs.hasOwnProperty(indexResult)) {
+				const sub = refs[indexResult];
 
-				if (origin instanceof CustomObjectType) {
-					return origin.set(traversalPath.concat([last]), value);
+				if (sub instanceof CustomObjectType) {
+					return sub.set(traversalPath.concat([last]), value);
 				}
-			} else {
-				throw new Error(`Cannot set path ${path.join('.')}`);
 			}
+
+			throw new Error(`Cannot set path ${path.join('.')}`);
 		}
 
-		if (origin) {
-			const setterIndex = me.toIndex(last);
+		const lastIndex = itemAtIndex(refs, Number(last));
 
-			if (!origin.hasOwnProperty(setterIndex)) {
-				throw new Error(`Index error (list index ${setterIndex} out of range)`);
-			}
+		if (!refs.hasOwnProperty(lastIndex)) {
+			throw new Error(`Index error (list index ${lastIndex} out of range)`);
+		}
 
-			if (value instanceof FunctionOperationBase) {
-				origin[setterIndex] = value.fork(me);
-			} else {
-				origin[setterIndex] = value;
-			}
+		if (value instanceof FunctionOperationBase) {
+			refs[lastIndex] = value.fork(me);
 		} else {
-			throw new Error(`Cannot set path ${path.join('.')}`);
+			refs[lastIndex] = value;
 		}
 	}
 
@@ -114,28 +104,28 @@ export default class CustomList extends CustomObjectType {
 		const traversalPath = [].concat(path);
 		const refs = me.value;
 		const current = traversalPath.shift();
-		const currentValue = current.valueOf();
-		let origin = refs;
 
-		if (currentValue != null) {
-			const index = me.toIndex(current);
+		if (current != null) {
+			const currentIndex = itemAtIndex(refs, Number(current));
 
-			if (origin.hasOwnProperty(index)) {
-				origin = origin[index];
+			if (refs.hasOwnProperty(currentIndex)) {
+				const sub = refs[currentIndex];
 
-				if (traversalPath.length > 0 && origin instanceof CustomObjectType) {
-					return origin.get(traversalPath);
+				if (traversalPath.length > 0 && sub instanceof CustomObjectType) {
+					return sub.get(traversalPath);
 				}
-			} else if (path.length === 1 && CustomList.intrinsics.has(currentValue)) {
-				return CustomList.intrinsics.get(currentValue).bind(null, me);
+
+				if (traversalPath.length === 0) {
+					return sub;
+				}
+			} else if (path.length === 1 && CustomList.intrinsics.has(current)) {
+				return CustomList.intrinsics.get(current).bind(null, me);
 			} else {
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
-		} else {
-			return null;
 		}
 		
-		return origin;
+		return null;
 	}
 
 	async getCallable(path: any[]): Promise<Callable> {
@@ -143,18 +133,22 @@ export default class CustomList extends CustomObjectType {
 		const traversalPath = [].concat(path);
 		const refs = me.value;
 		const current = traversalPath.shift();
-		let origin = refs;
-		let context;
 
 		if (current != null) {
-			const index = me.toIndex(current);
+			const currentIndex = itemAtIndex(refs, Number(current));
 
-			if (origin.hasOwnProperty(index)) {
-				context = origin;
-				origin = origin[index];
+			if (refs.hasOwnProperty(currentIndex)) {
+				const sub = refs[currentIndex];
 
-				if (origin instanceof CustomObjectType) {
-					return origin.getCallable(traversalPath);
+				if (sub instanceof CustomObjectType) {
+					return sub.getCallable(traversalPath);
+				}
+
+				if (traversalPath.length === 0) {
+					return Promise.resolve({
+						origin: sub,
+						context: me
+					});
 				}
 			} else if (path.length === 1 && CustomList.intrinsics.has(current)) {
 				return {
@@ -167,8 +161,8 @@ export default class CustomList extends CustomObjectType {
 		}
 
 		return {
-			origin: origin,
-			context: context
+			origin: refs,
+			context: me
 		};
 	}
 
@@ -178,20 +172,20 @@ export default class CustomList extends CustomObjectType {
 		}
 
 		const me = this;
-		const member = method[0].valueOf();
+		const member = method[0]?.toString();
 
 		if (CustomList.isNumber(member)) {
-			const index = me.toIndex(member);
+			const memberIndex = itemAtIndex(me.value, Number(member));
 
-			if (!me.value.hasOwnProperty(index)) {
+			if (!me.value.hasOwnProperty(memberIndex)) {
 				return null;
 			}
 
 			if (method.length > 1) {
-				return me.value[index].callMethod(method.slice(1), ...args);
+				return me.value[memberIndex].callMethod(method.slice(1), ...args);
 			}
 
-			return me.value[index];
+			return me.value[memberIndex];
 		}
 
 		if (!CustomList.intrinsics.has(member)) {
