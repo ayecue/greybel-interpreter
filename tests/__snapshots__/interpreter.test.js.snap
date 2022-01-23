@@ -280,6 +280,24 @@ CustomNumber {
 }
 `;
 
+exports[`interpreter default scripts gs-bug-index.src 1`] = `
+CustomString {
+  "value": "function",
+}
+`;
+
+exports[`interpreter default scripts gs-bug-index.src 2`] = `
+CustomString {
+  "value": "function",
+}
+`;
+
+exports[`interpreter default scripts gs-bug-index.src 3`] = `
+CustomString {
+  "value": "testfoo",
+}
+`;
+
 exports[`interpreter default scripts has-index.src 1`] = `
 CustomString {
   "value": "1234",
@@ -774,6 +792,55 @@ CustomList {
       "value": "gad",
     },
   ],
+}
+`;
+
+exports[`interpreter default scripts uglified.src 1`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "B" => CustomMap {
+      "isInstance": false,
+      "value": Map {
+        "exports" => CustomMap {
+          "isInstance": false,
+          "value": Map {
+            "bar" => CustomNumber {
+              "value": 123,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts uglified.src 2`] = `
+CustomString {
+  "value": "B",
+}
+`;
+
+exports[`interpreter default scripts uglified.src 3`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    "exports" => CustomMap {
+      "isInstance": false,
+      "value": Map {
+        "bar" => CustomNumber {
+          "value": 123,
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts uglified.src 4`] = `
+CustomNumber {
+  "value": 123,
 }
 `;
 

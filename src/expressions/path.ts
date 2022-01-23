@@ -9,6 +9,7 @@ import { ASTType } from 'greyscript-core';
 import { Operation } from '../types/operation';
 import { Expression } from '../types/expression';
 import { OperationContext } from '../context';
+import FunctionOperation from '../operations/function';
 import {
 	isCustomValue,
 	isCustomString,
@@ -171,12 +172,22 @@ export default class PathExpression extends Expression {
 					current = current.value;
 
 					if (isCustomValue(current)) {
-						traversedPath.push(current.valueOf());
+						traversedPath.push(current.toString());
 					} else if (current instanceof Expression) {
 						const value = await current.get(operationContext);
-						traversedPath.push(value);
+						traversedPath.push(value.toString());
 					} else {
 						operationContext.debugger.raise('Unexpected index', me, current);
+					}
+
+					// emulate bug in greyscript
+					if (handle && !parentExpr) {
+						const origin: any = await handle.get(traversedPath, me.expr);
+
+						if (origin instanceof Function || origin instanceof FunctionOperation) {
+							handle = origin;
+							traversedPath = [];
+						}
 					}
 				} else if (current instanceof SliceSegment) {
 					if (!handle) {

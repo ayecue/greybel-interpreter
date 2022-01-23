@@ -20,6 +20,10 @@ pseudoAPI.set('valueOfTest', (customValue) => {
 	return customValue.valueOf();
 });
 
+pseudoAPI.set('typeof', (customValue) => {
+	return customValue.getType();
+});
+
 pseudoAPI.set('mapToObject', (customValue) => {
 	if (customValue instanceof CustomMap) {
 		const result = {};

@@ -1,0 +1,11 @@
+myMap = {}
+myMap.myFunc = function(v)
+	return "test" + v
+end function
+
+print(typeof(myMap["myFunc"]))
+print(typeof(@myMap.myFunc))
+
+ref = myMap["myFunc"]
+
+print(ref("foo"))

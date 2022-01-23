@@ -1,0 +1,29 @@
+globals.H=globals
+C={}
+D={}
+E=function(r)
+if not C.hasIndex(r) then
+exit((("Module " + r) + " cannot be found..."))
+end if
+G=C[r]
+return @G(r).exports
+end function
+C["B"]=function(r)
+G={}
+if D.hasIndex(r) then
+G=D[r]
+end if
+if not G.hasIndex("exports") then
+G.exports={"bar":123}
+end if
+D[r]=G
+print(D)
+print(r)
+print(G)
+return D[r]
+end function
+F=function()
+I=E("B")
+print(I.bar)
+end function
+F
