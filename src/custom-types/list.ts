@@ -184,8 +184,7 @@ export default class CustomList extends CustomObjectType {
 			const index = me.toIndex(member);
 
 			if (!me.value.hasOwnProperty(index)) {
-				console.error(method, member, args);
-				throw new Error(`Unexpected index`);
+				return null;
 			}
 
 			if (method.length > 1) {
