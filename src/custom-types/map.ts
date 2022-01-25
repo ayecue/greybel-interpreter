@@ -64,8 +64,42 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		return me;
 	}
 
+	has(path: string[]): Promise<boolean> {
+		const me = this;
+
+		if (path.length === 0) {
+			return Promise.resolve(true);
+		}
+
+		const traversalPath = [].concat(path);
+		const refs = me.value;
+		const current = traversalPath.shift();
+
+		if (current != null) {
+			if (refs.has(current)) {
+				const sub = refs.get(current);
+
+				if (traversalPath.length > 0 && sub instanceof CustomObjectType) {
+					return sub.has(traversalPath);
+				}
+
+				if (traversalPath.length === 0) {
+					return Promise.resolve(true);
+				}
+			}
+		}
+
+		return Promise.resolve(false);
+	}
+
 	set(path: string[], value: any): Promise<void> {
 		const me = this;
+
+		if (!path) {
+			console.warn('Cannot set empty path for ', me);
+			return;
+		}
+
 		const traversalPath = [].concat(path);
 		const refs = me.value;
 		const last = traversalPath.pop();
@@ -78,9 +112,10 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 				if (sub instanceof CustomObjectType) {
 					return sub.set(traversalPath.concat(last), value);
 				}
-			} else {
-				throw new Error(`Cannot set path ${path.join('.')}`);
 			}
+
+			console.warn(`Cannot set path ${path?.join('.')}`);
+			return;
 		}
 
 		if (value instanceof FunctionOperationBase) {
@@ -120,20 +155,12 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
 		}
-		
+
 		return Promise.resolve(null);
 	}
 
 	getCallable(path: string[]): Promise<Callable> {
 		const me = this;
-
-		if (path.length === 0) {
-			return Promise.resolve({
-				origin: me.value,
-				context: me
-			});
-		}
-
 		const traversalPath = [].concat(path);
 		const refs = me.value;
 		const current = traversalPath.shift();
@@ -158,11 +185,14 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 					context: me
 				});
 			} else {
-				throw new Error(`Cannot get path ${path.join('.')}`);
+				throw new Error(`Cannot get callable path ${path.join('.')}`);
 			}
 		}
 
-		return Promise.resolve(null);
+		return Promise.resolve({
+			origin: null,
+			context: me
+		});
 	}
 
 	callMethod(method: string[], ...args: any[]): any {

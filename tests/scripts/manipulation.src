@@ -15,6 +15,7 @@ myString = "abc lorem ipsum XxXaV"
 tempMap = {"see":"124578"} + myMap
 tempList = ["123456"] + myList
 
+print(globals)
 print(tempMap)
 print(tempList)
 print(myMap)

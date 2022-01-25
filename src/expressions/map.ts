@@ -4,6 +4,7 @@ import {
 	ASTMapKeyString
 } from 'greybel-core';
 import { Expression } from '../types/expression';
+import { Operation } from '../types/operation';
 import CustomMap from '../custom-types/map';
 import { OperationContext } from '../context';
 import { isCustomValue } from '../typer';
@@ -69,6 +70,8 @@ export default class MapExpression extends Expression {
 				if (isCustomValue(current.value)) {
 					value = current.value;
 				} else if (current.value instanceof Expression) {
+					value = await current.value.get(operationContext);
+				} else if (current.value instanceof Operation) {
 					value = await current.value.get(operationContext);
 				} else {
 					operationContext.debugger.raise('Unexpected value', me, current.value);

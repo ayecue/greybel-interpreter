@@ -1,0 +1,45 @@
+test = function() 
+	result = [0, 0, 0, 0]
+
+	for i in result
+	    result[i] = "test" + i
+	end for
+
+	print(result)
+end function
+
+test
+
+for i in []
+    print(i)
+end for
+
+globals.accepted = false
+
+while not globals.accepted
+	print("before accepted")
+	globals.accepted = true
+	print("after accepted")
+end while
+
+while true
+	print("before break")
+	break
+	print("after break")
+end while
+
+index = 0
+after = 0
+
+while true
+	if (locals.index < 10) then
+		globals.index += 1
+		continue
+	end if
+
+	break
+	after += 1
+end while
+
+print(index)
+print(after)

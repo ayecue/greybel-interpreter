@@ -26,7 +26,9 @@ export default class ArgumentOperation extends Operation {
 				args.push(entity);
 			} else if (entity instanceof AssignExpression) {
 				await entity.get(operationContext, me);
-				args.push(await entity.expr.left.get(operationContext));
+
+				const arg = await entity.expr.left.get(operationContext, me);
+				args.push(arg);
 			} else if (entity instanceof PathExpression) {
 				const arg = await entity.get(operationContext, me);
 				operationContext.set(arg.path, new CustomNil());

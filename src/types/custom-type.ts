@@ -21,6 +21,10 @@ export abstract class CustomLiteralType extends CustomType {
 export abstract class CustomObjectType extends CustomType {
 	value: any;
 
+	has(path: any[]): Promise<boolean> {
+		throw new Error('Implentation of "has" missing');
+	}
+
 	set(path: any[], value: any): Promise<void> {
 		throw new Error('Implentation of "set" missing');
 	}

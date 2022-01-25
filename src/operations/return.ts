@@ -3,6 +3,7 @@ import { Expression } from '../types/expression';
 import { isCustomValue } from '../typer';
 import { ASTBase } from 'greybel-core';
 import { OperationContext } from '../context';
+import CustomNil from '../custom-types/nil';
 
 export interface ReturnOperationOptions {
 	arg: any;
@@ -30,7 +31,7 @@ export default class ReturnOperation extends Operation {
 		} else if (me.arg instanceof Operation) {
 			arg = await me.arg.get(operationContext);
 		} else {
-			operationContext.debugger.raise('Unexpected return value', me, me.arg);
+			arg = new CustomNil();
 		}
 
 		functionContext.value = arg;

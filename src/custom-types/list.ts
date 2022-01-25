@@ -120,8 +120,6 @@ export default class CustomList extends CustomObjectType {
 				}
 			} else if (path.length === 1 && CustomList.intrinsics.has(current)) {
 				return CustomList.intrinsics.get(current).bind(null, me);
-			} else {
-				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
 		}
 		
@@ -155,13 +153,11 @@ export default class CustomList extends CustomObjectType {
 					origin: CustomList.intrinsics.get(current).bind(null, me),
 					context: me
 				};
-			} else {
-				throw new Error(`Cannot get path ${path.join('.')}`);
 			}
 		}
 
 		return {
-			origin: refs,
+			origin: null,
 			context: me
 		};
 	}

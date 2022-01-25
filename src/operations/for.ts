@@ -32,6 +32,7 @@ export default class ForOperation extends Operation {
 		});
 		const variable = await me.variable.get(opc, me);
 		const iterator = await me.iterator.get(opc);
+
 		const loopContext = {
 			isBreak: false,
 			isContinue: false

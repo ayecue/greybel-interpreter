@@ -35,7 +35,10 @@ export default class WhileOperation extends Operation {
 		const resolveCondition = async function() {
 			if (me.condition instanceof Expression) {
 				const value = await me.condition.get(opc);
-				return value.valueOf();
+				return !!value?.valueOf();
+			} else if (me.condition instanceof Operation) {
+				const value = await me.condition.get(opc);
+				return !!value?.valueOf();
 			} else if (isCustomValue(me.condition)) {
 				return me.condition.valueOf();
 			}

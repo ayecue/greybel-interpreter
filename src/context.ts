@@ -34,85 +34,51 @@ export class Scope extends CustomMap {
 		this.context = context;
 	}
 
-	set(path: string[], value: any): Promise<void> {
+	async get(path: string[]): Promise<any> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const current = traversalPath.shift();
 
-		if (current != null) {
-			if (current === 'locals') {
-				return me.context.locals.set(traversalPath, value);
-			} else if (current === 'globals') {
-				return me.context.globals.set(traversalPath, value);
-			} else if (me.context.locals != null) {
-				return CustomMap.prototype.set.call(me.context.locals, path, value);
-			} else {
-				throw new Error(`Cannot set path ${path.join('.')}`);
-			}
+		if (path.length === 0) {
+			return Promise.resolve(me);
+		}
+
+		if (current === 'locals' || current === 'globals') {
+			return me.context.get(path);
+		} else if (await me.has(path)) {
+			return super.get(path);
+		} else if (await me.context.api.scope.has(path)) {
+			return me.context.api.get(path);
+		} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
+			return Promise.resolve(CustomMap.intrinsics.get(current).bind(null, me));
+		} else if (me.context.previous) {
+			return me.context.previous.get(path);
+		} else {
+			throw new Error(`Cannot get path ${path.join('.')}`);
 		}
 	}
 
-	get(path: string[]): Promise<any> {
+	async getCallable(path: string[]): Promise<Callable> {
 		const me = this;
 		const traversalPath = [].concat(path);
 		const current = traversalPath.shift();
 
-		if (current != null) {
-			if (current === 'locals') {
-				return traversalPath.length === 0
-					? Promise.resolve(me.context.locals)
-					: me.context.locals.get(traversalPath);
-			} else if (current === 'globals') {
-				return traversalPath.length === 0
-					? Promise.resolve(me.context.globals)
-					: me.context.globals.get(traversalPath);
-			} else if (me.context.locals?.value.has(current)) {
-				return CustomMap.prototype.get.call(me.context.locals, path);
-			} else if (me.context.globals?.value.has(current)) {
-				return CustomMap.prototype.get.call(me.context.globals, path);
-			} else if (me.context.api?.value.has(current)) {
-				return CustomMap.prototype.get.call(me.context.api, path);
-			} else if (me.value.has(current)) {
-				return super.get(path);
-			} else if (me.context.previous) {
-				return CustomMap.prototype.get.call(me.context.previous.scope, path);
-			} else {
-				throw new Error(`Cannot get path ${path.join('.')}`);
-			}
+		if (current === 'locals' || current === 'globals') {
+			return me.context.getCallable(path);
+		} if (await me.has(path)) {
+			return super.getCallable(path);
+		} else if (await me.context.api.scope.has(path)) {
+			return me.context.api.getCallable(path);
+		} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
+			return Promise.resolve({
+				origin: CustomMap.intrinsics.get(current).bind(null, me),
+				context: me
+			});
+		} else if (me.context.previous) {
+			return me.context.previous.getCallable(path);
+		} else {
+			throw new Error(`Cannot get callable path ${path.join('.')}`);
 		}
-		
-		return null;
-	}
-
-	getCallable(path: string[]): Promise<Callable> {
-		const me = this;
-		const traversalPath = [].concat(path);
-		const current = traversalPath.shift();
-
-		if (current != null) {
-			if (current === 'locals') {
-				return me.context.locals.getCallable(traversalPath);
-			} else if (current === 'globals') {
-				return me.context.globals.getCallable(traversalPath);
-			} else if (me.context.locals?.value.has(current)) {
-				return CustomMap.prototype.getCallable.call(me.context.locals, path);
-			} else if (me.context.globals?.value.has(current)) {
-				return CustomMap.prototype.getCallable.call(me.context.globals, path);
-			} else if (me.context.api?.value.has(current)) {
-				return CustomMap.prototype.getCallable.call(me.context.api, path);
-			} else if (me.value.has(current)) {
-				return super.getCallable(path);
-			} else if (me.context.previous) {
-				return CustomMap.prototype.getCallable.call(me.context.previous.scope, path);
-			} else {
-				throw new Error(`Cannot get callable path ${path.join('.')}`);
-			}
-		}
-
-		return Promise.resolve({
-			origin: me,
-			context: null
-		});
 	}
 }
 
@@ -224,9 +190,9 @@ export class OperationContext {
 	isProtected: boolean;
 	injected: boolean;
 
-	api: Scope | null;
-	locals: Scope | null;
-	globals: Scope | null;
+	api: OperationContext | null;
+	locals: OperationContext | null;
+	globals: OperationContext | null;
 
 	constructor(options: OperationContextOptions) {
 		const me = this;
@@ -250,7 +216,7 @@ export class OperationContext {
 
 		me.api = me.lookupAPI();
 		me.globals = me.lookupGlobals();
-		me.locals = me.lookupLocals();
+		me.locals = me.lookupLocals() || me;
 	}
 
 	step(item: ASTBase): Promise<void> {
@@ -320,18 +286,39 @@ export class OperationContext {
 		return me;
 	}
 
-	lookupType(validate: (type: ContextType) => boolean): Scope {
+	lookupAllOfType(validate: (type: ContextType) => boolean): OperationContext[] {
 		const me = this;
+		const result = [];
 
 		if (validate(me.type)) {
-			return me.scope;
+			result.push(me);
 		}
 
 		let current = me.previous;
 
 		while (current) {
 			if (validate(current.type)) {
-				return current.scope;
+				result.push(current);
+			}
+
+			current = current.previous;
+		}
+
+		return result;
+	}
+
+	lookupType(validate: (type: ContextType) => boolean): OperationContext {
+		const me = this;
+
+		if (validate(me.type)) {
+			return me;
+		}
+
+		let current = me.previous;
+
+		while (current) {
+			if (validate(current.type)) {
+				return current;
 			}
 
 			current = current.previous;
@@ -340,55 +327,82 @@ export class OperationContext {
 		return null;
 	}
 
-	lookupAPI() {
+	lookupAllScopes(): OperationContext[] {
+		return this.lookupAllOfType((type: ContextType) => [ContextType.GLOBAL, ContextType.FUNCTION].includes(type));
+	}
+
+	lookupAPI(): OperationContext {
 		return this.lookupType((type: ContextType) => [ContextType.API].includes(type));
 	}
 
-	lookupGlobals(): Scope {
+	lookupGlobals(): OperationContext {
 		return this.lookupType((type: ContextType) => [ContextType.GLOBAL].includes(type));
 	}
 
-	lookupLocals(): Scope {
+	lookupLocals(): OperationContext {
 		return this.lookupType((type: ContextType) => [ContextType.GLOBAL, ContextType.FUNCTION].includes(type));
 	}
 
 	valueOf(): CustomMap {
-		return this.scope.valueOf();
+		return this.scope;
 	}
 
 	extend(map: Map<string, any>): OperationContext {
 		const me = this;
+
 		if (me.state === ContextState.TEMPORARY) {
 			me.previous?.extend(map);
 		} else {
 			me.scope.extend(map);
 		}
+
 		return me;
 	}
 
 	set(path: any[], value: any): Promise<void> {
 		const me = this;
-		if (me.state === ContextState.TEMPORARY) {
+		const traversalPath = [].concat(path);
+		const current = traversalPath.shift();
+
+		if (current === 'locals') {
+			return me.locals.set(traversalPath, value);
+		} else if (current === 'globals') {
+			return me.globals.set(traversalPath, value);
+		} if (me.state === ContextState.TEMPORARY) {
 			return me.previous?.set(path, value);
-		} else {
-			return me.scope.set(path, value);
 		}
+
+		return me.locals.scope.set(path, value);
 	}
 
 	get(path: any[]): Promise<any> {
 		const me = this;
-		if (me.state === ContextState.TEMPORARY) {
+		const traversalPath = [].concat(path);
+		const current = traversalPath.shift();
+
+		if (current === 'locals') {
+			return me.locals.get(traversalPath);
+		} else if (current === 'globals') {
+			return me.globals.get(traversalPath);
+		} else if (me.state === ContextState.TEMPORARY) {
 			return me.previous?.get(path);
 		}
-		return me.scope.get(path);
+
+		return me.locals.scope.get(path);
 	}
 
 	getCallable(path: string[]): Promise<Callable> {
 		const me = this;
-		if (me.state === ContextState.TEMPORARY) {
-			return me.previous?.getCallable(path);
+		const traversalPath = [].concat(path);
+		const current = traversalPath.shift();
+
+		if (current === 'locals') {
+			return me.locals.getCallable(traversalPath);
+		} else if (current === 'globals') {
+			return me.globals.getCallable(traversalPath);
 		}
-		return me.scope.getCallable(path);
+
+		return me.locals.scope.getCallable(path);
 	}
 
 	setMemory(key: string, value: any): OperationContext {

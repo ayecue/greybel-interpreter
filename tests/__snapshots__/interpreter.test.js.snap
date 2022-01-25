@@ -257,14 +257,14 @@ CustomString {
 `;
 
 exports[`interpreter default scripts default-args.src 4`] = `
-CustomNumber {
-  "value": 0,
+CustomString {
+  "value": "foo",
 }
 `;
 
 exports[`interpreter default scripts default-args.src 5`] = `
-CustomString {
-  "value": "test",
+CustomBoolean {
+  "value": false,
 }
 `;
 
@@ -318,13 +318,13 @@ CustomString {
 
 exports[`interpreter default scripts has-index.src 4`] = `
 CustomBoolean {
-  "value": false,
+  "value": true,
 }
 `;
 
 exports[`interpreter default scripts has-index.src 5`] = `
 CustomBoolean {
-  "value": false,
+  "value": true,
 }
 `;
 
@@ -336,7 +336,7 @@ CustomString {
 
 exports[`interpreter default scripts has-index.src 7`] = `
 CustomBoolean {
-  "value": false,
+  "value": true,
 }
 `;
 
@@ -384,7 +384,7 @@ CustomString {
 
 exports[`interpreter default scripts has-index.src 15`] = `
 CustomBoolean {
-  "value": false,
+  "value": true,
 }
 `;
 
@@ -538,7 +538,379 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts loops.src 1`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "test0",
+    },
+    CustomNumber {
+      "value": 0,
+    },
+    CustomNumber {
+      "value": 0,
+    },
+    CustomNumber {
+      "value": 0,
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts loops.src 2`] = `
+CustomString {
+  "value": "before accepted",
+}
+`;
+
+exports[`interpreter default scripts loops.src 3`] = `
+CustomString {
+  "value": "after accepted",
+}
+`;
+
+exports[`interpreter default scripts loops.src 4`] = `
+CustomString {
+  "value": "before break",
+}
+`;
+
+exports[`interpreter default scripts loops.src 5`] = `
+CustomNumber {
+  "value": 10,
+}
+`;
+
+exports[`interpreter default scripts loops.src 6`] = `
+CustomNumber {
+  "value": 0,
+}
+`;
+
 exports[`interpreter default scripts manipulation.src 1`] = `
+Scope {
+  "context": OperationContext {
+    "api": OperationContext {
+      "api": [Circular],
+      "cps": CPS {
+        "cpsMap": Object {
+          "AssignmentStatement": [Function],
+          "BinaryExpression": [Function],
+          "BinaryNegatedExpression": [Function],
+          "BooleanLiteral": [Function],
+          "BreakStatement": [Function],
+          "CallExpression": [Function],
+          "CallStatement": [Function],
+          "Chunk": [Function],
+          "ContinueStatement": [Function],
+          "ElseClause": [Function],
+          "ElseShortcutClause": [Function],
+          "ElseifClause": [Function],
+          "ElseifShortcutClause": [Function],
+          "EmptyExpression": [Function],
+          "FeatureDebuggerExpression": [Function],
+          "FeatureEnvarExpression": [Function],
+          "FeatureImportExpression": [Function],
+          "FeatureIncludeExpression": [Function],
+          "ForGenericStatement": [Function],
+          "FunctionDeclaration": [Function],
+          "Identifier": [Function],
+          "IfClause": [Function],
+          "IfShortcutClause": [Function],
+          "IfShortcutStatement": [Function],
+          "IfStatement": [Function],
+          "ImportCodeExpression": [Function],
+          "IndexExpression": [Function],
+          "ListConstructorExpression": [Function],
+          "LogicalExpression": [Function],
+          "MapConstructorExpression": [Function],
+          "MemberExpression": [Function],
+          "NegationExpression": [Function],
+          "NilLiteral": [Function],
+          "NumericLiteral": [Function],
+          "ReturnStatement": [Function],
+          "StringLiteral": [Function],
+          "UnaryExpression": [Function],
+          "WhileStatement": [Function],
+        },
+      },
+      "debugger": TestDebugger {
+        "breakpoint": false,
+        "lastContext": null,
+        "nextStep": false,
+      },
+      "globals": null,
+      "injected": false,
+      "isProtected": true,
+      "locals": [Circular],
+      "memory": Map {},
+      "previous": null,
+      "processState": Object {
+        "exit": false,
+        "last": [Circular],
+        "pending": true,
+      },
+      "scope": Scope {
+        "context": [Circular],
+        "isInstance": false,
+        "value": Map {
+          "print" => [Function],
+          "valueOfTest" => [Function],
+          "typeof" => [Function],
+          "mapToObject" => [Function],
+          "pop" => [Function],
+          "exit" => [Function],
+        },
+      },
+      "stackItem": null,
+      "state": "DEFAULT",
+      "target": "C:\\\\Users\\\\ayecue\\\\Documents\\\\Workspace\\\\greybel-interpreter\\\\tests\\\\scripts\\\\manipulation.src",
+      "type": "API",
+    },
+    "cps": CPS {
+      "cpsMap": Object {
+        "AssignmentStatement": [Function],
+        "BinaryExpression": [Function],
+        "BinaryNegatedExpression": [Function],
+        "BooleanLiteral": [Function],
+        "BreakStatement": [Function],
+        "CallExpression": [Function],
+        "CallStatement": [Function],
+        "Chunk": [Function],
+        "ContinueStatement": [Function],
+        "ElseClause": [Function],
+        "ElseShortcutClause": [Function],
+        "ElseifClause": [Function],
+        "ElseifShortcutClause": [Function],
+        "EmptyExpression": [Function],
+        "FeatureDebuggerExpression": [Function],
+        "FeatureEnvarExpression": [Function],
+        "FeatureImportExpression": [Function],
+        "FeatureIncludeExpression": [Function],
+        "ForGenericStatement": [Function],
+        "FunctionDeclaration": [Function],
+        "Identifier": [Function],
+        "IfClause": [Function],
+        "IfShortcutClause": [Function],
+        "IfShortcutStatement": [Function],
+        "IfStatement": [Function],
+        "ImportCodeExpression": [Function],
+        "IndexExpression": [Function],
+        "ListConstructorExpression": [Function],
+        "LogicalExpression": [Function],
+        "MapConstructorExpression": [Function],
+        "MemberExpression": [Function],
+        "NegationExpression": [Function],
+        "NilLiteral": [Function],
+        "NumericLiteral": [Function],
+        "ReturnStatement": [Function],
+        "StringLiteral": [Function],
+        "UnaryExpression": [Function],
+        "WhileStatement": [Function],
+      },
+    },
+    "debugger": TestDebugger {
+      "breakpoint": false,
+      "lastContext": null,
+      "nextStep": false,
+    },
+    "globals": [Circular],
+    "injected": false,
+    "isProtected": false,
+    "locals": [Circular],
+    "memory": Map {
+      "loopContext" => undefined,
+      "functionContext" => undefined,
+    },
+    "previous": OperationContext {
+      "api": [Circular],
+      "cps": CPS {
+        "cpsMap": Object {
+          "AssignmentStatement": [Function],
+          "BinaryExpression": [Function],
+          "BinaryNegatedExpression": [Function],
+          "BooleanLiteral": [Function],
+          "BreakStatement": [Function],
+          "CallExpression": [Function],
+          "CallStatement": [Function],
+          "Chunk": [Function],
+          "ContinueStatement": [Function],
+          "ElseClause": [Function],
+          "ElseShortcutClause": [Function],
+          "ElseifClause": [Function],
+          "ElseifShortcutClause": [Function],
+          "EmptyExpression": [Function],
+          "FeatureDebuggerExpression": [Function],
+          "FeatureEnvarExpression": [Function],
+          "FeatureImportExpression": [Function],
+          "FeatureIncludeExpression": [Function],
+          "ForGenericStatement": [Function],
+          "FunctionDeclaration": [Function],
+          "Identifier": [Function],
+          "IfClause": [Function],
+          "IfShortcutClause": [Function],
+          "IfShortcutStatement": [Function],
+          "IfStatement": [Function],
+          "ImportCodeExpression": [Function],
+          "IndexExpression": [Function],
+          "ListConstructorExpression": [Function],
+          "LogicalExpression": [Function],
+          "MapConstructorExpression": [Function],
+          "MemberExpression": [Function],
+          "NegationExpression": [Function],
+          "NilLiteral": [Function],
+          "NumericLiteral": [Function],
+          "ReturnStatement": [Function],
+          "StringLiteral": [Function],
+          "UnaryExpression": [Function],
+          "WhileStatement": [Function],
+        },
+      },
+      "debugger": TestDebugger {
+        "breakpoint": false,
+        "lastContext": null,
+        "nextStep": false,
+      },
+      "globals": null,
+      "injected": false,
+      "isProtected": true,
+      "locals": [Circular],
+      "memory": Map {},
+      "previous": null,
+      "processState": Object {
+        "exit": false,
+        "last": [Circular],
+        "pending": true,
+      },
+      "scope": Scope {
+        "context": [Circular],
+        "isInstance": false,
+        "value": Map {
+          "print" => [Function],
+          "valueOfTest" => [Function],
+          "typeof" => [Function],
+          "mapToObject" => [Function],
+          "pop" => [Function],
+          "exit" => [Function],
+        },
+      },
+      "stackItem": null,
+      "state": "DEFAULT",
+      "target": "C:\\\\Users\\\\ayecue\\\\Documents\\\\Workspace\\\\greybel-interpreter\\\\tests\\\\scripts\\\\manipulation.src",
+      "type": "API",
+    },
+    "processState": Object {
+      "exit": false,
+      "last": [Circular],
+      "pending": true,
+    },
+    "scope": [Circular],
+    "stackItem": Object {
+      "arguments": Array [
+        Object {
+          "end": Object {
+            "character": 13,
+            "line": 34,
+          },
+          "name": "myList",
+          "start": Object {
+            "character": 7,
+            "line": 34,
+          },
+          "type": "Identifier",
+        },
+      ],
+      "base": Object {
+        "end": Object {
+          "character": 6,
+          "line": 34,
+        },
+        "name": "print",
+        "start": Object {
+          "character": 1,
+          "line": 34,
+        },
+        "type": "Identifier",
+      },
+      "end": Object {
+        "character": 14,
+        "line": 34,
+      },
+      "start": Object {
+        "character": 6,
+        "line": 34,
+      },
+      "type": "CallExpression",
+    },
+    "state": "DEFAULT",
+    "target": "C:\\\\Users\\\\ayecue\\\\Documents\\\\Workspace\\\\greybel-interpreter\\\\tests\\\\scripts\\\\manipulation.src",
+    "type": "GLOBAL",
+  },
+  "isInstance": false,
+  "value": Map {
+    "params" => CustomList {
+      "slice": [Function],
+      "value": Array [],
+    },
+    "myMap" => CustomMap {
+      "isInstance": false,
+      "value": Map {
+        "foo" => CustomNumber {
+          "value": 123,
+        },
+        "bar" => CustomBoolean {
+          "value": true,
+        },
+        "lore" => CustomString {
+          "value": "moo",
+        },
+      },
+    },
+    "myList" => CustomList {
+      "slice": [Function],
+      "value": Array [
+        CustomString {
+          "value": "xxx",
+        },
+        CustomNumber {
+          "value": 123,
+        },
+        CustomString {
+          "value": "foo",
+        },
+      ],
+    },
+    "myString" => CustomString {
+      "value": "abc lorem ipsum XxXaV",
+    },
+    "tempMap" => CustomMap {
+      "isInstance": false,
+      "value": Map {
+        "bar" => CustomBoolean {
+          "value": true,
+        },
+        "lore" => CustomString {
+          "value": "moo",
+        },
+      },
+    },
+    "tempList" => CustomList {
+      "slice": [Function],
+      "value": Array [
+        CustomString {
+          "value": "xxx",
+        },
+        CustomNumber {
+          "value": 123,
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts manipulation.src 2`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
@@ -558,7 +930,7 @@ CustomMap {
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 2`] = `
+exports[`interpreter default scripts manipulation.src 3`] = `
 CustomList {
   "slice": [Function],
   "value": Array [
@@ -578,7 +950,7 @@ CustomList {
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 3`] = `
+exports[`interpreter default scripts manipulation.src 4`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
@@ -595,7 +967,7 @@ CustomMap {
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 4`] = `
+exports[`interpreter default scripts manipulation.src 5`] = `
 CustomList {
   "slice": [Function],
   "value": Array [
@@ -612,19 +984,19 @@ CustomList {
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 5`] = `
+exports[`interpreter default scripts manipulation.src 6`] = `
 CustomNumber {
   "value": 123,
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 6`] = `
+exports[`interpreter default scripts manipulation.src 7`] = `
 CustomString {
   "value": "foo",
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 7`] = `
+exports[`interpreter default scripts manipulation.src 8`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
@@ -638,7 +1010,7 @@ CustomMap {
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 8`] = `
+exports[`interpreter default scripts manipulation.src 9`] = `
 CustomList {
   "slice": [Function],
   "value": Array [
@@ -652,7 +1024,7 @@ CustomList {
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 9`] = `
+exports[`interpreter default scripts manipulation.src 10`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
@@ -669,7 +1041,7 @@ CustomMap {
 }
 `;
 
-exports[`interpreter default scripts manipulation.src 10`] = `
+exports[`interpreter default scripts manipulation.src 11`] = `
 CustomList {
   "slice": [Function],
   "value": Array [
