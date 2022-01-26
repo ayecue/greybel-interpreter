@@ -61,8 +61,8 @@ CustomNumber {
 `;
 
 exports[`interpreter default scripts binary-expressions.src 11`] = `
-CustomNumber {
-  "value": 20,
+CustomBoolean {
+  "value": true,
 }
 `;
 
@@ -197,26 +197,26 @@ CustomNumber {
 `;
 
 exports[`interpreter default scripts cast.src 13`] = `
-CustomNil {
-  "value": null,
+CustomNumber {
+  "value": 0,
 }
 `;
 
 exports[`interpreter default scripts cast.src 14`] = `
-CustomNil {
-  "value": null,
+CustomNumber {
+  "value": NaN,
 }
 `;
 
 exports[`interpreter default scripts cast.src 15`] = `
-CustomNil {
-  "value": null,
+CustomNumber {
+  "value": NaN,
 }
 `;
 
 exports[`interpreter default scripts cast.src 16`] = `
-CustomNil {
-  "value": null,
+CustomNumber {
+  "value": NaN,
 }
 `;
 
@@ -227,8 +227,8 @@ CustomNumber {
 `;
 
 exports[`interpreter default scripts cast.src 18`] = `
-CustomNil {
-  "value": null,
+CustomNumber {
+  "value": 0,
 }
 `;
 
@@ -541,6 +541,32 @@ CustomList {
 `;
 
 exports[`interpreter default scripts intrinsics.src 2`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "s",
+    },
+    CustomString {
+      "value": "t",
+    },
+    CustomString {
+      "value": "r",
+    },
+    CustomString {
+      "value": "i",
+    },
+    CustomString {
+      "value": "n",
+    },
+    CustomString {
+      "value": "g",
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts intrinsics.src 3`] = `
 CustomList {
   "slice": [Function],
   "value": Array [

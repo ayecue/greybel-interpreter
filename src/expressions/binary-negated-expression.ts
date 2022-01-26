@@ -8,17 +8,13 @@ import { OperationContext } from '../context';
 import { isCustomValue, cast } from '../typer';
 import { CustomType } from '../types/custom-type';
 
-export const toPrimitive = (v: CustomType | any): any => {
-	return isCustomValue(v) ? v.valueOf() : v;
-};
-
 export type OperationMap = {
 	[key: string]: (a: CustomType) => any
 };
 
 const OPERATIONS: OperationMap = {
-	[Operator.Plus]: (a: CustomType): any => toPrimitive(a),
-	[Operator.Minus]: (a: CustomType): any => -toPrimitive(a)
+	[Operator.Plus]: (a: CustomType): any => a.toNumber(),
+	[Operator.Minus]: (a: CustomType): any => -a.toNumber()
 };
 
 export class ExpressionSegment {

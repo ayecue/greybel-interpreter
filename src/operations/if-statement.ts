@@ -24,20 +24,23 @@ export default class IfStatementOperation extends Operation {
 		for (let clause of clauses) {
 			if (clause instanceof IfOperation || clause instanceof ElseIfOperation) {
 				const condition = clause.condition;
-				let isValid;
+				const resolveCondition = async function(item: any): Promise<boolean> {
+					if (item instanceof Expression) {
+						const value = await item.get(operationContext);
+						return resolveCondition(value);
+					} else if (item instanceof Operation) {
+						const value = await item.get(operationContext);
+						return resolveCondition(value);
+					} else if (isCustomValue(item)) {
+						return item.toTruthy();
+					} else if (typeof item === 'boolean') {
+						return item;
+					}
+					
+					operationContext.debugger.raise('Unexpected condition', me, item);
+				};
 
-				if (isCustomValue(condition)) {
-					isValid = condition.valueOf();
-				} else if (
-					condition instanceof Expression ||
-					condition instanceof Operation
-				) {
-					isValid = await condition.get(operationContext);
-				} else {
-					operationContext.debugger.raise('Unexpected condition in clause', me, clause.condition);
-				}
-
-				if (isValid.valueOf()) {
+				if (await resolveCondition(condition)) {
 					await clause.body.run(operationContext);
 					break;
 				}

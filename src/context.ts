@@ -343,10 +343,6 @@ export class OperationContext {
 		return this.lookupType((type: ContextType) => [ContextType.GLOBAL, ContextType.FUNCTION].includes(type));
 	}
 
-	valueOf(): CustomMap {
-		return this.scope;
-	}
-
 	extend(map: Map<string, any>): OperationContext {
 		const me = this;
 

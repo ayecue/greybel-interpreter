@@ -50,7 +50,7 @@ export default class CustomString extends CustomLiteralType {
 	}
 
 	slice(a: CustomLiteralType, b: CustomLiteralType): CustomString {
-		return new CustomString(this.value.slice(a?.valueOf(), b?.valueOf()));
+		return new CustomString(this.value.slice(a?.toNumber(), b?.toNumber()));
 	}
 
 	[Symbol.iterator]() {
@@ -105,13 +105,16 @@ export default class CustomString extends CustomLiteralType {
 		return 'string';
 	}
 
-	valueOf(): string | null {
-		const me = this;
-		return me.value.length === 0 ? null : me.value;
-	}
-
 	toString(): string {
 		return this.value;
+	}
+
+	toNumber(): number {
+		return Number(this.value);
+	}
+
+	toTruthy(): boolean {
+		return this.value.length > 0;
 	}
 
 	fork(): CustomString {

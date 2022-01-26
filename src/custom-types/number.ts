@@ -13,12 +13,16 @@ export default class CustomNumber extends CustomLiteralType {
 		return 'number';
 	}
 
-	valueOf(): number {
+	toString(): string {
+		return this.value.toString();
+	}
+
+	toNumber(): number {
 		return this.value;
 	}
 
-	toString(): string {
-		return this.value.toString();
+	toTruthy(): boolean {
+		return Number.isNaN(this.value) ? false : !!this.value;
 	}
 
 	fork(): CustomNumber {

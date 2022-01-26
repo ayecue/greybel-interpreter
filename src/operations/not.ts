@@ -23,12 +23,12 @@ export default class NotOperation extends Operation {
 		let arg;
 
 		if (isCustomValue(me.arg)) {
-			arg = me.arg.valueOf();
+			arg = me.arg.toTruthy();
 		} else if (me.arg instanceof Expression) {
 			arg = await me.arg.get(operationContext);
 
 			if (isCustomValue(arg)) {
-				arg = arg.valueOf();
+				arg = arg.toTruthy();
 			}
 		} else {
 			operationContext.debugger.raise('Unexpected not operation', me, me.arg);

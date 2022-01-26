@@ -18,13 +18,9 @@ import {
 } from '../typer';
 import { CustomType } from '../types/custom-type';
 
-export const toPrimitive = (v: CustomType | any): any => {
-	return isCustomValue(v) ? v.valueOf() : v;
-};
-
 export const multiplyString = (a: CustomType, b: CustomType): string => {
-	const aVal = a.valueOf() || '';
-	const bVal = b.valueOf();
+	const aVal = a.toString();
+	const bVal = b.toNumber();
 
 	return new Array(bVal)
 		.fill(aVal)
@@ -41,42 +37,38 @@ export const OPERATIONS: OperationMap = {
 			return (a as CustomMap).extend((b as CustomMap).value);
 		} else if (isCustomList(a) && isCustomList(b)) {
 			return (a as CustomList).concat(b as CustomList);
+		} else if (isCustomString(a) || isCustomString(b)) {
+			return a.toString() + b.toString();
 		}
 
-		const aVal = isCustomString(a) ? (a.valueOf() || '') : toPrimitive(a);
-		const bVal = isCustomString(b) ? (b.valueOf() || '') : toPrimitive(b);
-
-		return aVal + bVal;
+		return a.toNumber() + b.toNumber();
 	},
-	[Operator.Minus]: (a: CustomType, b: CustomType): any => toPrimitive(a) - toPrimitive(b),
-	[Operator.Slash]: (a: CustomType, b: CustomType): any => toPrimitive(a) / toPrimitive(b),
-	[Operator.Asterik]: (a: CustomType, b: CustomType): any => {
+	[Operator.Minus]: (a: CustomType, b: CustomType): number => a.toNumber() - b.toNumber(),
+	[Operator.Slash]: (a: CustomType, b: CustomType): number => a.toNumber() / b.toNumber(),
+	[Operator.Asterik]: (a: CustomType, b: CustomType): number | string => {
 		if (isCustomString(a) && isCustomNumber(b)) {
 			return multiplyString(a, b);
 		} else if (isCustomString(b) && isCustomNumber(a)) {
 			return multiplyString(b, a);
 		}
 
-		const aVal = toPrimitive(a);
-		const bVal = toPrimitive(b);
-
-		return aVal * bVal;
+		return a.toNumber() * b.toNumber();
 	},
-	[Operator.Xor]: (a: CustomType, b: CustomType): any => toPrimitive(a) ^ toPrimitive(b),
-	[Operator.BitwiseOr]: (a: CustomType, b: CustomType): any => toPrimitive(a) | toPrimitive(b),
-	[Operator.LessThan]: (a: CustomType, b: CustomType): any => toPrimitive(a) < toPrimitive(b),
-	[Operator.GreaterThan]: (a: CustomType, b: CustomType): any => toPrimitive(a) > toPrimitive(b),
-	[Operator.LeftShift]: (a: CustomType, b: CustomType): any => toPrimitive(a) << toPrimitive(b),
-	[Operator.RightShift]: (a: CustomType, b: CustomType): any => toPrimitive(a) >> toPrimitive(b),
-	[Operator.UnsignedRightShift]: (a: CustomType, b: CustomType): any => toPrimitive(a) >>> toPrimitive(b),
-	[Operator.BitwiseAnd]: (a: CustomType, b: CustomType): any => toPrimitive(a) & toPrimitive(b),
-	[Operator.PercentSign]: (a: CustomType, b: CustomType): any => toPrimitive(a) % toPrimitive(b),
-	[Operator.GreaterThanOrEqual]: (a: CustomType, b: CustomType): any => toPrimitive(a) >= toPrimitive(b),
-	[Operator.Equal]: (a: CustomType, b: CustomType): any => toPrimitive(a) == toPrimitive(b),
-	[Operator.LessThanOrEqual]: (a: CustomType, b: CustomType): any => toPrimitive(a) <= toPrimitive(b),
-	[Operator.NotEqual]: (a: CustomType, b: CustomType): any => toPrimitive(a) != toPrimitive(b),
-	[Operator.And]: (a: CustomType, b: CustomType): any => toPrimitive(a) && toPrimitive(b),
-	[Operator.Or]: (a: CustomType, b: CustomType): any => toPrimitive(a) || toPrimitive(b)
+	[Operator.Xor]: (a: CustomType, b: CustomType): number => a.toNumber() ^ b.toNumber(),
+	[Operator.BitwiseOr]: (a: CustomType, b: CustomType): number => a.toNumber() | b.toNumber(),
+	[Operator.LessThan]: (a: CustomType, b: CustomType): boolean => a.toNumber() < b.toNumber(),
+	[Operator.GreaterThan]: (a: CustomType, b: CustomType): boolean => a.toNumber() > b.toNumber(),
+	[Operator.LeftShift]: (a: CustomType, b: CustomType): number => a.toNumber() << b.toNumber(),
+	[Operator.RightShift]: (a: CustomType, b: CustomType): number => a.toNumber() >> b.toNumber(),
+	[Operator.UnsignedRightShift]: (a: CustomType, b: CustomType): number => a.toNumber() >>> b.toNumber(),
+	[Operator.BitwiseAnd]: (a: CustomType, b: CustomType): number => a.toNumber() & b.toNumber(),
+	[Operator.PercentSign]: (a: CustomType, b: CustomType): number => a.toNumber() % b.toNumber(),
+	[Operator.GreaterThanOrEqual]: (a: CustomType, b: CustomType): boolean => a.toNumber() >= b.toNumber(),
+	[Operator.Equal]: (a: CustomType, b: CustomType): boolean => a.toNumber() == b.toNumber(),
+	[Operator.LessThanOrEqual]: (a: CustomType, b: CustomType): boolean => a.toNumber() <= b.toNumber(),
+	[Operator.NotEqual]: (a: CustomType, b: CustomType): boolean => a.toNumber() != b.toNumber(),
+	[Operator.And]: (a: CustomType, b: CustomType): boolean => a.toTruthy() && b.toTruthy(),
+	[Operator.Or]: (a: CustomType, b: CustomType): boolean => a.toTruthy() || b.toTruthy()
 };
 
 export class ExpressionSegment {
@@ -134,27 +126,23 @@ export default class LogicalAndBinaryExpression extends Expression {
 				switch(expr.type) {
 					case ASTType.BinaryExpression:
 						const binaryResult = OPERATIONS[expr.operator](
-							await evaluate(expr.left),
-							await evaluate(expr.right)
+							cast(await evaluate(expr.left)),
+							cast(await evaluate(expr.right))
 						);
 
-						return Number.isNaN(binaryResult) ? null : binaryResult;
+						return binaryResult;
 					case ASTType.LogicalExpression:
-						let logicalLeft = await evaluate(expr.left);
+						let logicalLeft = cast(await evaluate(expr.left));
 
-						if (isCustomList(logicalLeft) && !logicalLeft.valueOf()) {
-							logicalLeft = false;
-						}
-
-						if (expr.operator === Operator.And && !toPrimitive(logicalLeft)) {
+						if (expr.operator === Operator.And && !logicalLeft.toTruthy()) {
 							return false;
-						} else if (expr.operator === Operator.Or && toPrimitive(logicalLeft)) {
+						} else if (expr.operator === Operator.Or && logicalLeft.toTruthy()) {
 							return true;
 						}
 
 						const logicalResult = OPERATIONS[expr.operator](
 							logicalLeft,
-							await evaluate(expr.right)
+							cast(await evaluate(expr.right))
 						);
 
 						return logicalResult;

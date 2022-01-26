@@ -32,23 +32,25 @@ export default class WhileOperation extends Operation {
 			isBreak: false,
 			isContinue: false
 		};
-		const resolveCondition = async function() {
-			if (me.condition instanceof Expression) {
-				const value = await me.condition.get(opc);
-				return !!value?.valueOf();
-			} else if (me.condition instanceof Operation) {
-				const value = await me.condition.get(opc);
-				return !!value?.valueOf();
-			} else if (isCustomValue(me.condition)) {
-				return me.condition.valueOf();
+		const resolveCondition = async function(item: any): Promise<boolean> {
+			if (item instanceof Expression) {
+				const value = await item.get(opc);
+				return resolveCondition(value);
+			} else if (item instanceof Operation) {
+				const value = await item.get(opc);
+				return resolveCondition(value);
+			} else if (isCustomValue(item)) {
+				return item.toTruthy();
+			} else if (typeof item === 'boolean') {
+				return item;
 			}
-			
-			operationContext.debugger.raise('Unexpected condition', me, me.condition);
+
+			operationContext.debugger.raise('Unexpected condition', me, item);
 		};
 
 		opc.setMemory('loopContext', loopContext);
 
-		while (await resolveCondition()) {
+		while (await resolveCondition(me.condition)) {
 			loopContext.isContinue = false;
 			await me.body.run(opc);
 			if (loopContext.isContinue) continue;

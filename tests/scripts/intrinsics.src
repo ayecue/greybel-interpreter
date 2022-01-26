@@ -1,2 +1,4 @@
 print(typeof("test").split(""))
 print(returnString.split(""))
+var = returnString.split("")
+print(var)

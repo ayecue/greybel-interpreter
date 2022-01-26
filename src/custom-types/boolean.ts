@@ -13,15 +13,19 @@ export default class CustomBoolean extends CustomLiteralType {
 		return 'boolean';
 	}
 
-	valueOf(): boolean {
-		return this.value;
-	}
-
 	toString(): string {
 		return this.value.toString();
 	}
 
 	fork(): CustomBoolean {
 		return new CustomBoolean(this.value);
+	}
+
+	toNumber(): number {
+		return Number(this.value);
+	}
+
+	toTruthy(): boolean {
+		return this.value;
 	}
 }

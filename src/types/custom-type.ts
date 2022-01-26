@@ -5,12 +5,16 @@ export abstract class CustomType {
 		throw new Error('Implentation of "getType" missing');
 	}
 	
-	valueOf(): any {
-		throw new Error('Implentation of "valueOf" missing');
+	toNumber(): number {
+		throw new Error('Implentation of "toNumber" missing');
 	}
 
 	toString(): string {
 		throw new Error('Implentation of "toString" missing');
+	}
+
+	toTruthy(): boolean {
+		throw new Error('Implentation of "toTruthy" missing');
 	}
 }
 

@@ -222,17 +222,19 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		return me.value.get('classID')?.toString() || 'map';
 	}
 
-	valueOf(): CustomMap | null {
-		const me = this;
-		const value = me.value;
-		return value.size === 0 ? null : me;
+	toNumber(): number {
+		return Number.NaN;
+	}
+
+	toTruthy(): boolean {
+		return this.value.size > 0;
 	}
 
 	toString(): string {
 		const me = this;
 		const body = Object
 			.entries(me.value)
-			.map(([key, value]) => `"${key}": ${value.valueOf().toString()}`);
+			.map(([key, value]) => `"${key}": ${value?.toString()}`);
 
 		return `{${body.join(',')}}`;
 	}

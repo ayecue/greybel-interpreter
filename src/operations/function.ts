@@ -51,6 +51,14 @@ export default class FunctionOperation extends FunctionOperationBase {
 		return 'Function';
 	}
 
+	toTruthy(): boolean {
+		return true;
+	}
+
+	toNumber(): number {
+		return 0;
+	}
+
 	async run(operationContext: OperationContext): Promise<any> {
 		const me = this;
 		const opc = operationContext.fork({

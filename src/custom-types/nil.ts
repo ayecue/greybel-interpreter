@@ -8,8 +8,12 @@ export default class CustomNil extends CustomLiteralType {
 		return 'null';
 	}
 
-	valueOf(): null {
-		return null;
+	toNumber(): number {
+		return Number.NaN;
+	}
+
+	toTruthy(): boolean {
+		return false;
 	}
 
 	toString(): string {

@@ -59,7 +59,7 @@ export default class CustomList extends CustomObjectType {
 	}
 
 	slice = function(a: CustomLiteralType, b: CustomLiteralType): CustomList {
-		return new CustomList(this.value.slice(a?.valueOf(), b?.valueOf()));
+		return new CustomList(this.value.slice(a.toNumber(), b.toNumber()));
 	}
 
 	async set(path: any[], value: any): Promise<void> {
@@ -171,17 +171,19 @@ export default class CustomList extends CustomObjectType {
 		return 'list';
 	}
 
-	valueOf(): CustomList | null {
-		const me = this;
-		const value = me.value;
-		return value.length === 0 ? null : me;
-	}
-
 	toString(): string {
 		const me = this;
-		const body = me.value.map((item) => item?.valueOf()?.toString());
+		const body = me.value.map((item) => item?.toString());
 
 		return `[${body.join(',')}]`;
+	}
+
+	toNumber(): number {
+		return 0;
+	}
+
+	toTruthy(): boolean {
+		return this.value.length > 0;
 	}
 
 	fork(): CustomList {
