@@ -24,6 +24,10 @@ pseudoAPI.set('typeof', (customValue) => {
 	return customValue.getType();
 });
 
+pseudoAPI.set('returnString', () => {
+	return 'string';
+});
+
 pseudoAPI.set('mapToObject', (customValue) => {
 	if (customValue instanceof CustomMap) {
 		const result = {};

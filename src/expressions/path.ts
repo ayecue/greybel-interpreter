@@ -163,7 +163,7 @@ export default class PathExpression extends Expression {
 								handle = origin;
 								traversedPath = [];
 							} else if (origin instanceof Function) {
-								handle = await origin.call(handle);
+								handle = cast(await origin.call(handle));
 								traversedPath = [];
 							}
 						}
