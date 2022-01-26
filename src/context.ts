@@ -142,7 +142,7 @@ export class Debugger {
 		});
 	}
 
-	interact(operationContext: OperationContext, item: ASTBase) {
+	interact(operationContext: OperationContext, item: ASTBase, entity: Operation | Expression) {
 		const me = this;
 		console.warn("Debugger is not setup.");
 		console.info(operationContext);
@@ -219,16 +219,17 @@ export class OperationContext {
 		me.locals = me.lookupLocals() || me;
 	}
 
-	step(item: ASTBase): Promise<void> {
+	step(entity: Operation | Expression): Promise<void> {
 		const me = this;
 		const dbgr = me.debugger;
 
 		if (!me.injected) {
-			me.stackItem = item;
+			me.stackItem = entity.ast;
+			me.target = entity.target || me.target;
 			me.setLastActive(me);
 
 			if (dbgr.getBreakpoint(me)) {
-				dbgr.interact(me, item);
+				dbgr.interact(me, entity.ast, entity);
 				return dbgr.resume();
 			}
 		}

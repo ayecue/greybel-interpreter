@@ -57,6 +57,8 @@ import CustomNumber from './custom-types/number';
 import CustomString from './custom-types/string';
 import CustomNil from './custom-types/nil';
 import { ResourceHandler } from './resource';
+import { Expression } from './types/expression';
+import { Operation } from './types/operation';
 
 export interface CPSMapType {
 	[key: string]: (item: ASTBase) => any;
@@ -65,6 +67,7 @@ export interface CPSMapType {
 export interface CPSMapContext {
 	target: string;
 	resourceHandler: ResourceHandler;
+	currentTarget?: string;
 }
 
 export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContext): CPSMapType {
@@ -278,7 +281,11 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			);
 			const code = await context.resourceHandler.get(target);
 
-			return new ImportExpression(item, target, code).prepare(visit);
+			context.currentTarget = target;
+			const chunk = new ImportExpression(item, target, code).prepare(visit);
+			context.currentTarget = context.target;
+
+			return chunk;
 		},
 		'FeatureIncludeExpression': async function(item: ASTFeatureIncludeExpression): Promise<IncludeExpression> {
 			const resourceHandler = context.resourceHandler;
@@ -289,7 +296,11 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			);
 			const code = await context.resourceHandler.get(target);
 
-			return new IncludeExpression(item, target, code).prepare(visit);
+			context.currentTarget = target;
+			const chunk = new IncludeExpression(item, target, code).prepare(visit);
+			context.currentTarget = context.target;
+
+			return chunk;
 		},
 		'ImportCodeExpression': async function(item: ASTImportCodeExpression): Promise<IncludeExpression> {
 			const resourceHandler = context.resourceHandler;
@@ -300,7 +311,11 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			);
 			const code = await context.resourceHandler.get(target);
 
-			return new IncludeExpression(item, target, code).prepare(visit);
+			context.currentTarget = target;
+			const chunk = new IncludeExpression(item, target, code).prepare(visit);
+			context.currentTarget = context.target;
+
+			return chunk;
 		},
 		'FeatureDebuggerExpression': function(item: ASTBase): Promise<DebuggerOperation> {
 			return Promise.resolve(
@@ -354,10 +369,13 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 
 export default class CPS {
 	cpsMap: CPSMapType;
+	context: CPSMapContext;
 
 	constructor(context: CPSMapContext) {
 		const me = this;
 		me.cpsMap = CPSMap(me.visit.bind(me), context);
+		me.context = context;
+		context.currentTarget = context.target;
 	}
 
 	async visit(o: ASTBase): Promise<any> {
@@ -373,6 +391,9 @@ export default class CPS {
 			throw new Error('Type does not exist ' + o.type);
 		}
 		const result = await fn.call(me, o);
+		if (result instanceof Operation || result instanceof Expression) {
+			result.target = me.context.currentTarget;
+		}
 		return result;
 	}
 }

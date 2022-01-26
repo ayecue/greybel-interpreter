@@ -32,7 +32,7 @@ export default class BodyOperation extends Operation {
 		}
 
 		for (let entity of me.stack) {
-			await operationContext.step(entity.ast);
+			await operationContext.step(entity);
 
 			if (entity instanceof Expression) {
 				await entity.get(operationContext);
