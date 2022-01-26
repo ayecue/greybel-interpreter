@@ -43,3 +43,10 @@ end while
 
 print(index)
 print(after)
+
+myObject = { "test": 123, "abc": 456 }
+
+for o in myObject
+	print(o.key)
+	print(o.value)
+end for

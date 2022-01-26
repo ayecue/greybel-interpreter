@@ -672,6 +672,30 @@ CustomNumber {
 }
 `;
 
+exports[`interpreter default scripts loops.src 7`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts loops.src 8`] = `
+CustomNumber {
+  "value": 123,
+}
+`;
+
+exports[`interpreter default scripts loops.src 9`] = `
+CustomString {
+  "value": "abc",
+}
+`;
+
+exports[`interpreter default scripts loops.src 10`] = `
+CustomNumber {
+  "value": 456,
+}
+`;
+
 exports[`interpreter default scripts manipulation.src 1`] = `
 CustomMap {
   "isInstance": false,

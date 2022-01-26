@@ -1,29 +1,25 @@
+import CustomNil from './nil';
 import { CustomObjectType, Callable } from '../types/custom-type';
 import { Operation, FunctionOperationBase } from '../types/operation';
 import CustomString from './string';
 
-export interface CustomMapIterableItem {
-	key: string;
-	value: any;
-}
-
-export class CustomMapIterator implements Iterator<CustomMapIterableItem> {
-	value: any;
+export class CustomMapIterator implements Iterator<CustomMap> {
+	value: Map<string, any>;
 	index: number;
 
-	constructor(value: any) {
+	constructor(value: Map<string, any>) {
 		const me = this;
 		me.value = value;
 		me.index = 0;
 	}
 
-	next(): IteratorResult<CustomMapIterableItem> {
+	next(): IteratorResult<CustomMap> {
 		const me = this;
-		const keys = Object.keys(me.value);
+		const keys = Array.from(me.value.keys());
 
 		if (me.index === keys.length) {
 			return {
-				value: null,
+				value: new CustomNil(),
 				done: true
 			};
 		}
@@ -31,16 +27,16 @@ export class CustomMapIterator implements Iterator<CustomMapIterableItem> {
 		const key = keys[me.index++];
 
 		return {
-			value: {
-				key: key,
-				value: me.value[key]
-			},
+			value: new CustomMap(new Map([
+				['key', new CustomString(key)],
+				['value', me.value.get(key)]
+			])),
 			done: false
 		};
 	}
 }
 
-export default class CustomMap extends CustomObjectType implements Iterable<CustomMapIterableItem> {
+export default class CustomMap extends CustomObjectType implements Iterable<CustomMap> {
 	static intrinsics: Map<string, Function> = new Map();
 	value: Map<string, any>;
 	isInstance: boolean;
