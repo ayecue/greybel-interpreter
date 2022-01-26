@@ -282,7 +282,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			const code = await context.resourceHandler.get(target);
 
 			context.currentTarget = target;
-			const chunk = new ImportExpression(item, target, code).prepare(visit);
+			const chunk = await (new ImportExpression(item, target, code).prepare(visit));
 			context.currentTarget = context.target;
 
 			return chunk;
@@ -297,7 +297,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			const code = await context.resourceHandler.get(target);
 
 			context.currentTarget = target;
-			const chunk = new IncludeExpression(item, target, code).prepare(visit);
+			const chunk = await (new IncludeExpression(item, target, code).prepare(visit));
 			context.currentTarget = context.target;
 
 			return chunk;
@@ -312,7 +312,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 			const code = await context.resourceHandler.get(target);
 
 			context.currentTarget = target;
-			const chunk = new IncludeExpression(item, target, code).prepare(visit);
+			const chunk = await (new IncludeExpression(item, target, code).prepare(visit));
 			context.currentTarget = context.target;
 
 			return chunk;
