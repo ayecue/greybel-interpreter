@@ -514,6 +514,32 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts intrinsics.src 1`] = `
+CustomList {
+  "slice": [Function],
+  "value": Array [
+    CustomString {
+      "value": "s",
+    },
+    CustomString {
+      "value": "t",
+    },
+    CustomString {
+      "value": "r",
+    },
+    CustomString {
+      "value": "i",
+    },
+    CustomString {
+      "value": "n",
+    },
+    CustomString {
+      "value": "g",
+    },
+  ],
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",

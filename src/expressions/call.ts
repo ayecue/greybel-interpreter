@@ -8,6 +8,8 @@ import { Expression } from '../types/expression';
 import { Operation } from '../types/operation';
 import {
 	isCustomValue,
+	isCustomList,
+	isCustomString,
 	cast,
 	isCustomMap
 } from '../typer';
@@ -81,7 +83,11 @@ export default class CallExpression extends Expression {
 			operationContext.debugger.debug('Line', me.ast.start.line, 'CallExpression', 'pathExpr', pathExpr);
 
 			if (pathExpr.handle) {
-				if (isCustomMap(pathExpr.handle)) {
+				if (
+					isCustomMap(pathExpr.handle) ||
+					isCustomList(pathExpr.handle) ||
+					isCustomString(pathExpr.handle)
+				) {
 					const callable = await pathExpr.handle.getCallable(pathExpr.path);
 
 					if (callable.origin instanceof Operation) {
@@ -90,11 +96,9 @@ export default class CallExpression extends Expression {
 					} else if (callable.origin instanceof Function) {
 						return cast(await callable.origin.call(pathExpr.handle, ...args));
 					}
-
-					operationContext.debugger.raise('Unexpected handle call', me, callable);
 				}
 
-				return cast(pathExpr.handle.callMethod(pathExpr.path, ...args));
+				operationContext.debugger.raise('Unexpected handle call', me, pathExpr);
 			}
 			
 			const callable = await opc.getCallable(pathExpr.path);

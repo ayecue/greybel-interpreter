@@ -1,3 +1,4 @@
+import { Callable } from '../types/custom-type';
 import { CustomLiteralType } from '../types/custom-type';
 
 export class CustomStringIterator implements Iterator<string> {
@@ -27,6 +28,14 @@ export class CustomStringIterator implements Iterator<string> {
 	}
 }
 
+export function itemAtIndex(str: any, n: number): number | null {
+	if (Number.isNaN(n)) return null;
+	n = Math.trunc(n) || 0;
+	if (n < 0) n += str.length;
+	if (n < 0 || n >= str.length) return -1;
+	return n;
+}
+
 export default class CustomString extends CustomLiteralType {
 	static intrinsics: Map<string, Function> = new Map();
 	value: string;
@@ -48,42 +57,48 @@ export default class CustomString extends CustomLiteralType {
 		return new CustomStringIterator(this.value);
 	}
 
-	toIndex(value: string): number {
+	async get (path: any[]): Promise<any> {
 		const me = this;
-		const casted = Number(value);
-		return casted < 0 ? me.value.length + casted : casted;
+
+		if (path.length === 0) {
+			return me;
+		}
+
+		const traversalPath = [].concat(path);
+		const str = me.value;
+		const current = traversalPath.shift();
+
+		if (current != null) {
+			const currentIndex = itemAtIndex(str, Number(current));
+
+			if (currentIndex != null && str.charAt(currentIndex) != null) {
+				return new CustomString(str.charAt(currentIndex));
+			} else if (path.length === 1 && CustomString.intrinsics.has(current)) {
+				return CustomString.intrinsics.get(current).bind(null, me);
+			}
+		}
+
+		return null;
 	}
 
-	callMethod(method: string[], ...args: any[]): any {
-		if (method.length === 0) {
-			throw new Error('Unexpected method length');
-		}
-
+	async getCallable(path: any[]): Promise<Callable> {
 		const me = this;
-		const member = method[0].valueOf();
+		const traversalPath = [].concat(path);
+		const current = traversalPath.shift();
 
-		if (CustomString.isNumber(member)) {
-			const index = me.toIndex(member);
-
-			if (!me.value[index]) {
-				console.error(method, member, args);
-				throw new Error(`Unexpected index ${index}`);
+		if (current != null) {
+			if (path.length === 1 && CustomString.intrinsics.has(current)) {
+				return {
+					origin: CustomString.intrinsics.get(current).bind(null, me),
+					context: me
+				};
 			}
-
-			const value = new CustomString(me.value[index]);
-
-			if (method.length > 1) {
-				return value.callMethod(method.slice(1), ...args);
-			}
-
-			return value;
 		}
 
-		if (!CustomString.intrinsics.has(member)) {
-			throw new Error(`Cannot access ${member} in string`);
-		}
-
-		return CustomString.intrinsics.get(member)(me, ...args);
+		return {
+			origin: null,
+			context: me
+		};
 	}
 
 	getType(): string {

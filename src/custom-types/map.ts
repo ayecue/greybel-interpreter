@@ -1,5 +1,6 @@
 import { CustomObjectType, Callable } from '../types/custom-type';
 import { Operation, FunctionOperationBase } from '../types/operation';
+import CustomString from './string';
 
 export interface CustomMapIterableItem {
 	key: string;
@@ -140,7 +141,10 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 			if (refs.has(current)) {
 				const sub = refs.get(current);
 
-				if (traversalPath.length > 0 && sub instanceof CustomObjectType) {
+				if (
+					traversalPath.length > 0 &&
+					(sub instanceof CustomObjectType || sub instanceof CustomString)
+				) {
 					return sub.get(traversalPath);
 				}
 
@@ -169,7 +173,7 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 			if (refs.has(current)) {
 				const sub = refs.get(current);
 
-				if (sub instanceof CustomObjectType) {
+				if (sub instanceof CustomObjectType || sub instanceof CustomString) {
 					return sub.getCallable(traversalPath);
 				}
 
@@ -193,29 +197,6 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 			origin: null,
 			context: me
 		});
-	}
-
-	callMethod(method: string[], ...args: any[]): any {
-		if (method.length === 0) {
-			throw new Error('Unexpected method length');
-		}
-
-		const me = this;
-		const key = method[0]?.toString();
-
-		if (method.length > 1) {
-			if (me.value.has(key)) {
-				return me.value.get(key).callMethod(method.slice(1), ...args);
-			}
-
-			throw new Error(`Unexpected method path`);
-		}
-
-		if (!CustomMap.intrinsics.has(key)) {
-			throw new Error(`Cannot access ${key} in map`);
-		}
-
-		return CustomMap.intrinsics.get(key)(me, ...args);
 	}
 
 	createInstance(): CustomMap {

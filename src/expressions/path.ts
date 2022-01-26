@@ -237,7 +237,11 @@ export default class PathExpression extends Expression {
 			if (resultExpr.handle) {
 				if (resultExpr.path.length === 0) {
 					return resultExpr.handle;
-				} else if (isCustomMap(resultExpr.handle)) {
+				} else if (
+					isCustomMap(resultExpr.handle) ||
+					isCustomList(resultExpr.handle) ||
+					isCustomString(resultExpr.handle)
+				) {
 					const context = resultExpr.handle;
 					const value = await context.get(resultExpr.path);
 
@@ -250,7 +254,7 @@ export default class PathExpression extends Expression {
 					return value;
 				}
 
-				return cast(resultExpr.handle.callMethod(resultExpr.path));
+				operationContext.debugger.raise('Unexpected handle get', me, resultExpr);
 			}
 
 			const value = await operationContext.get(resultExpr.path);

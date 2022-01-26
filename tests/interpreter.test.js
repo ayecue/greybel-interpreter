@@ -54,6 +54,10 @@ CustomString.intrinsics.set('len', function(str) {
 	return str.value.length;
 });
 
+CustomString.intrinsics.set('split', function(str, delimiter) {
+	return str.value.split(delimiter?.toString());
+});
+
 CustomList.intrinsics.set('len', function(list) {
 	return list.value.length;
 });

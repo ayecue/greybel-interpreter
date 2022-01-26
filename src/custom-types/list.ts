@@ -1,5 +1,6 @@
 import { FunctionOperationBase } from '../types/operation';
 import { CustomLiteralType, CustomObjectType, Callable } from '../types/custom-type';
+import CustomString from './string';
 
 export class CustomListIterator implements Iterator<any> {
 	value: any[];
@@ -28,7 +29,8 @@ export class CustomListIterator implements Iterator<any> {
 	}
 }
 
-export function itemAtIndex(list: any[], n: number): number {
+export function itemAtIndex(list: any[], n: number): number | null {
+	if (Number.isNaN(n)) return null;
 	n = Math.trunc(n) || 0;
 	if (n < 0) n += list.length;
 	if (n < 0 || n >= list.length) return -1;
@@ -111,7 +113,10 @@ export default class CustomList extends CustomObjectType {
 			if (refs.hasOwnProperty(currentIndex)) {
 				const sub = refs[currentIndex];
 
-				if (traversalPath.length > 0 && sub instanceof CustomObjectType) {
+				if (
+					traversalPath.length > 0 &&
+					(sub instanceof CustomObjectType || sub instanceof CustomString)
+				) {
 					return sub.get(traversalPath);
 				}
 
@@ -138,7 +143,7 @@ export default class CustomList extends CustomObjectType {
 			if (refs.hasOwnProperty(currentIndex)) {
 				const sub = refs[currentIndex];
 
-				if (sub instanceof CustomObjectType) {
+				if (sub instanceof CustomObjectType || sub instanceof CustomString) {
 					return sub.getCallable(traversalPath);
 				}
 
@@ -160,35 +165,6 @@ export default class CustomList extends CustomObjectType {
 			origin: null,
 			context: me
 		};
-	}
-
-	callMethod(method: string[], ...args: any[]): any {
-		if (method.length === 0) {
-			throw new Error('Unexpected method length');
-		}
-
-		const me = this;
-		const member = method[0]?.toString();
-
-		if (CustomList.isNumber(member)) {
-			const memberIndex = itemAtIndex(me.value, Number(member));
-
-			if (!me.value.hasOwnProperty(memberIndex)) {
-				return null;
-			}
-
-			if (method.length > 1) {
-				return me.value[memberIndex].callMethod(method.slice(1), ...args);
-			}
-
-			return me.value[memberIndex];
-		}
-
-		if (!CustomList.intrinsics.has(member)) {
-			throw new Error(`Cannot access ${member} in list`);
-		}
-
-		return CustomList.intrinsics.get(member)(me, ...args);
 	}
 
 	getType(): string {
