@@ -16,6 +16,10 @@ export abstract class CustomType {
 	toTruthy(): boolean {
 		throw new Error('Implentation of "toTruthy" missing');
 	}
+
+	valueOf(): any {
+		throw new Error('Implentation of "valueOf" missing');
+	}
 }
 
 export abstract class CustomLiteralType extends CustomType {

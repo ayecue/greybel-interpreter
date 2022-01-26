@@ -56,7 +56,11 @@ export default class FunctionOperation extends FunctionOperationBase {
 	}
 
 	toNumber(): number {
-		return 0;
+		return Number.NaN;
+	}
+
+	valueOf(): FunctionOperation {
+		return this;
 	}
 
 	async run(operationContext: OperationContext): Promise<any> {

@@ -19,4 +19,8 @@ export default class CustomNil extends CustomLiteralType {
 	toString(): string {
 		return 'null';
 	}
+
+	valueOf(): any[] {
+		return null;
+	}
 }

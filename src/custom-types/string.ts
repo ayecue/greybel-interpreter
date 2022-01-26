@@ -117,6 +117,10 @@ export default class CustomString extends CustomLiteralType {
 		return this.value.length > 0;
 	}
 
+	valueOf(): string {
+		return this.value;
+	}
+
 	fork(): CustomString {
 		return new CustomString(this.value);
 	}

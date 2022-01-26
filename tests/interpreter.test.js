@@ -28,6 +28,10 @@ pseudoAPI.set('returnString', () => {
 	return 'string';
 });
 
+pseudoAPI.set('returnNil', () => {
+	return null;
+});
+
 pseudoAPI.set('mapToObject', (customValue) => {
 	if (customValue instanceof CustomMap) {
 		const result = {};

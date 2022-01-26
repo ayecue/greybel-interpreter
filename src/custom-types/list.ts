@@ -186,6 +186,10 @@ export default class CustomList extends CustomObjectType {
 		return this.value.length > 0;
 	}
 
+	valueOf(): any[] {
+		return this.value;
+	}
+
 	fork(): CustomList {
 		return new CustomList(this.value);
 	}

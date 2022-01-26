@@ -28,4 +28,8 @@ export default class CustomBoolean extends CustomLiteralType {
 	toTruthy(): boolean {
 		return this.value;
 	}
+
+	valueOf(): boolean {
+		return this.value;
+	}
 }

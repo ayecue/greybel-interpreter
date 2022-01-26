@@ -592,6 +592,12 @@ CustomList {
 }
 `;
 
+exports[`interpreter default scripts intrinsics.src 4`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",
@@ -990,7 +996,11 @@ CustomBoolean {
 }
 `;
 
-exports[`interpreter default scripts unary.src 4`] = `true`;
+exports[`interpreter default scripts unary.src 4`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
 
 exports[`interpreter default scripts unary.src 5`] = `
 CustomNumber {

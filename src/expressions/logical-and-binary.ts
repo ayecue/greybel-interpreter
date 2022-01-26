@@ -63,10 +63,10 @@ export const OPERATIONS: OperationMap = {
 	[Operator.UnsignedRightShift]: (a: CustomType, b: CustomType): number => a.toNumber() >>> b.toNumber(),
 	[Operator.BitwiseAnd]: (a: CustomType, b: CustomType): number => a.toNumber() & b.toNumber(),
 	[Operator.PercentSign]: (a: CustomType, b: CustomType): number => a.toNumber() % b.toNumber(),
-	[Operator.GreaterThanOrEqual]: (a: CustomType, b: CustomType): boolean => a.toNumber() >= b.toNumber(),
-	[Operator.Equal]: (a: CustomType, b: CustomType): boolean => a.toNumber() == b.toNumber(),
-	[Operator.LessThanOrEqual]: (a: CustomType, b: CustomType): boolean => a.toNumber() <= b.toNumber(),
-	[Operator.NotEqual]: (a: CustomType, b: CustomType): boolean => a.toNumber() != b.toNumber(),
+	[Operator.GreaterThanOrEqual]: (a: CustomType, b: CustomType): boolean => a.valueOf() >= b.valueOf(),
+	[Operator.Equal]: (a: CustomType, b: CustomType): boolean => a.valueOf() == b.valueOf(),
+	[Operator.LessThanOrEqual]: (a: CustomType, b: CustomType): boolean => a.valueOf() <= b.valueOf(),
+	[Operator.NotEqual]: (a: CustomType, b: CustomType): boolean => a.valueOf() != b.valueOf(),
 	[Operator.And]: (a: CustomType, b: CustomType): boolean => a.toTruthy() && b.toTruthy(),
 	[Operator.Or]: (a: CustomType, b: CustomType): boolean => a.toTruthy() || b.toTruthy()
 };

@@ -25,6 +25,10 @@ export default class CustomNumber extends CustomLiteralType {
 		return Number.isNaN(this.value) ? false : !!this.value;
 	}
 
+	valueOf(): number {
+		return this.value;
+	}
+
 	fork(): CustomNumber {
 		return new CustomNumber(this.value);
 	}

@@ -239,6 +239,10 @@ export default class CustomMap extends CustomObjectType implements Iterable<Cust
 		return `{${body.join(',')}}`;
 	}
 
+	valueOf(): Map<string, any> {
+		return this.value;
+	}
+
 	fork(): CustomMap {
 		return new CustomMap(this.value);
 	}

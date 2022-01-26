@@ -1,5 +1,5 @@
 import { Operation } from '../types/operation';
-import { isCustomValue, isCustomMap } from '../typer';
+import { isCustomValue, isCustomMap, cast } from '../typer';
 import { Expression } from '../types/expression';
 import { OperationContext } from '../context';
 import { ASTBase } from 'greybel-core';
@@ -34,6 +34,6 @@ export default class NotOperation extends Operation {
 			operationContext.debugger.raise('Unexpected not operation', me, me.arg);
 		}
 
-		return !arg;
+		return cast(!arg);
 	}
 }

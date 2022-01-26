@@ -35,14 +35,12 @@ export default class WhileOperation extends Operation {
 		const resolveCondition = async function(item: any): Promise<boolean> {
 			if (item instanceof Expression) {
 				const value = await item.get(opc);
-				return resolveCondition(value);
+				return value.toTruthy();
 			} else if (item instanceof Operation) {
 				const value = await item.get(opc);
-				return resolveCondition(value);
+				return value.toTruthy();
 			} else if (isCustomValue(item)) {
 				return item.toTruthy();
-			} else if (typeof item === 'boolean') {
-				return item;
 			}
 
 			operationContext.debugger.raise('Unexpected condition', me, item);
