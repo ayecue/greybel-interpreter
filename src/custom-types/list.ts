@@ -59,7 +59,7 @@ export default class CustomList extends CustomObjectType {
 	}
 
 	slice = function(a: CustomLiteralType, b: CustomLiteralType): CustomList {
-		return new CustomList(this.value.slice(a.toNumber(), b.toNumber()));
+		return new CustomList(this.value.slice(a?.toNumber(), b?.toNumber()));
 	}
 
 	async set(path: any[], value: any): Promise<void> {
