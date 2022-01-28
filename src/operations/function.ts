@@ -1,5 +1,4 @@
 import { FunctionOperationBase } from '../types/operation';
-import { v4 as uuidv4 } from 'uuid';
 import { OperationContext, ContextType, ContextState } from '../context';
 import { ASTBase } from 'greybel-core';
 import ArgumentOperation from './argument';
@@ -12,16 +11,22 @@ export interface FunctionOperationOptions {
 }
 
 export default class FunctionOperation extends FunctionOperationBase {
+	static incrementalId: number = 0;
+
 	args: ArgumentOperation;
 	body: BodyOperation;
 	context: any;
-	id: string;
+	id: number;
+
+	static generateId(): number{
+		return FunctionOperation.incrementalId++;
+	}
 
 	constructor(ast: ASTBase, options: FunctionOperationOptions) {
 		super();
 		const me = this;
 		me.ast = ast;
-		me.id = uuidv4();
+		me.id = FunctionOperation.generateId();
 		me.args = options.args;
 		me.body = options.body;
 		me.context = null;
