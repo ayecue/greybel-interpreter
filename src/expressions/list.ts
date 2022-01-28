@@ -4,6 +4,7 @@ import {
 	ASTListValue
 } from 'greybel-core';
 import { Expression } from '../types/expression';
+import { Operation } from '../types/operation';
 import CustomList from '../custom-types/list';
 import { isCustomValue } from '../typer';
 import { OperationContext } from '../context';
@@ -52,8 +53,10 @@ export default class ListExpression extends Expression {
 					list.push(current);
 				} else if (current instanceof Expression) {
 					list.push(await current.get(operationContext));
+				} else if (current.value instanceof Operation) {
+					list.push(await current.value.get(operationContext));
 				} else {
-					operationContext.debugger.raise('Unexpected handle', me, current);
+					operationContext.debugger.raise('Unexpected value in list.', me, current.value);
 				}
 			}
 

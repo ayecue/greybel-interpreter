@@ -132,7 +132,7 @@ export default class PathExpression extends Expression {
 		const me = this;
 		const evaluate = async function(node: ExpressionSegment): Promise<PathEvaluationResult> {
 			const traverselPath = [].concat(node.value);
-			let traversedPath = [];
+			let traversedPath: string[] = [];
 			let position = 0;
 			let handle;
 			let current;
@@ -151,7 +151,7 @@ export default class PathExpression extends Expression {
 						if (functionContext?.context) {
 							handle = functionContext.context;
 						} else {
-							operationContext.debugger.raise('Unexpected self', me, current);
+							operationContext.debugger.raise('Unexpected self. Function does not appear to be bound to any context.', me, current);
 						}
 					} else {
 						traversedPath.push(current.value);
@@ -177,7 +177,7 @@ export default class PathExpression extends Expression {
 						const value = await current.get(operationContext);
 						traversedPath.push(value.toString());
 					} else {
-						operationContext.debugger.raise('Unexpected index', me, current);
+						operationContext.debugger.raise(`Unexpected index with value ${current?.toString()} in path ${traversedPath?.join('.')} found.`, me, current);
 					}
 
 					// emulate bug in greyscript
@@ -196,7 +196,7 @@ export default class PathExpression extends Expression {
 					}
 
 					if (!isCustomList(handle) && !isCustomString(handle)) {
-						operationContext.debugger.raise('Invalid type for slice', me, handle);
+						operationContext.debugger.raise(`Unexpected slice attempt. ${handle?.toString()} does not seem to support slicing.`, me, handle);
 					}
 
 					let left = current.left;
@@ -217,7 +217,7 @@ export default class PathExpression extends Expression {
 
 					handle = handle.slice(left, right);
 				} else {
-					operationContext.debugger.raise('Unexpected handle', me, current);
+					operationContext.debugger.raise(`Unexpected object in ${traversedPath?.join('.')}. Doesn't seem to be a function.`, me, current);
 				}
 
 				position++;
@@ -254,7 +254,7 @@ export default class PathExpression extends Expression {
 					return value;
 				}
 
-				operationContext.debugger.raise('Unexpected handle get', me, resultExpr);
+				operationContext.debugger.raise(`Cannot call ${resultExpr.path?.join('.')}. Doesn't seem to be a function.`, me, resultExpr);
 			}
 
 			const value = await operationContext.get(resultExpr.path);

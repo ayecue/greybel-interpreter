@@ -280,6 +280,12 @@ CustomNumber {
 }
 `;
 
+exports[`interpreter default scripts exit-in-loop.src 1`] = `
+CustomString {
+  "value": "in loop",
+}
+`;
+
 exports[`interpreter default scripts gs-bug-index.src 1`] = `
 CustomString {
   "value": "function",

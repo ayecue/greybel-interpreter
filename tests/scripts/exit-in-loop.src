@@ -1,0 +1,8 @@
+condition = function()
+    print("in loop")
+    return true
+end function
+
+while (condition)
+    exit("test")
+end while

@@ -24,14 +24,14 @@ export default class NotOperation extends Operation {
 
 		if (isCustomValue(me.arg)) {
 			arg = me.arg.toTruthy();
-		} else if (me.arg instanceof Expression) {
+		} else if (me.arg instanceof Expression || me.arg instanceof Operation) {
 			arg = await me.arg.get(operationContext);
 
 			if (isCustomValue(arg)) {
 				arg = arg.toTruthy();
 			}
 		} else {
-			operationContext.debugger.raise('Unexpected not operation', me, me.arg);
+			operationContext.debugger.raise(`Unexpected object used in not unary ${me.arg?.toString()}.`, me, me.arg);
 		}
 
 		return cast(!arg);

@@ -52,7 +52,7 @@ export default class WhileOperation extends Operation {
 			loopContext.isContinue = false;
 			await me.body.run(opc);
 			if (loopContext.isContinue) continue;
-			if (loopContext.isBreak) break;
+			if (loopContext.isBreak || operationContext.isExit()) break;
 		}
 	}
 }

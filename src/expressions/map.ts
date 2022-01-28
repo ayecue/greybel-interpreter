@@ -74,7 +74,7 @@ export default class MapExpression extends Expression {
 				} else if (current.value instanceof Operation) {
 					value = await current.value.get(operationContext);
 				} else {
-					operationContext.debugger.raise('Unexpected value', me, current.value);
+					operationContext.debugger.raise('Unexpected value in map.', me, current.value);
 				}
 
 				// @ts-ignore: Key is always a literal

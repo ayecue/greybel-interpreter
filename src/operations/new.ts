@@ -27,11 +27,11 @@ export default class NewOperation extends Operation {
 		} else if (me.arg instanceof Expression) {
 			arg = await me.arg.get(operationContext);
 		} else {
-			operationContext.debugger.raise('Unexpected reference', me, me.arg);
+			operationContext.debugger.raise(`Unexpected object used in new unary ${me.arg?.toString()}.`, me, me.arg);
 		}
 
 		if (!isCustomMap(arg)) {
-			operationContext.debugger.raise('Unexpected type for new operator', me, arg);
+			operationContext.debugger.raise('Only maps can be initiated.', me, arg);
 		}
 
 		return arg.createInstance();

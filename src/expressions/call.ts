@@ -98,7 +98,7 @@ export default class CallExpression extends Expression {
 					}
 				}
 
-				operationContext.debugger.raise('Unexpected handle call', me, pathExpr);
+				operationContext.debugger.raise(`Cannot call ${pathExpr.path?.join('.')}. Doesn't seem to be a function.`, me, pathExpr);
 			}
 			
 			const callable = await opc.getCallable(pathExpr.path);

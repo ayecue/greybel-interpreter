@@ -28,7 +28,7 @@ export default class ReferenceOperation extends Operation {
 		} else if (me.arg instanceof Expression) {
 			arg = await me.arg.get(operationContext, me);
 		} else {
-			operationContext.debugger.raise('Unexpected reference', me, me.arg);
+			operationContext.debugger.raise(`Unexpected reference ${me.arg?.toString()}.`, me, me.arg);
 		}
 
 		if (isCustomValue(arg)) {
@@ -38,7 +38,7 @@ export default class ReferenceOperation extends Operation {
 				return arg.handle.get(arg.path);
 			}
 
-			operationContext.debugger.raise('Unexpected handle in reference statement', me, arg.handle);
+			operationContext.debugger.raise(`Unexpected object as reference ${arg.handle?.toString()}.`, me, arg.handle);
 		}
 
 		return operationContext.get(arg.path);

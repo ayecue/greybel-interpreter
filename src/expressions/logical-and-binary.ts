@@ -120,7 +120,7 @@ export default class LogicalAndBinaryExpression extends Expression {
 				const expr = (node as LogicalAndBinaryExpression).expr;
 
 				if (!OPERATIONS[expr.operator]) {
-					operationContext.debugger.raise('Unexpected expression type', me, expr);
+					operationContext.debugger.raise(`Unexpected operator in condition. ${expr.operator} is not supported.`, me, expr);
 				}
 
 				switch(expr.type) {

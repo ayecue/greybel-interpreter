@@ -139,6 +139,7 @@ export const CPSMap = function(visit: (o: ASTBase) => any, context: CPSMapContex
 		'FeatureEnvarExpression': function(_item: ASTBase) {
 			throw new Error('Not supported');
 		},
+		'InvalidCodeExpression': function(_item: ASTBase) {},
 		'IfShortcutStatement': async function(item: ASTIfStatement): Promise<IfStatementOperation> {
 			const op = new IfStatementOperation(item);
 
@@ -383,12 +384,12 @@ export default class CPS {
 		if (o == null) return '';
 		if (o.type == null) {
 			console.error('Error ast type:', o);
-			throw new Error('Unexpected as type');
+			throw new Error(`Current CPS iteration item does not have a type.`);
 		}
 		const fn = me.cpsMap[o.type];
 		if (fn == null) {
 			console.error('Error ast:', o);
-			throw new Error('Type does not exist ' + o.type);
+			throw new Error(`${o.type} is not a supported AST type.`);
 		}
 		const result = await fn.call(me, o);
 		if (result instanceof Operation || result instanceof Expression) {

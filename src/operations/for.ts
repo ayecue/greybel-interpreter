@@ -45,7 +45,7 @@ export default class ForOperation extends Operation {
 			await opc.set(variable.path, cast(value));
 			await me.body.run(opc);
 			if (loopContext.isContinue) continue;
-			if (loopContext.isBreak) break;
+			if (loopContext.isBreak || operationContext.isExit()) break;
 		}
 	}
 }

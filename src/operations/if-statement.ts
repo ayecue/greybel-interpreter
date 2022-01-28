@@ -35,7 +35,7 @@ export default class IfStatementOperation extends Operation {
 						return item.toTruthy();
 					}
 					
-					operationContext.debugger.raise('Unexpected condition', me, item);
+					operationContext.debugger.raise(`Unexpected object in condition ${item?.toString()}.`, me, item);
 				};
 
 				if (await resolveCondition(condition)) {
@@ -46,7 +46,7 @@ export default class IfStatementOperation extends Operation {
 				await clause.body.run(operationContext);
 				break;
 			} else {
-				operationContext.debugger.raise('Invalid operation in if statement.', me, clause);
+				operationContext.debugger.raise(`Unexpected operation in if statement ${clause?.toString()}.`, me, clause);
 			}
 		}
 	}
