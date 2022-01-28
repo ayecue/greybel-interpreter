@@ -22,7 +22,7 @@ export default class WhileOperation extends Operation {
 		me.body = options.body;
 	}
 
-	async run(operationContext: OperationContext) {
+	async run(operationContext: OperationContext): Promise<void> {
 		const me = this;
 		const opc = operationContext.fork({
 			type: ContextType.LOOP,
@@ -48,11 +48,27 @@ export default class WhileOperation extends Operation {
 
 		opc.setMemory('loopContext', loopContext);
 
-		while (await resolveCondition(me.condition)) {
-			loopContext.isContinue = false;
-			await me.body.run(opc);
-			if (loopContext.isContinue) continue;
-			if (loopContext.isBreak || operationContext.isExit()) break;
-		}
+		return new Promise((resolve, reject) => {
+			const iteration = async (): Promise<void> => {
+				loopContext.isContinue = false;
+				const condition = await resolveCondition(me.condition);
+	
+				if (!condition) {
+					resolve();
+					return;
+				}
+	
+				await me.body.run(opc);
+	
+				if (loopContext.isBreak || operationContext.isExit()) {
+					resolve();
+					return;
+				}
+	
+				process.nextTick(iteration);
+			};
+
+			iteration();
+		});
 	}
 }
