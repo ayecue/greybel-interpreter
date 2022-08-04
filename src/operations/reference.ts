@@ -1,46 +1,20 @@
-import { Operation } from '../types/operation';
-import { Expression } from '../types/expression';
-import { CustomObjectType } from '../types/custom-type';
-import { isCustomValue } from '../typer';
-import { ASTBase } from 'greybel-core';
-import { OperationContext } from '../context';
+import OperationContext from '../context';
+import { CustomValue } from '../types/generics';
+import Operation, { CPSVisit } from './operation';
 
-export interface ReferenceOperationOptions {
-	arg: any;
-}
+export default class Reference extends Operation {
+  readonly value: CustomValue;
 
-export default class ReferenceOperation extends Operation {
-	arg: any;
+  constructor(value: CustomValue) {
+    super(null, 'native');
+    this.value = value;
+  }
 
-	constructor(ast: ASTBase, options: ReferenceOperationOptions) {
-		super();
-		const me = this;
-		me.ast = ast;
-		me.arg = options.arg;
-	}
+  build(_visit: CPSVisit): Promise<Reference> {
+    return Promise.resolve(this);
+  }
 
-	async get(operationContext: OperationContext): Promise<any> {
-		const me = this;
-		let arg: any;
-
-		if (isCustomValue(me.arg)) {
-			return me.arg;
-		} else if (me.arg instanceof Expression) {
-			arg = await me.arg.get(operationContext, me);
-		} else {
-			operationContext.debugger.raise(`Unexpected reference ${me.arg?.toString()}.`, me, me.arg);
-		}
-
-		if (isCustomValue(arg)) {
-			return arg;
-		} else if (arg.handle) {
-			if (arg.handle instanceof CustomObjectType) {
-				return arg.handle.get(arg.path);
-			}
-
-			operationContext.debugger.raise(`Unexpected object as reference ${arg.handle?.toString()}.`, me, arg.handle);
-		}
-
-		return operationContext.get(arg.path);
-	}
+  handle(_ctx: OperationContext): Promise<CustomValue> {
+    return Promise.resolve(this.value);
+  }
 }

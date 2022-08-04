@@ -1,11 +1,11 @@
-import { ASTUnaryExpression } from 'greyscript-core';
+import { ASTUnaryExpression, Operator } from 'greyscript-core';
 
 import context from '../context';
-import CustomBoolean from '../types/boolean';
 import { CustomValue } from '../types/generics';
+import CustomNumber from '../types/number';
 import Operation, { CPSVisit } from './operation';
 
-export default class Not extends Operation {
+export default class NegatedBinary extends Operation {
   readonly item: ASTUnaryExpression;
   arg: Operation;
 
@@ -20,7 +20,13 @@ export default class Not extends Operation {
   }
 
   async handle(ctx: context): Promise<CustomValue> {
-    const result = await this.arg.handle(ctx);
-    return new CustomBoolean(!result.toTruthy());
+    switch (this.item.operator) {
+      case Operator.Minus:
+        return new CustomNumber(-(await this.arg.handle(ctx)).toNumber());
+      case Operator.Plus:
+        return new CustomNumber(+(await this.arg.handle(ctx)).toNumber());
+      default:
+        throw new Error('Unexpected negation operator.');
+    }
   }
 }

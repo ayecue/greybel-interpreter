@@ -1,11 +1,11 @@
 import { ASTBase } from 'greyscript-core';
 
-import OperationContext from '../context';
+import context from '../context';
 import Defaults from '../types/default';
 import { CustomValue } from '../types/generics';
 import Operation, { CPSVisit } from './operation';
 
-export default class Break extends Operation {
+export default class DebuggerStatement extends Operation {
   readonly item: ASTBase;
 
   constructor(item: ASTBase, target?: string) {
@@ -13,14 +13,12 @@ export default class Break extends Operation {
     this.item = item;
   }
 
-  build(_visit: CPSVisit): Promise<Break> {
+  build(_visit: CPSVisit): Promise<DebuggerStatement> {
     return Promise.resolve(this);
   }
 
-  handle(ctx: OperationContext): Promise<CustomValue> {
-    if (ctx.loopState !== null) {
-      ctx.loopState.isBreak = true;
-    }
+  handle(ctx: context): Promise<CustomValue> {
+    ctx.debugger.setBreakpoint(true);
     return Promise.resolve(Defaults.Void);
   }
 }

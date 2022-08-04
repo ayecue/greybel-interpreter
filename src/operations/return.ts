@@ -1,40 +1,30 @@
-import { Operation } from '../types/operation';
-import { Expression } from '../types/expression';
-import { isCustomValue } from '../typer';
-import { ASTBase } from 'greybel-core';
-import { OperationContext } from '../context';
-import CustomNil from '../custom-types/nil';
+import { ASTReturnStatement } from 'greyscript-core';
 
-export interface ReturnOperationOptions {
-	arg: any;
-}
+import context from '../context';
+import Defaults from '../types/default';
+import { CustomValue } from '../types/generics';
+import Operation, { CPSVisit } from './operation';
 
-export default class ReturnOperation extends Operation {
-	arg: any;
+export default class Return extends Operation {
+  readonly item: ASTReturnStatement;
+  arg: Operation;
 
-	constructor(ast: ASTBase, options: ReturnOperationOptions) {
-		super();
-		const me = this;
-		me.ast = ast;
-		me.arg = options.arg;
-	}
+  constructor(item: ASTReturnStatement, target?: string) {
+    super(null, target);
+    this.item = item;
+  }
 
-	async run(operationContext: OperationContext) {
-		const me = this;
-		const functionContext = operationContext.getMemory('functionContext');
-		let arg;
+  async build(visit: CPSVisit): Promise<Operation> {
+    this.arg = await visit(this.item.argument);
+    return this;
+  }
 
-		if (isCustomValue(me.arg)) {
-			arg = me.arg
-		} else if (me.arg instanceof Expression) {
-			arg = await me.arg.get(operationContext);
-		} else if (me.arg instanceof Operation) {
-			arg = await me.arg.get(operationContext);
-		} else {
-			arg = new CustomNil();
-		}
+  async handle(ctx: context): Promise<CustomValue> {
+    if (ctx.functionState !== null) {
+      ctx.functionState.value = await this.arg.handle(ctx);
+      ctx.functionState.isReturn = true;
+    }
 
-		functionContext.value = arg;
-		functionContext.isReturn = true;
-	}
+    return Defaults.Void;
+  }
 }

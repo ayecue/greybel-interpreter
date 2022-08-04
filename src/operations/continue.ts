@@ -1,18 +1,26 @@
-import { Operation } from '../types/operation';
-import { OperationContext } from '../context';
-import { ASTBase } from 'greybel-core';
+import { ASTBase } from 'greyscript-core';
 
-export default class ContinueOperation extends Operation {
-	constructor(ast: ASTBase) {
-		super();
-		const me = this;
-		me.ast = ast;
-	}
+import OperationContext from '../context';
+import Defaults from '../types/default';
+import { CustomValue } from '../types/generics';
+import Operation, { CPSVisit } from './operation';
 
-	run(operationContext: OperationContext) {
-		const me = this;
-		const loopContext = operationContext.getMemory('loopContext');
+export default class Continue extends Operation {
+  readonly item: ASTBase;
 
-		loopContext.isContinue = true;
-	}
+  constructor(item: ASTBase, target?: string) {
+    super(null, target);
+    this.item = item;
+  }
+
+  build(_visit: CPSVisit): Promise<Continue> {
+    return Promise.resolve(this);
+  }
+
+  handle(ctx: OperationContext): Promise<CustomValue> {
+    if (ctx.loopState !== null) {
+      ctx.loopState.isContinue = true;
+    }
+    return Promise.resolve(Defaults.Void);
+  }
 }

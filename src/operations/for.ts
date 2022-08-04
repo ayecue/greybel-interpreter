@@ -1,51 +1,69 @@
-import { cast } from '../typer';
-import { Operation } from '../types/operation';
-import { OperationContext, ContextType, ContextState } from '../context';
-import { ASTBase } from 'greybel-core';
-import BodyOperation from './body';
+import { ASTForGenericStatement } from 'greyscript-core';
 
-export interface ForOperationOptions {
-	variable: any;
-	iterator: any;
-	body: BodyOperation;
-}
+import context, { ContextState, ContextType, LoopState } from '../context';
+import Defaults from '../types/default';
+import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
+import Block from './block';
+import Operation, { CPSVisit } from './operation';
+import Resolve from './resolve';
 
-export default class ForOperation extends Operation {
-	variable: any;
-	iterator: any;
-	body: BodyOperation;
+export default class For extends Operation {
+  readonly item: ASTForGenericStatement;
+  block: Block;
+  variable: Resolve;
+  iterator: Operation;
 
-	constructor(ast: ASTBase, options: ForOperationOptions) {
-		super();
-		const me = this;
-		me.ast = ast;
-		me.variable = options.variable;
-		me.iterator = options.iterator;
-		me.body = options.body;
-	}
+  constructor(item: ASTForGenericStatement, target?: string) {
+    super(null, target);
+    this.item = item;
+  }
 
-	async run(operationContext: OperationContext): Promise<void> {
-		const me = this;
-		const opc = operationContext.fork({
-			type: ContextType.LOOP,
-			state: ContextState.TEMPORARY
-		});
-		const variable = await me.variable.get(opc, me);
-		const iterator = await me.iterator.get(opc);
+  async build(visit: CPSVisit): Promise<Operation> {
+    const stack = await Promise.all(
+      this.item.body.map((child) => visit(child))
+    );
+    this.block = new Block(stack);
+    this.variable = new Resolve(this.item.variable);
+    await this.variable.build(visit);
+    this.iterator = await visit(this.item.iterator);
+    return this;
+  }
 
-		const loopContext = {
-			isBreak: false,
-			isContinue: false
-		};
+  async handle(ctx: context): Promise<CustomValue> {
+    const forCtx = ctx.fork({
+      type: ContextType.Loop,
+      state: ContextState.Temporary
+    });
+    const resolveResult = await this.variable.getResult(ctx);
+    const iteratorValue = (await this.iterator.handle(
+      ctx
+    )) as CustomValueWithIntrinsics;
+    const loopState = new LoopState();
 
-		opc.setMemory('loopContext', loopContext);
+    forCtx.loopState = loopState;
 
-		for (let value of iterator) {
-			loopContext.isContinue = false;
-			await opc.set(variable.path, cast(value));
-			await me.body.run(opc);
-			if (loopContext.isContinue) continue;
-			if (loopContext.isBreak || operationContext.isExit()) break;
-		}
-	}
+    return new Promise((resolve, _reject) => {
+      const iterator = iteratorValue[Symbol.iterator]();
+      let iteratorResult = iterator.next();
+
+      const iteration = async (): Promise<void> => {
+        if (iteratorResult.done || loopState.isBreak || ctx.isExit()) {
+          resolve(Defaults.Void);
+          return;
+        }
+
+        const current = iteratorResult.value as CustomValue;
+
+        loopState.isContinue = false;
+
+        forCtx.set(resolveResult.path, current);
+        await this.block.handle(forCtx);
+
+        iteratorResult = iterator.next();
+        process.nextTick(iteration);
+      };
+
+      iteration();
+    });
+  }
 }

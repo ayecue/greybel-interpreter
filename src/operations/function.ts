@@ -1,103 +1,83 @@
-import { FunctionOperationBase } from '../types/operation';
-import { OperationContext, ContextType, ContextState } from '../context';
-import { ASTBase } from 'greybel-core';
-import ArgumentOperation from './argument';
-import BodyOperation from './body';
-import { cast } from '../typer';
+import {
+  ASTAssignmentStatement,
+  ASTFunctionStatement,
+  ASTIdentifier,
+  ASTType
+} from 'greyscript-core';
 
-export interface FunctionOperationOptions {
-	args: ArgumentOperation;
-	body: BodyOperation;
-}
+import OperationContext, { FunctionState } from '../context';
+import Defaults from '../types/default';
+import CustomFunction from '../types/function';
+import { CustomValue } from '../types/generics';
+import Path from '../utils/path';
+import Block from './block';
+import Operation, { CPSVisit } from './operation';
+import Reference from './reference';
 
-export default class FunctionOperation extends FunctionOperationBase {
-	static incrementalId: number = 0;
+export default class FunctionOperation extends Operation {
+  readonly item: ASTFunctionStatement;
+  block: Operation;
+  args: Map<string, Operation>;
 
-	args: ArgumentOperation;
-	body: BodyOperation;
-	context: any;
-	id: number;
+  constructor(item: ASTFunctionStatement, target?: string) {
+    super(null, target);
+    this.item = item;
+  }
 
-	static generateId(): number{
-		return FunctionOperation.incrementalId++;
-	}
+  async build(visit: CPSVisit): Promise<Operation> {
+    const stack = await Promise.all(
+      this.item.body.map((child) => visit(child))
+    );
+    this.block = new Block(stack);
+    this.args = new Map<string, Operation>();
+    const defers = this.item.parameters.map(async (child) => {
+      switch (child.type) {
+        case ASTType.AssignmentStatement: {
+          const assignStatement = child as ASTAssignmentStatement;
+          const assignKey = assignStatement.variable as ASTIdentifier;
+          this.args.set(assignKey.name, await visit(assignStatement.init));
+          break;
+        }
+        case ASTType.Identifier: {
+          const identifierKey = child as ASTIdentifier;
+          this.args.set(identifierKey.name, new Reference(Defaults.Void));
+          break;
+        }
+        default:
+          throw new Error('Unexpected operation in arguments.');
+      }
+    });
+    await Promise.all(defers);
+    return this;
+  }
 
-	constructor(ast: ASTBase, options: FunctionOperationOptions) {
-		super();
-		const me = this;
-		me.ast = ast;
-		me.id = FunctionOperation.generateId();
-		me.args = options.args;
-		me.body = options.body;
-		me.context = null;
-	}
+  handle(ctx: OperationContext): Promise<CustomValue> {
+    const func = new CustomFunction(
+      ctx,
+      'anonymous',
+      async (
+        fnCtx: OperationContext,
+        self: CustomValue,
+        args: Map<string, CustomValue>
+      ): Promise<CustomValue> => {
+        fnCtx.functionState = new FunctionState();
 
-	getType(): string {
-		return 'function';
-	}
+        fnCtx.set(new Path<string>(['self']), self);
 
-	fork(context: any): FunctionOperation {
-		const me = this;
-		const newFunction = new FunctionOperation(me.ast, {
-			args: me.args,
-			body: me.body
-		});
+        for (const [key, value] of args) {
+          fnCtx.set(new Path<string>([key]), value);
+        }
 
-		newFunction.context = context;
+        await this.block.handle(fnCtx);
 
-		return newFunction;
-	}
+        return fnCtx.functionState.value;
+      }
+    );
 
-	get(operationContext: OperationContext): FunctionOperation {
-		return this;
-	}
+    for (const [key, value] of this.args) {
+      func.addArgument(key, value);
+    }
 
-	toString(): string {
-		return 'Function';
-	}
-
-	toTruthy(): boolean {
-		return true;
-	}
-
-	toNumber(): number {
-		return Number.NaN;
-	}
-
-	valueOf(): FunctionOperation {
-		return this;
-	}
-
-	async run(operationContext: OperationContext): Promise<any> {
-		const me = this;
-		const opc = operationContext.fork({
-			type: ContextType.FUNCTION,
-			state: ContextState.DEFAULT
-		});
-		const incArgs = operationContext.getMemory('args');
-		const args = await me.args.get(opc);
-		const argMap = {};
-		const functionContext: { [key: string]: any } = {
-			value: null,
-			isReturn: false,
-			context: me.context
-		};
-
-		opc.setMemory('functionContext', functionContext);
-
-		let index = 0;
-		const max = args.length;
-
-		while (index < max) {
-			if (incArgs?.[index]) {
-				await opc.set(args[index].path, incArgs[index]);
-			}
-
-			index++;
-		}
-
-		await me.body.run(opc);
-
-		return cast(functionContext.value);
-	}
+    return Promise.resolve(func);
+  }
 }
