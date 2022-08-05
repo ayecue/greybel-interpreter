@@ -47,7 +47,7 @@ export default class For extends Operation {
       let iteratorResult = iterator.next();
 
       const iteration = async (): Promise<void> => {
-        if (iteratorResult.done || loopState.isBreak || ctx.isExit()) {
+        if (iteratorResult.done) {
           resolve(Defaults.Void);
           return;
         }
@@ -58,6 +58,11 @@ export default class For extends Operation {
 
         forCtx.set(resolveResult.path, current);
         await this.block.handle(forCtx);
+
+        if (loopState.isBreak || ctx.isExit()) {
+          resolve(Defaults.Void);
+          return;
+        }
 
         iteratorResult = iterator.next();
         process.nextTick(iteration);

@@ -58,9 +58,11 @@ export default class CustomMap extends CustomObject {
   readonly value: Map<string, CustomValue>;
   private isInstance: boolean = false;
 
-  constructor(value: Map<string, CustomValue> = new Map()) {
+  constructor(
+    value: Map<string, CustomValue> = new Map<string, CustomValue>()
+  ) {
     super();
-    this.value = value;
+    this.value = new Map<string, CustomValue>(value);
   }
 
   getCustomType(): string {
@@ -86,7 +88,7 @@ export default class CustomMap extends CustomObject {
   }
 
   toNumber(): number {
-    return Number.NaN;
+    return 0;
   }
 
   toInt(): number {

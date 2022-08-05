@@ -3,9 +3,11 @@ import { ASTEvaluationExpression, ASTType, Operator } from 'greyscript-core';
 import OperationContext from '../context';
 import CustomBoolean from '../types/boolean';
 import Defaults from '../types/default';
+import CustomFunction from '../types/function';
 import { CustomValue } from '../types/generics';
 import CustomList from '../types/list';
 import CustomMap from '../types/map';
+import CustomNil from '../types/nil';
 import CustomNumber from '../types/number';
 import CustomString from '../types/string';
 import Operation, { CPSVisit } from './operation';
@@ -49,8 +51,15 @@ export const NumberProcessorHandler: ProcessorHandler = {
     new CustomBoolean(a.toNumber() !== b.toNumber())
 };
 
+export const multiplyString = (a: CustomValue, b: CustomValue): CustomValue => {
+  const multiStr = new Array(b.toNumber()).fill(a.toString()).join('');
+
+  return new CustomString(multiStr);
+};
+
 export const StringProcessorHandler: ProcessorHandler = {
   [Operator.Plus]: (a, b) => new CustomString(a.toString() + b.toString()),
+  [Operator.Asterik]: (a, b) => multiplyString(a, b),
   [Operator.LessThan]: (a, b) =>
     new CustomBoolean(a.toString().length < b.toString().length),
   [Operator.GreaterThan]: (a, b) =>
@@ -96,6 +105,16 @@ export const MapProcessorHandler: ProcessorHandler = {
     new CustomBoolean(left.value.size <= right.value.size),
   [Operator.NotEqual]: (left: CustomMap, right: CustomMap) =>
     new CustomBoolean(left.value !== right.value)
+};
+
+export const NilProcessorHandler: ProcessorHandler = {
+  [Operator.Equal]: (_a, b) => new CustomBoolean(b instanceof CustomNil),
+  [Operator.NotEqual]: (_a, b) => new CustomBoolean(!(b instanceof CustomNil))
+};
+
+export const FunctionProcessorHandler: ProcessorHandler = {
+  [Operator.Equal]: (a, b) => new CustomBoolean(a === b),
+  [Operator.NotEqual]: (a, b) => new CustomBoolean(a !== b)
 };
 
 export const handleNumber: ProcessorHandlerFunction = (op, a, b) => {
@@ -148,22 +167,45 @@ export const handleMap: ProcessorHandlerFunction = (op, a, b) => {
   return Defaults.Void;
 };
 
+export const handleNil: ProcessorHandlerFunction = (op, a, b) => {
+  if (op in NilProcessorHandler) {
+    return NilProcessorHandler[op](a, b);
+  } else if (op in GenericProcessorHandler) {
+    return GenericProcessorHandler[op](a, b);
+  }
+
+  return Defaults.Void;
+};
+
+export const handleFunction: ProcessorHandlerFunction = (op, a, b) => {
+  if (op in FunctionProcessorHandler) {
+    return FunctionProcessorHandler[op](a, b);
+  } else if (op in GenericProcessorHandler) {
+    return GenericProcessorHandler[op](a, b);
+  }
+
+  return Defaults.Void;
+};
+
 export const handle = (
-  ctx: OperationContext,
   op: string,
   a: CustomValue,
   b: CustomValue
 ): CustomValue => {
-  if (a instanceof CustomString) {
+  if (a instanceof CustomString || b instanceof CustomString) {
     return handleString(op, a, b);
-  } else if (a instanceof CustomNumber) {
+  } else if (a instanceof CustomNumber || b instanceof CustomNumber) {
     return handleNumber(op, a, b);
-  } else if (a instanceof CustomBoolean) {
+  } else if (a instanceof CustomBoolean || b instanceof CustomBoolean) {
     return handleBoolean(op, a, b);
   } else if (a instanceof CustomList) {
     return handleList(op, a, b);
   } else if (a instanceof CustomMap) {
     return handleMap(op, a, b);
+  } else if (a instanceof CustomFunction) {
+    return handleFunction(op, a, b);
+  } else if (a instanceof CustomNil) {
+    return handleNil(op, a, b);
   }
 
   return Defaults.Void;
@@ -192,7 +234,7 @@ export default class Evaluate extends Operation {
   async resolveBinaryExpression(ctx: OperationContext, expr: Evaluate) {
     const left = await this.resolve(ctx, expr.left);
     const right = await this.resolve(ctx, expr.right);
-    return handle(ctx, expr.op, left, right);
+    return handle(expr.op, left, right);
   }
 
   async resolveLogicalExpression(ctx: OperationContext, expr: Evaluate) {
@@ -206,7 +248,7 @@ export default class Evaluate extends Operation {
 
     const right = await this.resolve(ctx, expr.right);
 
-    return handle(ctx, expr.op, left, right);
+    return handle(expr.op, left, right);
   }
 
   async resolve(ctx: OperationContext, op: Operation): Promise<CustomValue> {

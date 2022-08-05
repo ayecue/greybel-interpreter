@@ -3,14 +3,28 @@ import {
   ASTIdentifier,
   ASTIndexExpression,
   ASTMemberExpression,
+  ASTSliceExpression,
   ASTType
 } from 'greyscript-core';
 
 import OperationContext from '../context';
 import Defaults from '../types/default';
+import CustomFunction from '../types/function';
 import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
+import CustomList from '../types/list';
+import CustomString from '../types/string';
 import Path from '../utils/path';
 import Operation, { CPSVisit } from './operation';
+
+export class SliceSegment {
+  readonly left: Operation;
+  readonly right: Operation;
+
+  constructor(left: Operation, right: Operation) {
+    this.left = left;
+    this.right = right;
+  }
+}
 
 export class IdentifierSegment {
   readonly value: string;
@@ -36,7 +50,11 @@ export class OperationSegment {
   }
 }
 
-export type Segment = IdentifierSegment | IndexSegment | OperationSegment;
+export type Segment =
+  | SliceSegment
+  | IdentifierSegment
+  | IndexSegment
+  | OperationSegment;
 
 export class ResolveResult {
   readonly path: Path<string>;
@@ -51,6 +69,7 @@ export class ResolveResult {
 export default class Resolve extends Operation {
   readonly item: ASTBase;
   path: Array<Segment>;
+  last: Segment;
 
   constructor(item: ASTBase, target?: string) {
     super(null, target);
@@ -61,15 +80,24 @@ export default class Resolve extends Operation {
     switch (node.type) {
       case ASTType.MemberExpression: {
         const memberExpr = node as ASTMemberExpression;
-        this.buildProcessor(memberExpr.base, visit);
-        this.buildProcessor(memberExpr.identifier, visit);
+        await this.buildProcessor(memberExpr.base, visit);
+        await this.buildProcessor(memberExpr.identifier, visit);
         break;
       }
       case ASTType.IndexExpression: {
         const indexExpr = node as ASTIndexExpression;
-        this.buildProcessor(indexExpr.base, visit);
-        const indexSegment = new IndexSegment(await visit(indexExpr.index));
-        this.path.push(indexSegment);
+        await this.buildProcessor(indexExpr.base, visit);
+
+        if (indexExpr.index.type === ASTType.SliceExpression) {
+          const sliceExpr = indexExpr.index as ASTSliceExpression;
+          const left = await visit(sliceExpr.left);
+          const right = await visit(sliceExpr.right);
+          const sliceSegment = new SliceSegment(left, right);
+          this.path.push(sliceSegment);
+        } else {
+          const indexSegment = new IndexSegment(await visit(indexExpr.index));
+          this.path.push(indexSegment);
+        }
         break;
       }
       case ASTType.Identifier: {
@@ -89,6 +117,7 @@ export default class Resolve extends Operation {
   async build(visit: CPSVisit): Promise<Resolve> {
     this.path = [];
     await this.buildProcessor(this.item, visit);
+    this.last = this.path[this.path.length - 1];
     return this;
   }
 
@@ -113,6 +142,8 @@ export default class Resolve extends Operation {
           break;
         }
 
+        const previous = handle;
+
         if (handle !== Defaults.Void) {
           if (handle instanceof CustomValueWithIntrinsics) {
             const customValueCtx = handle as CustomValueWithIntrinsics;
@@ -122,6 +153,10 @@ export default class Resolve extends Operation {
           }
         } else {
           handle = ctx.get(traversedPath);
+        }
+
+        if (handle instanceof CustomFunction) {
+          handle = await handle.run(previous || Defaults.Void, []);
         }
 
         traversedPath = new Path<string>();
@@ -147,6 +182,18 @@ export default class Resolve extends Operation {
         }
 
         traversedPath = new Path<string>();
+      } else if (current instanceof SliceSegment) {
+        const sliceSegment = current as SliceSegment;
+        const left = await sliceSegment.left.handle(ctx);
+        const right = await sliceSegment.right.handle(ctx);
+
+        if (handle instanceof CustomList || handle instanceof CustomString) {
+          handle = handle.slice(left, right);
+        } else {
+          throw new Error(
+            `Unexpected slice attempt. ${handle.getCustomType()} does not seem to support slicing.`
+          );
+        }
       }
     }
 
@@ -155,7 +202,8 @@ export default class Resolve extends Operation {
 
   async handle(
     ctx: OperationContext,
-    result: ResolveResult = null
+    result: ResolveResult = null,
+    autoCall: boolean = true
   ): Promise<CustomValue> {
     if (result === null) {
       result = await this.getResult(ctx);
@@ -163,13 +211,34 @@ export default class Resolve extends Operation {
 
     if (result.handle !== Defaults.Void) {
       if (result.path.count() === 0) {
+        if (autoCall && result.handle instanceof CustomFunction) {
+          return result.handle.run(Defaults.Void, []);
+        }
+
         return result.handle;
       }
 
       const customValueCtx = result.handle as CustomValueWithIntrinsics;
-      return customValueCtx.get(result.path);
+      const child = customValueCtx.get(result.path);
+
+      if (
+        autoCall &&
+        child instanceof CustomFunction &&
+        // support index bug in greyscript
+        !(this.last instanceof IndexSegment)
+      ) {
+        return child.run(customValueCtx, []);
+      }
+
+      return child;
     }
 
-    return ctx.get(result.path);
+    const handle = ctx.get(result.path);
+
+    if (autoCall && handle instanceof CustomFunction) {
+      return handle.run(Defaults.Void, []);
+    }
+
+    return handle;
   }
 }

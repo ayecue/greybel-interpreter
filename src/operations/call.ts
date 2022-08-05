@@ -27,7 +27,7 @@ export default class Call extends Operation {
 
   async handle(ctx: OperationContext): Promise<CustomValue> {
     const resolveResult = await this.fnRef.getResult(ctx);
-    const valueRef = await this.fnRef.handle(ctx, resolveResult);
+    const valueRef = await this.fnRef.handle(ctx, resolveResult, false);
     const fnArgs: Array<CustomValue> = [];
 
     for (let index = 0; index < this.args.length; index++) {

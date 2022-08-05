@@ -2,7 +2,7 @@ export default class Path<T> {
   readonly path: Array<T>;
 
   constructor(path: Array<T> = []) {
-    this.path = path;
+    this.path = [...path];
   }
 
   next(): T | null {

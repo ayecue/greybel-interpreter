@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { Parser } from 'greyscript-core';
+import { Parser } from 'greybel-core';
 
 import OperationContext, {
   ContextState,
@@ -172,11 +172,15 @@ export default class Interpreter extends EventEmitter {
 
     try {
       this.apiContext.setPending(true);
-      await top.handle(this.globalContext);
+
+      const process = top.handle(this.globalContext);
+      this.emit('start', this);
+      await process;
     } catch (err: any) {
       this.handler.errorHandler.raise(err);
     } finally {
       this.apiContext.setPending(false);
+      this.emit('exit', this);
     }
 
     return this;

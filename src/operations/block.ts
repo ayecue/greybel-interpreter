@@ -28,26 +28,17 @@ export default class Block extends Operation {
       isEOL = () => ctx.functionState.isReturn;
     }
 
-    return new Promise((resolve, _reject) => {
-      let index = 0;
+    for (let index = 0; index < this.stack.length; index++) {
+      if (isEOL() || ctx.isExit()) {
+        break;
+      }
 
-      const iteration = async (): Promise<void> => {
-        if (index >= this.stack.length || isEOL() || ctx.isExit()) {
-          resolve(Defaults.Void);
-          return;
-        }
+      const op = this.stack[index];
 
-        const op = this.stack[index];
+      await ctx.step(op);
+      await op.handle(ctx);
+    }
 
-        await ctx.step(op);
-        await op.handle(ctx);
-
-        index++;
-
-        process.nextTick(iteration);
-      };
-
-      iteration();
-    });
+    return Defaults.Void;
   }
 }

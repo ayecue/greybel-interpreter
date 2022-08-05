@@ -14,7 +14,7 @@ export default class CustomNil extends CustomValue {
   }
 
   toNumber(): number {
-    return Number.NaN;
+    return 0;
   }
 
   toInt(): number {

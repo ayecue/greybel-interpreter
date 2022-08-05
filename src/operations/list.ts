@@ -1,4 +1,4 @@
-import { ASTListConstructorExpression } from 'greyscript-core';
+import { ASTListConstructorExpression, ASTListValue } from 'greyscript-core';
 
 import context from '../context';
 import { CustomValue } from '../types/generics';
@@ -16,7 +16,10 @@ export default class List extends Operation {
 
   async build(visit: CPSVisit): Promise<Operation> {
     this.fields = await Promise.all(
-      this.item.fields.map((child) => visit(child))
+      this.item.fields.map((child) => {
+        const listValue = child as ASTListValue;
+        return visit(listValue.value);
+      })
     );
     return this;
   }

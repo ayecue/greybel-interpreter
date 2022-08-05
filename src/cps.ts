@@ -1,4 +1,8 @@
-import { ASTType as ASTTypeExtended } from 'greybel-core';
+import {
+  ASTFeatureImportExpression,
+  ASTFeatureIncludeExpression,
+  ASTType as ASTTypeExtended
+} from 'greybel-core';
 import {
   ASTAssignmentStatement,
   ASTBase,
@@ -29,8 +33,10 @@ import DebuggerStatement from './operations/debugger-statement';
 import Evaluate from './operations/evaluate';
 import For from './operations/for';
 import FunctionOperation from './operations/function';
+import FunctionReference from './operations/function-reference';
 import IfStatement from './operations/if-statement';
 import Import from './operations/import';
+import Include from './operations/include';
 import List from './operations/list';
 import Literal from './operations/literal';
 import MapOperation from './operations/map';
@@ -109,6 +115,7 @@ export default class CPS {
           visit
         );
       case ASTType.IfStatement:
+      case ASTType.IfShortcutStatement:
         return new IfStatement(item as ASTIfStatement, context.target).build(
           visit
         );
@@ -124,12 +131,12 @@ export default class CPS {
         return new Call(item as ASTCallExpression, context.target).build(visit);
       case ASTType.CallStatement:
         return visit((item as ASTCallStatement).expression);
-      case ASTType.ImportCodeExpression: {
-        const importExpr = item as ASTImportCodeExpression;
+      case ASTTypeExtended.FeatureImportExpression: {
+        const importExpr = item as ASTFeatureImportExpression;
         const target =
           await context.handler.resourceHandler.getTargetRelativeTo(
             context.target,
-            importExpr.fileSystemDirectory
+            importExpr.path
           );
         const code = await context.handler.resourceHandler.get(target);
 
@@ -140,6 +147,54 @@ export default class CPS {
         context.currentTarget = target;
 
         const importStatement = await new Import(
+          importExpr,
+          target,
+          code
+        ).build(visit);
+        context.currentTarget = context.target;
+
+        return importStatement;
+      }
+      case ASTTypeExtended.FeatureIncludeExpression: {
+        const includeExpr = item as ASTFeatureIncludeExpression;
+        const target =
+          await context.handler.resourceHandler.getTargetRelativeTo(
+            context.target,
+            includeExpr.path
+          );
+        const code = await context.handler.resourceHandler.get(target);
+
+        if (code == null) {
+          throw new Error(`Cannot find include ${context.target}.`);
+        }
+
+        context.currentTarget = target;
+
+        const importStatement = await new Include(
+          includeExpr,
+          target,
+          code
+        ).build(visit);
+        context.currentTarget = context.target;
+
+        return importStatement;
+      }
+      case ASTType.ImportCodeExpression: {
+        const importExpr = item as ASTImportCodeExpression;
+        const target =
+          await context.handler.resourceHandler.getTargetRelativeTo(
+            context.target,
+            importExpr.fileSystemDirectory
+          );
+        const code = await context.handler.resourceHandler.get(target);
+
+        if (code == null) {
+          throw new Error(`Cannot find native import ${context.target}.`);
+        }
+
+        context.currentTarget = target;
+
+        const importStatement = await new Include(
           importExpr,
           target,
           code
@@ -175,6 +230,8 @@ export default class CPS {
 
         if (unaryExpr.operator === 'new') {
           return new NewInstance(unaryExpr).build(visit);
+        } else if (unaryExpr.operator === '@') {
+          return new FunctionReference(unaryExpr).build(visit);
         }
 
         throw new Error('Unknown unary expression.');

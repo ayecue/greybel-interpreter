@@ -82,6 +82,10 @@ export default class CustomString extends CustomValueWithIntrinsics {
     return this.value.length > 0;
   }
 
+  slice(a: CustomValue, b: CustomValue): CustomString {
+    return new CustomString(this.value.slice(a.toNumber(), b.toNumber()));
+  }
+
   [Symbol.iterator](): CustomStringIterator {
     return new CustomStringIterator(this.value);
   }

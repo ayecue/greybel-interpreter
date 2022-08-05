@@ -56,7 +56,7 @@ export default class CustomList extends CustomObject {
 
   constructor(value: Array<CustomValue> = []) {
     super();
-    this.value = value;
+    this.value = [...value];
   }
 
   getCustomType(): string {
@@ -72,7 +72,7 @@ export default class CustomList extends CustomObject {
   }
 
   toNumber(): number {
-    return Number.NaN;
+    return 0;
   }
 
   toInt(): number {
@@ -81,6 +81,10 @@ export default class CustomList extends CustomObject {
 
   toTruthy(): boolean {
     return this.value.length > 0;
+  }
+
+  slice(a: CustomValue, b: CustomValue): CustomList {
+    return new CustomList(this.value.slice(a.toNumber(), b.toNumber()));
   }
 
   extend(list: CustomList | Array<CustomValue>): CustomList {

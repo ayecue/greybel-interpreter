@@ -54,10 +54,13 @@ export default class IfStatement extends Operation {
 
       switch (child.type) {
         case ASTType.IfClause:
+        case ASTType.IfShortcutClause:
         case ASTType.ElseifClause:
+        case ASTType.ElseifShortcutClause:
           await this.buildIfClause(child as ASTIfClause, visit);
           break;
         case ASTType.ElseClause:
+        case ASTType.ElseShortcutClause:
           await this.buildElseClause(child as ASTElseClause, visit);
           break;
       }

@@ -282,7 +282,7 @@ export default class OperationContext {
     let current = this.previous;
 
     while (current !== null) {
-      if (allowedTypes.includes(this.type)) {
+      if (allowedTypes.includes(current.type)) {
         return current;
       }
 
@@ -329,7 +329,7 @@ export default class OperationContext {
     } else if (this.state === ContextState.Temporary) {
       this.previous?.set(path, value);
     } else {
-      this.locals.set(path, value);
+      this.locals.scope.set(path, value);
     }
   }
 
@@ -349,7 +349,7 @@ export default class OperationContext {
       return this.previous?.get(path);
     }
 
-    return this.locals.get(path);
+    return this.locals.scope.get(path);
   }
 
   fork(options: ContextForkOptions): OperationContext {

@@ -1,6 +1,6 @@
 import { ASTAssignmentStatement } from 'greyscript-core';
 
-import context from '../context';
+import OperationContext from '../context';
 import Defaults from '../types/default';
 import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
 import Operation, { CPSVisit } from './operation';
@@ -23,7 +23,7 @@ export default class Assign extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     const resolveResult = await this.left.getResult(ctx);
     const rightValue = await this.right.handle(ctx);
 

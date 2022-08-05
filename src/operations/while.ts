@@ -38,13 +38,18 @@ export default class While extends Operation {
       const iteration = async (): Promise<void> => {
         const conditionResult = await this.condition.handle(whileCtx);
 
-        if (!conditionResult.toTruthy() || loopState.isBreak || ctx.isExit()) {
+        if (!conditionResult.toTruthy()) {
           resolve(Defaults.Void);
           return;
         }
 
         loopState.isContinue = false;
         await this.block.handle(whileCtx);
+
+        if (loopState.isBreak || ctx.isExit()) {
+          resolve(Defaults.Void);
+          return;
+        }
 
         process.nextTick(iteration);
       };

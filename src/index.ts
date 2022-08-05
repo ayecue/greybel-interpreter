@@ -44,6 +44,7 @@ export { default as For } from './operations/for';
 export { default as FunctionOpertion } from './operations/function';
 export { Clause, default as IfStatement } from './operations/if-statement';
 export { default as Import } from './operations/import';
+export { default as Include } from './operations/include';
 export { default as List } from './operations/list';
 export { default as Literal } from './operations/literal';
 export { default as MapOperation } from './operations/map';
