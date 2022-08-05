@@ -68,14 +68,25 @@ export default class CustomString extends CustomValueWithIntrinsics {
     return new CustomString(this.value);
   }
 
+  isNumber(): boolean {
+    const nr = Number(this.value);
+    return !Number.isNaN(nr);
+  }
+
+  parseFloat(): number {
+    return parseFloat(this.value);
+  }
+
+  parseInt(): number {
+    return parseInt(this.value);
+  }
+
   toNumber(): number {
-    const value = parseFloat(this.value);
-    return Number.isNaN(value) ? 0 : value;
+    return 0;
   }
 
   toInt(): number {
-    const value = parseInt(this.value);
-    return Number.isNaN(value) ? 0 : value;
+    return 0;
   }
 
   toTruthy(): boolean {
