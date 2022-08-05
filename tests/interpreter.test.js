@@ -19,22 +19,22 @@ const pseudoAPI = new Map();
 
 pseudoAPI.set(
   'print',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
-    //console.log(args);
+  CustomFunction.createExternal('print', (fnCtx, self, args) => {
+    // console.log(args);
     printMock(args.get('value'));
   }).addArgument('value')
 );
 
 pseudoAPI.set(
   'valueOfTest',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
+  CustomFunction.createExternal('valueOfTest', (fnCtx, self, args) => {
     return args.get('value');
   }).addArgument('value')
 );
 
 pseudoAPI.set(
   'typeof',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
+  CustomFunction.createExternal('typeof', (fnCtx, self, args) => {
     const value = args.get('value');
     return new CustomString(value.getCustomType());
   }).addArgument('value')
@@ -42,19 +42,23 @@ pseudoAPI.set(
 
 pseudoAPI.set(
   'returnString',
-  CustomFunction.createAnonymous(
+  CustomFunction.createExternal(
+    'returnString',
     (fnCtx, self, args) => new CustomString('string')
   )
 );
 
 pseudoAPI.set(
   'returnNil',
-  CustomFunction.createAnonymous((fnCtx, self, args) => Defaults.Void)
+  CustomFunction.createExternal(
+    'returnNil',
+    (fnCtx, self, args) => Defaults.Void
+  )
 );
 
 pseudoAPI.set(
   'mapToObject',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
+  CustomFunction.createExternal('mapToObject', (fnCtx, self, args) => {
     const value = args.get('value');
 
     if (value instanceof CustomMap) {
@@ -65,35 +69,37 @@ pseudoAPI.set(
   }).addArgument('value')
 );
 
-const pop = (origin) => {
-  if (origin instanceof CustomMap) {
-    const keys = Array.from(origin.value.keys());
-    const item = origin.get(keys[0]);
-    origin.value.delete(keys[0]);
-    return item;
-  } else if (origin instanceof CustomList) {
-    return origin.value.pop(); 
-  }
-
-  return Defaults.Void;
-};
-
-pseudoAPI.set(
+const pop = CustomFunction.createExternalWithSelf(
   'pop',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
-    const value = args.get('value');
-    return pop(value);
-  }).addArgument('value')
+  (fnCtx, self, args) => {
+    const origin = args.get('self');
+
+    if (origin instanceof CustomMap) {
+      const keys = Array.from(origin.value.keys());
+      const item = origin.get(keys[0]);
+      origin.value.delete(keys[0]);
+      return item;
+    } else if (origin instanceof CustomList) {
+      return origin.value.pop();
+    }
+
+    return Defaults.Void;
+  }
 );
+
+pseudoAPI.set('pop', pop);
 
 CustomString.getIntrinsics().add(
   'len',
-  CustomFunction.createAnonymous((fnCtx, self, args) => new CustomNumber(self.value.length))
+  CustomFunction.createExternalWithSelf(
+    'len',
+    (fnCtx, self, args) => new CustomNumber(self.value.length)
+  )
 );
 
 CustomString.getIntrinsics().add(
   'split',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
+  CustomFunction.createExternalWithSelf('split', (fnCtx, self, args) => {
     const delimiter = args.get('delimiter');
     const values = self.value
       .split(delimiter.toString())
@@ -105,12 +111,15 @@ CustomString.getIntrinsics().add(
 
 CustomList.getIntrinsics().add(
   'len',
-  CustomFunction.createAnonymous((fnCtx, self, args) => new CustomNumber(self.value.length))
+  CustomFunction.createExternalWithSelf(
+    'len',
+    (fnCtx, self, args) => new CustomNumber(self.value.length)
+  )
 );
 
 CustomList.getIntrinsics().add(
   'push',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
+  CustomFunction.createExternalWithSelf('push', (fnCtx, self, args) => {
     const value = args.get('value');
     const nextIndex = self.value.push(value);
 
@@ -118,24 +127,18 @@ CustomList.getIntrinsics().add(
   }).addArgument('value', new CustomString(','))
 );
 
-CustomList.getIntrinsics().add(
-  'pop',
-  CustomFunction.createAnonymous((fnCtx, self, args) => pop(self))
-);
+CustomList.getIntrinsics().add('pop', pop);
 
 CustomMap.getIntrinsics().add(
   'hasIndex',
-  CustomFunction.createAnonymous((fnCtx, self, args) => {
+  CustomFunction.createExternalWithSelf('hasIndex', (fnCtx, self, args) => {
     const value = args.get('value');
     const result = self.value.has(value.toString());
     return new CustomBoolean(result);
   }).addArgument('value')
 );
 
-CustomMap.getIntrinsics().add(
-  'pop',
-  CustomFunction.createAnonymous((fnCtx, self, args) => pop(self))
-);
+CustomMap.getIntrinsics().add('pop', pop);
 
 class TestDebugger extends Debugger {
   debug() {}
@@ -160,7 +163,7 @@ describe('interpreter', function () {
 
         pseudoAPI.set(
           'exit',
-          CustomFunction.createAnonymous((fnCtx, self, args) => {
+          CustomFunction.createExternal('exit', (fnCtx, self, args) => {
             interpreter.exit();
           })
         );

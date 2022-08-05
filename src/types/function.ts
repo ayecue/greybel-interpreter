@@ -3,6 +3,7 @@ import Operation from '../operations/operation';
 import Reference from '../operations/reference';
 import Defaults from './default';
 import { CustomValue } from './generics';
+import CustomNil from './nil';
 
 export interface Callback {
   (
@@ -45,12 +46,19 @@ export default class CustomFunction extends CustomValue {
   readonly callback: Callback;
   readonly argumentDefs: Array<Argument>;
 
-  static createAnonymous(callback: Callback): CustomFunction {
+  static createExternalAnonymous(callback: Callback): CustomFunction {
     return new CustomFunction(null, 'anonymous', callback);
   }
 
-  static createWithoutScope(name: string, callback: Callback): CustomFunction {
+  static createExternal(name: string, callback: Callback): CustomFunction {
     return new CustomFunction(null, name, callback);
+  }
+
+  static createExternalWithSelf(
+    name: string,
+    callback: Callback
+  ): CustomFunction {
+    return new CustomFunction(null, name, callback).addArgument('self');
   }
 
   constructor(scope: OperationContext, name: string, callback: Callback) {
@@ -104,6 +112,10 @@ export default class CustomFunction extends CustomValue {
       state: ContextState.Default
     });
     const argMap: Map<string, CustomValue> = new Map();
+
+    if (!(self instanceof CustomNil)) {
+      args.unshift(self);
+    }
 
     for (let index = 0; index < this.argumentDefs.length; index++) {
       const item = this.argumentDefs[index];
