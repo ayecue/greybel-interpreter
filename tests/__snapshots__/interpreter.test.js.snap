@@ -917,6 +917,41 @@ CustomList {
 }
 `;
 
+exports[`interpreter default scripts slice.src 2`] = `
+CustomList {
+  "value": Array [
+    CustomString {
+      "value": "b",
+    },
+    CustomString {
+      "value": "c",
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts slice.src 3`] = `
+CustomList {
+  "value": Array [
+    CustomString {
+      "value": "a",
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts slice.src 4`] = `
+CustomString {
+  "value": "bc",
+}
+`;
+
+exports[`interpreter default scripts slice.src 5`] = `
+CustomString {
+  "value": "a",
+}
+`;
+
 exports[`interpreter default scripts uglified.src 1`] = `
 CustomMap {
   "isInstance": false,

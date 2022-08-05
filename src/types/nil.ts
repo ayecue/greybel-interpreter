@@ -14,11 +14,11 @@ export default class CustomNil extends CustomValue {
   }
 
   toNumber(): number {
-    return 0;
+    return undefined;
   }
 
   toInt(): number {
-    return 0;
+    return undefined;
   }
 
   toTruthy(): boolean {
