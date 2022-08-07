@@ -8,3 +8,18 @@ print(not test and (false or not false))
 print(not (test and (false or not false)))
 print(-1 + 2)
 print(-(1 + 2))
+
+test2 = function()
+	innerTestFn = function()
+		return "inner-function"
+	end function
+
+	interface = {}
+	interface.innerTestFn = @innerTestFn
+
+	return interface
+end function
+
+print(typeof(@test2().innerTestFn))
+print((@test2()).innerTestFn)
+print(typeof(@(@test2()).innerTestFn))

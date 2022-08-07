@@ -1,9 +1,14 @@
 const {
-	Interpreter,
-	Debugger,
-	CustomString,
-	CustomList,
-	CustomMap
+  Interpreter,
+  Debugger,
+  CustomString,
+  CustomList,
+  CustomMap,
+  CustomFunction,
+  CustomBoolean,
+  CustomNumber,
+  Defaults,
+  CustomValue
 } = require('../dist');
 const fs = require('fs');
 const path = require('path');
@@ -12,155 +17,209 @@ const testFolder = path.resolve(__dirname, 'scripts');
 let printMock;
 const pseudoAPI = new Map();
 
-pseudoAPI.set('print', (customValue) => {
-	printMock(customValue);
-});
+pseudoAPI.set(
+  'print',
+  CustomFunction.createExternal('print', (fnCtx, self, args) => {
+    // console.log(args);
+    printMock(args.get('value'));
+  }).addArgument('value')
+);
 
-pseudoAPI.set('valueOfTest', (customValue) => {
-	return customValue.valueOf();
-});
+pseudoAPI.set(
+  'valueOfTest',
+  CustomFunction.createExternal('valueOfTest', (fnCtx, self, args) => {
+    return args.get('value');
+  }).addArgument('value')
+);
 
-pseudoAPI.set('typeof', (customValue) => {
-	return customValue.getType();
-});
+pseudoAPI.set(
+  'typeof',
+  CustomFunction.createExternal('typeof', (fnCtx, self, args) => {
+    const value = args.get('value');
+    return new CustomString(value.getCustomType());
+  }).addArgument('value')
+);
 
-pseudoAPI.set('returnString', () => {
-	return 'string';
-});
+pseudoAPI.set(
+  'returnString',
+  CustomFunction.createExternal(
+    'returnString',
+    (fnCtx, self, args) => new CustomString('string')
+  )
+);
 
-pseudoAPI.set('returnNil', () => {
-	return null;
-});
+pseudoAPI.set(
+  'returnNil',
+  CustomFunction.createExternal(
+    'returnNil',
+    (fnCtx, self, args) => Defaults.Void
+  )
+);
 
-pseudoAPI.set('mapToObject', (customValue) => {
-	if (customValue instanceof CustomMap) {
-		const result = {};
+pseudoAPI.set(
+  'mapToObject',
+  CustomFunction.createExternal('mapToObject', (fnCtx, self, args) => {
+    const value = args.get('value');
 
-		customValue.value.forEach((v, k) => {
-			result[k] = v;
-		});
+    if (value instanceof CustomMap) {
+      return value;
+    }
 
-		return result;
-	}
-	return null;
-});
+    return Defaults.Void;
+  }).addArgument('value')
+);
 
-pseudoAPI.set('pop', (customValue) => {
-	if (customValue instanceof CustomMap) {
-		const keys = Array.from(customValue.value.keys());
-		const item = customValue.value.get(keys[0]);
-		customValue.value.delete(keys[0]);
-		return item;
-	} else if (customValue instanceof CustomList) {
-		return customValue.value.pop();
-	}
+const pop = CustomFunction.createExternalWithSelf(
+  'pop',
+  (fnCtx, self, args) => {
+    const origin = args.get('self');
 
-	return null;
-});
+    if (origin instanceof CustomMap) {
+      const keys = Array.from(origin.value.keys());
+      const item = origin.get(keys[0]);
+      origin.value.delete(keys[0]);
+      return item;
+    } else if (origin instanceof CustomList) {
+      return origin.value.pop();
+    }
 
-CustomString.intrinsics.set('len', function(str) {
-	return str.value.length;
-});
+    return Defaults.Void;
+  }
+);
 
-CustomString.intrinsics.set('split', function(str, delimiter) {
-	return str.value.split(delimiter?.toString());
-});
+pseudoAPI.set('pop', pop);
 
-CustomList.intrinsics.set('len', function(list) {
-	return list.value.length;
-});
+CustomString.getIntrinsics().add(
+  'len',
+  CustomFunction.createExternalWithSelf(
+    'len',
+    (fnCtx, self, args) => new CustomNumber(self.value.length)
+  )
+);
 
-CustomList.intrinsics.set('push', function(list, value) {
-	return list.value.push(value);
-});
+CustomString.getIntrinsics().add(
+  'split',
+  CustomFunction.createExternalWithSelf('split', (fnCtx, self, args) => {
+    const delimiter = args.get('delimiter');
+    const values = self.value
+      .split(delimiter.toString())
+      .map((segment) => new CustomString(segment));
 
-CustomList.intrinsics.set('pop', pseudoAPI.get('pop'));
+    return new CustomList(values);
+  }).addArgument('delimiter', new CustomString(','))
+);
 
-CustomMap.intrinsics.set('hasIndex', function(map, value) {
-	return map.value.has(value.toString());
-});
+CustomList.getIntrinsics().add(
+  'len',
+  CustomFunction.createExternalWithSelf(
+    'len',
+    (fnCtx, self, args) => new CustomNumber(self.value.length)
+  )
+);
 
-CustomMap.intrinsics.set('pop', pseudoAPI.get('pop'));
+CustomList.getIntrinsics().add(
+  'push',
+  CustomFunction.createExternalWithSelf('push', (fnCtx, self, args) => {
+    const value = args.get('value');
+    const nextIndex = self.value.push(value);
+
+    return new CustomNumber(nextIndex);
+  }).addArgument('value', new CustomString(','))
+);
+
+CustomList.getIntrinsics().add('pop', pop);
+
+CustomMap.getIntrinsics().add(
+  'hasIndex',
+  CustomFunction.createExternalWithSelf('hasIndex', (fnCtx, self, args) => {
+    const value = args.get('value');
+    const result = self.value.has(value.toString());
+    return new CustomBoolean(result);
+  }).addArgument('value')
+);
+
+CustomMap.getIntrinsics().add('pop', pop);
 
 class TestDebugger extends Debugger {
-	debug() {}
+  debug() {}
 }
 
-describe('interpreter', function() {
-	beforeEach(function() {
-		printMock = jest.fn();
-	});
+describe('interpreter', function () {
+  beforeEach(function () {
+    printMock = jest.fn();
+  });
 
-	describe('default scripts', function() {
-		fs
-			.readdirSync(testFolder)
-			.forEach(file => {
-				const filepath = path.resolve(testFolder, file);
+  describe('default scripts', function () {
+    fs.readdirSync(testFolder).forEach((file) => {
+      const filepath = path.resolve(testFolder, file);
 
-				test(path.basename(filepath), async () => {
-					const interpreter = new Interpreter({
-						target: filepath,
-						api: pseudoAPI,
-						debugger: new TestDebugger()
-					});
-					let success = false;
+      test(path.basename(filepath), async () => {
+        const interpreter = new Interpreter({
+          target: filepath,
+          api: pseudoAPI,
+          debugger: new TestDebugger()
+        });
+        let success = false;
 
-					pseudoAPI.set('exit', () => {
-						interpreter.exit();
-					});
+        pseudoAPI.set(
+          'exit',
+          CustomFunction.createExternal('exit', (fnCtx, self, args) => {
+            interpreter.exit();
+          })
+        );
 
-					try {
-						await interpreter.digest();
-						success = true;
-					} catch (e) {
-						console.log(`${filepath} failed with: `, e);
-					}
+        try {
+          await interpreter.run();
+          success = true;
+        } catch (e) {
+          console.log(`${filepath} failed with: `, e);
+        }
 
-					expect(success).toEqual(true);
-					for (const call of printMock.mock.calls) {
-						expect(call[0]).toMatchSnapshot();
-					}
-				});
-			});
-	});
+        expect(success).toEqual(true);
+        for (const call of printMock.mock.calls) {
+          expect(call[0]).toMatchSnapshot();
+        }
+      });
+    });
+  });
 
-	test('should exit', function(done) {
-		const interpreter = new Interpreter({
-			api: pseudoAPI,
-			debugger: new TestDebugger()
-		});
+  test('should exit', function (done) {
+    const interpreter = new Interpreter({
+      api: pseudoAPI,
+      debugger: new TestDebugger()
+    });
 
-		interpreter.once('start', () => {
-			interpreter.exit();
-		});
+    interpreter.once('start', () => {
+      interpreter.exit();
+    });
 
-		interpreter.once('exit', () => {
-			expect(printMock.mock.calls.length).toBeLessThan(3);
-			printMock = jest.fn();
+    interpreter.once('exit', () => {
+      expect(printMock.mock.calls.length).toBeLessThan(3);
+      printMock = jest.fn();
 
-			setTimeout(() => {
-				interpreter.once('exit', () => {
-					for (const call of printMock.mock.calls) {
-						expect(call[0]).toMatchSnapshot();
-					}
+      setTimeout(() => {
+        interpreter.once('exit', () => {
+          for (const call of printMock.mock.calls) {
+            expect(call[0]).toMatchSnapshot();
+          }
 
-					done();
-				});
+          done();
+        });
 
-				interpreter.digest(`
+        interpreter.run(`
 					print("123")
 					print("456")
 					print("789")
 					print(test)
 				`);
-			}, 1000);
-		});
+      }, 1000);
+    });
 
-		interpreter.digest(`
+    interpreter.run(`
 			test = "foo"
 			print("123")
 			print("456")
 			print("789")
 		`);
-	});
+  });
 });

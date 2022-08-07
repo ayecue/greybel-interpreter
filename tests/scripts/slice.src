@@ -13,3 +13,13 @@ divideString = function(str,limit)
 end function
 
 print(divideString("blahhblahhblahhblahhblahhblahhgad",5))
+
+arr = ["a", "b", "c"]
+
+print(arr[1:])
+print(arr[:1])
+
+str = "abc"
+
+print(str[1:])
+print(str[:1])

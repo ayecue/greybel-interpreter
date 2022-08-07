@@ -1,11 +1,12 @@
 import { ASTUnaryExpression } from 'greyscript-core';
 
 import context from '../context';
-import CustomBoolean from '../types/boolean';
+import Defaults from '../types/default';
 import { CustomValue } from '../types/generics';
+import CustomMap from '../types/map';
 import Operation, { CPSVisit } from './operation';
 
-export default class Not extends Operation {
+export default class NewInstance extends Operation {
   readonly item: ASTUnaryExpression;
   arg: Operation;
 
@@ -20,7 +21,12 @@ export default class Not extends Operation {
   }
 
   async handle(ctx: context): Promise<CustomValue> {
-    const result = await this.arg.handle(ctx);
-    return new CustomBoolean(!result.toTruthy());
+    const resolvedArg = await this.arg.handle(ctx);
+
+    if (resolvedArg instanceof CustomMap) {
+      return (resolvedArg as CustomMap).createInstance();
+    }
+
+    return Defaults.Void;
   }
 }

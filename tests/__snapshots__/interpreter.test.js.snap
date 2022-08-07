@@ -108,7 +108,6 @@ CustomMap {
 
 exports[`interpreter default scripts cast.src 3`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "was",
@@ -141,15 +140,10 @@ CustomBoolean {
 }
 `;
 
-exports[`interpreter default scripts cast.src 7`] = `
-CustomNil {
-  "value": null,
-}
-`;
+exports[`interpreter default scripts cast.src 7`] = `CustomNil {}`;
 
 exports[`interpreter default scripts cast.src 8`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "bar",
@@ -196,29 +190,13 @@ CustomNumber {
 }
 `;
 
-exports[`interpreter default scripts cast.src 13`] = `
-CustomNumber {
-  "value": 0,
-}
-`;
+exports[`interpreter default scripts cast.src 13`] = `CustomNil {}`;
 
-exports[`interpreter default scripts cast.src 14`] = `
-CustomNumber {
-  "value": NaN,
-}
-`;
+exports[`interpreter default scripts cast.src 14`] = `CustomNil {}`;
 
-exports[`interpreter default scripts cast.src 15`] = `
-CustomNumber {
-  "value": NaN,
-}
-`;
+exports[`interpreter default scripts cast.src 15`] = `CustomNil {}`;
 
-exports[`interpreter default scripts cast.src 16`] = `
-CustomNumber {
-  "value": NaN,
-}
-`;
+exports[`interpreter default scripts cast.src 16`] = `CustomNil {}`;
 
 exports[`interpreter default scripts cast.src 17`] = `
 CustomNumber {
@@ -484,11 +462,7 @@ CustomString {
 }
 `;
 
-exports[`interpreter default scripts if-shorthand.src 11`] = `
-CustomNil {
-  "value": null,
-}
-`;
+exports[`interpreter default scripts if-shorthand.src 11`] = `CustomNil {}`;
 
 exports[`interpreter default scripts imports.src 1`] = `
 CustomString {
@@ -522,7 +496,6 @@ CustomString {
 
 exports[`interpreter default scripts intrinsics.src 1`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "s",
@@ -548,7 +521,6 @@ CustomList {
 
 exports[`interpreter default scripts intrinsics.src 2`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "s",
@@ -574,7 +546,6 @@ CustomList {
 
 exports[`interpreter default scripts intrinsics.src 3`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "s",
@@ -630,7 +601,6 @@ CustomString {
 
 exports[`interpreter default scripts loops.src 1`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "test0",
@@ -724,7 +694,6 @@ CustomMap {
 
 exports[`interpreter default scripts manipulation.src 2`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "123456",
@@ -761,7 +730,6 @@ CustomMap {
 
 exports[`interpreter default scripts manipulation.src 4`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "xxx",
@@ -804,7 +772,6 @@ CustomMap {
 
 exports[`interpreter default scripts manipulation.src 8`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "xxx",
@@ -835,7 +802,6 @@ CustomMap {
 
 exports[`interpreter default scripts manipulation.src 10`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "xxx",
@@ -858,7 +824,6 @@ CustomNumber {
 
 exports[`interpreter default scripts negation.src 2`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomNumber {
       "value": -1,
@@ -875,7 +840,6 @@ CustomList {
 
 exports[`interpreter default scripts obj-init.src 1`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "123",
@@ -892,7 +856,6 @@ CustomList {
 
 exports[`interpreter default scripts obj-init.src 2`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomMap {
       "isInstance": false,
@@ -924,15 +887,10 @@ CustomString {
 }
 `;
 
-exports[`interpreter default scripts simple-object.src 2`] = `
-CustomNil {
-  "value": null,
-}
-`;
+exports[`interpreter default scripts simple-object.src 2`] = `CustomNil {}`;
 
 exports[`interpreter default scripts slice.src 1`] = `
 CustomList {
-  "slice": [Function],
   "value": Array [
     CustomString {
       "value": "blahh",
@@ -956,6 +914,41 @@ CustomList {
       "value": "gad",
     },
   ],
+}
+`;
+
+exports[`interpreter default scripts slice.src 2`] = `
+CustomList {
+  "value": Array [
+    CustomString {
+      "value": "b",
+    },
+    CustomString {
+      "value": "c",
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts slice.src 3`] = `
+CustomList {
+  "value": Array [
+    CustomString {
+      "value": "a",
+    },
+  ],
+}
+`;
+
+exports[`interpreter default scripts slice.src 4`] = `
+CustomString {
+  "value": "bc",
+}
+`;
+
+exports[`interpreter default scripts slice.src 5`] = `
+CustomString {
+  "value": "a",
 }
 `;
 
@@ -1041,6 +1034,24 @@ CustomNumber {
 exports[`interpreter default scripts unary.src 6`] = `
 CustomNumber {
   "value": -3,
+}
+`;
+
+exports[`interpreter default scripts unary.src 7`] = `
+CustomString {
+  "value": "function",
+}
+`;
+
+exports[`interpreter default scripts unary.src 8`] = `
+CustomString {
+  "value": "inner-function",
+}
+`;
+
+exports[`interpreter default scripts unary.src 9`] = `
+CustomString {
+  "value": "function",
 }
 `;
 

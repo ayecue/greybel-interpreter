@@ -1,53 +1,85 @@
-import { Operation } from '../types/operation';
-import { Expression } from '../types/expression';
-import IfOperation from './if';
-import ElseIfOperation from './else-if';
-import ElseOperation from './else';
-import { OperationContext } from '../context';
-import { ASTBase } from 'greybel-core';
-import { isCustomValue } from '../typer';
+import {
+  ASTElseClause,
+  ASTIfClause,
+  ASTIfStatement,
+  ASTType
+} from 'greyscript-core';
 
-export default class IfStatementOperation extends Operation {
-	clauses: any[];
+import context from '../context';
+import CustomBoolean from '../types/boolean';
+import Defaults from '../types/default';
+import { CustomValue } from '../types/generics';
+import Block from './block';
+import Operation, { CPSVisit } from './operation';
+import Reference from './reference';
 
-	constructor(ast: ASTBase) {
-		super();
-		const me = this;
-		me.ast = ast;
-		me.clauses = [];
-	}
+export class Clause {
+  readonly condition: Operation;
+  readonly block: Block;
 
-	async run(operationContext: OperationContext): Promise<void> {
-		const me = this;
-		const clauses = me.clauses;
+  constructor(condition: Operation, block: Block) {
+    this.condition = condition;
+    this.block = block;
+  }
+}
 
-		for (let clause of clauses) {
-			if (clause instanceof IfOperation || clause instanceof ElseIfOperation) {
-				const condition = clause.condition;
-				const resolveCondition = async function(item: any): Promise<boolean> {
-					if (item instanceof Expression) {
-						const value = await item.get(operationContext);
-						return value.toTruthy();
-					} else if (item instanceof Operation) {
-						const value = await item.get(operationContext);
-						return value.toTruthy();
-					} else if (isCustomValue(item)) {
-						return item.toTruthy();
-					}
-					
-					operationContext.debugger.raise(`Unexpected object in condition ${item?.toString()}.`, me, item);
-				};
+export default class IfStatement extends Operation {
+  readonly item: ASTIfStatement;
+  clauses: Array<Clause>;
 
-				if (await resolveCondition(condition)) {
-					await clause.body.run(operationContext);
-					break;
-				}
-			} else if (clause instanceof ElseOperation) {
-				await clause.body.run(operationContext);
-				break;
-			} else {
-				operationContext.debugger.raise(`Unexpected operation in if statement ${clause?.toString()}.`, me, clause);
-			}
-		}
-	}
+  constructor(item: ASTIfStatement, target?: string) {
+    super(null, target);
+    this.item = item;
+  }
+
+  async buildIfClause(node: ASTIfClause, visit: CPSVisit) {
+    const condition = await visit(node.condition);
+    const stack = await Promise.all(node.body.map((child) => visit(child)));
+    const block = new Block(stack);
+    this.clauses.push(new Clause(condition, block));
+  }
+
+  async buildElseClause(node: ASTElseClause, visit: CPSVisit) {
+    const condition = new Reference(new CustomBoolean(true));
+    const stack = await Promise.all(node.body.map((child) => visit(child)));
+    const block = new Block(stack);
+    this.clauses.push(new Clause(condition, block));
+  }
+
+  async build(visit: CPSVisit): Promise<Operation> {
+    this.clauses = [];
+
+    for (let index = 0; index < this.item.clauses.length; index++) {
+      const child = this.item.clauses[index];
+
+      switch (child.type) {
+        case ASTType.IfClause:
+        case ASTType.IfShortcutClause:
+        case ASTType.ElseifClause:
+        case ASTType.ElseifShortcutClause:
+          await this.buildIfClause(child as ASTIfClause, visit);
+          break;
+        case ASTType.ElseClause:
+        case ASTType.ElseShortcutClause:
+          await this.buildElseClause(child as ASTElseClause, visit);
+          break;
+      }
+    }
+
+    return this;
+  }
+
+  async handle(ctx: context): Promise<CustomValue> {
+    for (let index = 0; index < this.clauses.length; index++) {
+      const clause = this.clauses[index];
+      const clauseResult = await clause.condition.handle(ctx);
+
+      if (clauseResult.toTruthy()) {
+        await clause.block.handle(ctx);
+        break;
+      }
+    }
+
+    return Defaults.Void;
+  }
 }

@@ -1,444 +1,379 @@
-import CustomBoolean from './custom-types/boolean';
-import CustomNumber from './custom-types/number';
-import CustomString from './custom-types/string';
-import CustomNil from './custom-types/nil';
-import CustomMap from './custom-types/map';
-import CustomList from './custom-types/list';
-import { Operation } from './types/operation';
-import { Expression } from './types/expression';
-import { CustomObjectType, Callable } from './types/custom-type';
-import { Parser as CodeParser, ASTBase } from 'greybel-core';
-import { ASTPosition } from 'greyscript-core';
+import { ASTBase } from 'greyscript-core';
+
 import CPS from './cps';
+import HandlerContainer from './handler-container';
+import Operation from './operations/operation';
+import Defaults from './types/default';
+import { CustomValue } from './types/generics';
+import CustomMap from './types/map';
+import CustomNil from './types/nil';
+import Path from './utils/path';
 
 export enum ContextType {
-	API = 'API',
-	GLOBAL = 'GLOBAL',
-	FUNCTION = 'FUNCTION',
-	EXTERNAL = 'EXTERNAL',
-	LOOP = 'LOOP',
-	MAP = 'MAP',
-	CALL = 'CALL'
+  Api,
+  Global,
+  Function,
+  External,
+  Loop,
+  Map,
+  Call
 }
 
 export enum ContextState {
-	TEMPORARY = 'TEMPORARY',
-	DEFAULT = 'DEFAULT'
+  Temporary,
+  Default
 }
 
 export class Scope extends CustomMap {
-	context: OperationContext;
+  /* eslint-disable no-use-before-define */
+  private readonly context: OperationContext;
 
-	constructor(context: OperationContext) {
-		super();
-		this.context = context;
-	}
+  constructor(context: OperationContext) {
+    super();
+    this.context = context;
+  }
 
-	async get(path: string[]): Promise<any> {
-		const me = this;
-		const traversalPath = [].concat(path);
-		const current = traversalPath.shift();
+  get(path: Path<string> | string): CustomValue {
+    if (typeof path === 'string') {
+      return this.get(new Path<string>([path]));
+    }
 
-		if (path.length === 0) {
-			return Promise.resolve(me);
-		}
+    if (path.count() === 0) {
+      return this;
+    }
 
-		if (current === 'locals' || current === 'globals') {
-			return me.context.get(path);
-		} else if (await me.has(path)) {
-			return super.get(path);
-		} else if (await me.context.api.scope.has(path)) {
-			return me.context.api.get(path);
-		} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
-			return Promise.resolve(CustomMap.intrinsics.get(current).bind(null, me));
-		} else if (me.context.previous) {
-			return me.context.previous.get(path);
-		} else {
-			throw new Error(`Cannot get path ${path.join('.')}`);
-		}
-	}
+    const traversalPath = path.clone();
+    const current = traversalPath.next();
 
-	async getCallable(path: string[]): Promise<Callable> {
-		const me = this;
-		const traversalPath = [].concat(path);
-		const current = traversalPath.shift();
+    if (current === 'locals' || current === 'globals') {
+      return this.context.get(traversalPath);
+    } else if (this.has(path)) {
+      return super.get(path);
+    } else if (this.context.api.scope.has(path)) {
+      return this.context.api.scope.get(path);
+    } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
+      return CustomMap.getIntrinsics().get(current);
+    } else if (this.context.previous !== null) {
+      return this.context.previous.get(path);
+    }
 
-		if (current === 'locals' || current === 'globals') {
-			return me.context.getCallable(path);
-		} if (await me.has(path)) {
-			return super.getCallable(path);
-		} else if (await me.context.api.scope.has(path)) {
-			return me.context.api.getCallable(path);
-		} else if (path.length === 1 && CustomMap.intrinsics.has(current)) {
-			return Promise.resolve({
-				origin: CustomMap.intrinsics.get(current).bind(null, me),
-				context: me
-			});
-		} else if (me.context.previous) {
-			return me.context.previous.getCallable(path);
-		} else {
-			throw new Error(`Cannot get callable path ${path.join('.')}`);
-		}
-	}
+    throw new Error(`Unknown path ${path.toString()}.`);
+  }
 }
 
 export class Debugger {
-	breakpoint: boolean;
-	nextStep: boolean;
-	lastContext: OperationContext | null;
+  private breakpoint: boolean = false;
+  private nextStep: boolean = false;
+  /* eslint-disable no-use-before-define */
+  private lastContext: OperationContext = null;
 
-	constructor() {
-		const me = this;
+  getLastContext(): OperationContext {
+    return this.lastContext;
+  }
 
-		me.breakpoint = false;
-		me.nextStep = false;
-		me.lastContext = null;
-	}
+  debug(...segments: any[]): CustomNil {
+    console.debug(...segments);
+    return Defaults.Void;
+  }
 
-	raise(message: string, ...args: any[]) {
-		throw new Error(message);
-	}
+  setBreakpoint(breakpoint: boolean): Debugger {
+    this.breakpoint = breakpoint;
+    return this;
+  }
 
-	debug(message: string, ...args: any[]) {
-		console.info(message, ...args);
-	}
+  getBreakpoint(_ctx: OperationContext): boolean {
+    return this.breakpoint;
+  }
 
-	setBreakpoint(state: boolean): Debugger {
-		const me = this;
-		me.breakpoint = state;
-		return me;
-	}
+  next(): Debugger {
+    this.nextStep = true;
+    return this;
+  }
 
-	getBreakpoint(operationContext: OperationContext): boolean {
-		return this.breakpoint;
-	}
+  resume(): Promise<void> {
+    if (this.breakpoint) {
+      return Promise.resolve();
+    }
 
-	next(): Debugger {
-		const me = this;
-		me.nextStep = true;
-		return me;
-	}
+    return new Promise((resolve) => {
+      const check = () => {
+        if (this.breakpoint) {
+          resolve();
+        } else if (this.nextStep) {
+          this.nextStep = false;
+          resolve();
+        } else {
+          process.nextTick(check);
+        }
+      };
 
-	resume(): Promise<void> {
-		const me = this;
-		
-		if (!me.breakpoint) {
-			return Promise.resolve();
-		}
+      check();
+    });
+  }
 
-		return new Promise((resolve) => {
-			const check = () => {
-				if (!me.breakpoint) {
-					resolve();
-				} else if (me.nextStep) {
-					me.nextStep = false;
-					resolve();
-				} else {
-					setTimeout(check, 10);
-				}
-			};
-
-			setTimeout(check, 10);
-		});
-	}
-
-	interact(operationContext: OperationContext, item: ASTBase, entity: Operation | Expression) {
-		const me = this;
-		console.warn("Debugger is not setup.");
-		console.info(operationContext);
-		me.breakpoint = false;
-	}
+  interact(ctx: OperationContext, _ast: ASTBase, _op: Operation) {
+    const me = this;
+    console.warn('Debugger is not setup.');
+    console.info(ctx);
+    me.breakpoint = false;
+  }
 }
 
-export interface OperationContextProcessState {
-	exit: boolean;
-	pending: boolean;
-	last: OperationContext | null;
+export class ProcessState {
+  isExit: boolean = false;
+  isPending: boolean = false;
+  /* eslint-disable no-use-before-define */
+  last: OperationContext = null;
 }
 
-export interface OperationContextOptions {
-	target?: string;
-	isProtected?: boolean;
-	injected?: boolean;
-	type?: ContextType;
-	state?: ContextState;
-	previous?: OperationContext;
-	debugger?: Debugger;
-	cps?: CPS;
-	processState?: OperationContextProcessState;
+export class LoopState {
+  isBreak: boolean = false;
+  isContinue: boolean = false;
 }
 
-export interface OperationContextForkOptions {
-	type: ContextType;
-	state: ContextState;
-	target?: string;
-	injected?: boolean;
+export class FunctionState {
+  value: CustomValue = Defaults.Void;
+  isReturn: boolean = false;
 }
 
-export class OperationContext {
-	target: string;
-	stackItem: ASTBase | null;
-	debugger: Debugger;
-	previous: OperationContext | null;
-	type: ContextType;
-	state: ContextState;
-	scope: Scope;
-	memory: Map<string, any>;
-	cps: CPS | null;
-	processState: OperationContextProcessState;
+export interface ContextOptions {
+  target?: string;
+  /* eslint-disable no-use-before-define */
+  previous?: OperationContext;
+  type?: ContextType;
+  state?: ContextState;
+  isProtected?: boolean;
+  injected?: boolean;
+  debugger?: Debugger;
+  handler?: HandlerContainer;
+  cps?: CPS;
+  processState?: ProcessState;
+}
 
-	isProtected: boolean;
-	injected: boolean;
+export interface ContextForkOptions {
+  type: ContextType;
+  state: ContextState;
+  target?: string;
+  injected?: boolean;
+}
 
-	api: OperationContext | null;
-	locals: OperationContext | null;
-	globals: OperationContext | null;
+export default class OperationContext {
+  target: string;
+  stackItem: ASTBase;
+  debugger: Debugger;
+  handler: HandlerContainer;
+  /* eslint-disable no-use-before-define */
+  previous: OperationContext;
 
-	constructor(options: OperationContextOptions) {
-		const me = this;
+  readonly type: ContextType;
+  readonly state: ContextState;
+  readonly scope: Scope;
+  readonly cps: CPS;
 
-		me.target = options.target || 'unknown';
-		me.stackItem = null;
-		me.previous = options.previous || null;
-		me.type = options.type || ContextType.API;
-		me.state = options.state || ContextState.DEFAULT;
-		me.scope = new Scope(me);
-		me.isProtected = options.isProtected || false;
-		me.injected = options.injected || false;
-		me.memory = new Map();
-		me.debugger = options.debugger || new Debugger();
-		me.cps = options.cps;
-		me.processState = options.processState || {
-			exit: false,
-			pending: false,
-			last: null
-		};
+  readonly processState: ProcessState;
+  loopState: LoopState;
+  functionState: FunctionState;
 
-		me.api = me.lookupAPI();
-		me.globals = me.lookupGlobals();
-		me.locals = me.lookupLocals() || me;
-	}
+  isProtected: boolean;
+  injected: boolean;
 
-	step(entity: Operation | Expression): Promise<void> {
-		const me = this;
-		const dbgr = me.debugger;
+  /* eslint-disable no-use-before-define */
+  readonly api: OperationContext;
+  /* eslint-disable no-use-before-define */
+  readonly locals: OperationContext;
+  /* eslint-disable no-use-before-define */
+  readonly globals: OperationContext;
 
-		if (!me.injected) {
-			me.stackItem = entity.ast;
-			me.target = entity.target || me.target;
-			me.setLastActive(me);
+  private static readonly lookupApiType: Array<ContextType> = [ContextType.Api];
+  private static readonly lookupGlobalsType: Array<ContextType> = [
+    ContextType.Global
+  ];
 
-			if (dbgr.getBreakpoint(me)) {
-				dbgr.interact(me, entity.ast, entity);
-				return dbgr.resume();
-			}
-		}
+  private static readonly lookupLocalsType: Array<ContextType> = [
+    ContextType.Global,
+    ContextType.Function
+  ];
 
-		return Promise.resolve();
-	}
+  constructor(options: ContextOptions = {}) {
+    this.target = options.target || 'unknown';
+    this.stackItem = null;
+    this.previous = options.previous || null;
+    this.type = options.type || ContextType.Api;
+    this.state = options.state || ContextState.Default;
+    this.scope = new Scope(this);
+    this.isProtected = options.isProtected || false;
+    this.injected = options.injected || false;
+    this.debugger = options.debugger || new Debugger();
+    this.handler = options.handler || new HandlerContainer();
+    this.cps = options.cps || null;
+    this.processState = options.processState || new ProcessState();
 
-	setLastActive(opc: OperationContext): OperationContext {
-		const me = this;
-		if (!opc.injected) {
-			me.processState.last = opc;
-		}
-		return me;
-	}
+    this.api = this.lookupApi();
+    this.globals = this.lookupGlobals();
+    this.locals = this.lookupLocals() || this;
+  }
 
-	getLastActive(): OperationContext | null {
-		return this.processState.last;
-	}
+  step(op: Operation): Promise<void> {
+    if (!this.injected) {
+      this.stackItem = op.item;
+      this.target = op.target || this.target;
 
-	isExit(): boolean {
-		return this.processState.exit;
-	}
+      this.setLastActive(this);
 
-	exit(): Promise<OperationContext> {
-		const me = this;
-		const state = me.processState;
+      if (this.debugger.getBreakpoint(this)) {
+        this.debugger.interact(this, op.item, op);
+        return this.debugger.resume();
+      }
+    }
 
-		if (state.pending) {
-			state.exit = true;
+    return Promise.resolve();
+  }
 
-			return new Promise((resolve) => {
-				const check = () => {
-					if (!state.pending) {
-						state.exit = false;
-						resolve(me);
-					} else {
-						setTimeout(check, 10);
-					}
-				};
+  setLastActive(ctx: OperationContext): OperationContext {
+    if (!ctx.injected) {
+      this.processState.last = ctx;
+    }
+    return this;
+  }
 
-				setTimeout(check, 10);
-			});
-		}
+  getLastActive(): OperationContext {
+    return this.processState.last;
+  }
 
-		return Promise.reject(new Error('No running process found.'));
-	}
+  isExit(): boolean {
+    return this.processState.isExit;
+  }
 
-	isPending(): boolean {
-		return this.processState.pending;
-	}
+  isPending(): boolean {
+    return this.processState.isPending;
+  }
 
-	setPending(pending: boolean): OperationContext {
-		const me = this;
-		me.processState.pending = pending;
-		return me;
-	}
+  setPending(pending: boolean): OperationContext {
+    this.processState.isPending = pending;
+    return this;
+  }
 
-	lookupAllOfType(validate: (type: ContextType) => boolean): OperationContext[] {
-		const me = this;
-		const result = [];
+  exit(): Promise<OperationContext> {
+    if (this.processState.isPending) {
+      this.processState.isExit = true;
 
-		if (validate(me.type)) {
-			result.push(me);
-		}
+      return new Promise((resolve) => {
+        const check = () => {
+          if (!this.processState.isPending) {
+            this.processState.isExit = false;
+            resolve(this);
+          } else {
+            process.nextTick(check);
+          }
+        };
 
-		let current = me.previous;
+        check();
+      });
+    }
 
-		while (current) {
-			if (validate(current.type)) {
-				result.push(current);
-			}
+    return Promise.reject(new Error('No running process found.'));
+  }
 
-			current = current.previous;
-		}
+  lookupType(allowedTypes: Array<ContextType>): OperationContext {
+    if (allowedTypes.includes(this.type)) {
+      return this;
+    }
 
-		return result;
-	}
+    let current = this.previous;
 
-	lookupType(validate: (type: ContextType) => boolean): OperationContext {
-		const me = this;
+    while (current !== null) {
+      if (allowedTypes.includes(current.type)) {
+        return current;
+      }
 
-		if (validate(me.type)) {
-			return me;
-		}
+      current = current.previous;
+    }
 
-		let current = me.previous;
+    return null;
+  }
 
-		while (current) {
-			if (validate(current.type)) {
-				return current;
-			}
+  lookupApi(): OperationContext {
+    return this.lookupType(OperationContext.lookupApiType);
+  }
 
-			current = current.previous;
-		}
+  lookupGlobals(): OperationContext {
+    return this.lookupType(OperationContext.lookupGlobalsType);
+  }
 
-		return null;
-	}
+  lookupLocals(): OperationContext {
+    return this.lookupType(OperationContext.lookupLocalsType);
+  }
 
-	lookupAllScopes(): OperationContext[] {
-		return this.lookupAllOfType((type: ContextType) => [ContextType.GLOBAL, ContextType.FUNCTION].includes(type));
-	}
+  extend(map: Map<string, CustomValue>): OperationContext {
+    if (this.state === ContextState.Temporary) {
+      this.previous?.extend(map);
+    } else {
+      this.scope.extend(map);
+    }
+    return this;
+  }
 
-	lookupAPI(): OperationContext {
-		return this.lookupType((type: ContextType) => [ContextType.API].includes(type));
-	}
+  set(path: Path<string> | string, value: CustomValue) {
+    if (typeof path === 'string') {
+      this.set(new Path<string>([path]), value);
+      return;
+    }
 
-	lookupGlobals(): OperationContext {
-		return this.lookupType((type: ContextType) => [ContextType.GLOBAL].includes(type));
-	}
+    const traversalPath = path.clone();
+    const current = traversalPath.next();
 
-	lookupLocals(): OperationContext {
-		return this.lookupType((type: ContextType) => [ContextType.GLOBAL, ContextType.FUNCTION].includes(type));
-	}
+    if (current === 'locals') {
+      this.locals.set(traversalPath, value);
+    } else if (current === 'globals') {
+      this.globals.set(traversalPath, value);
+    } else if (this.state === ContextState.Temporary) {
+      this.previous?.set(path, value);
+    } else {
+      this.locals.scope.set(path, value);
+    }
+  }
 
-	extend(map: Map<string, any>): OperationContext {
-		const me = this;
+  get(path: Path<string> | string): CustomValue {
+    if (typeof path === 'string') {
+      return this.get(new Path<string>([path]));
+    }
 
-		if (me.state === ContextState.TEMPORARY) {
-			me.previous?.extend(map);
-		} else {
-			me.scope.extend(map);
-		}
+    const traversalPath = path.clone();
+    const current = traversalPath.next();
 
-		return me;
-	}
+    if (current === 'locals') {
+      return this.locals.get(traversalPath);
+    } else if (current === 'globals') {
+      return this.globals.get(traversalPath);
+    } else if (this.state === ContextState.Temporary) {
+      return this.previous?.get(path);
+    }
 
-	set(path: any[], value: any): Promise<void> {
-		const me = this;
-		const traversalPath = [].concat(path);
-		const current = traversalPath.shift();
+    return this.locals.scope.get(path);
+  }
 
-		if (current === 'locals') {
-			return me.locals.set(traversalPath, value);
-		} else if (current === 'globals') {
-			return me.globals.set(traversalPath, value);
-		} if (me.state === ContextState.TEMPORARY) {
-			return me.previous?.set(path, value);
-		}
+  fork(options: ContextForkOptions): OperationContext {
+    const newContext = new OperationContext({
+      target: options.target || this.target,
+      previous: this,
+      type: options.type,
+      state: options.state,
+      isProtected: false,
+      injected: this.injected,
+      debugger: this.debugger,
+      handler: this.handler,
+      cps: this.cps,
+      processState: this.processState
+    });
 
-		return me.locals.scope.set(path, value);
-	}
+    if (this.type !== ContextType.Function) {
+      if (this.type !== ContextType.Loop) {
+        newContext.loopState = this.loopState;
+      }
 
-	get(path: any[]): Promise<any> {
-		const me = this;
-		const traversalPath = [].concat(path);
-		const current = traversalPath.shift();
+      newContext.functionState = this.functionState;
+    }
 
-		if (current === 'locals') {
-			return me.locals.get(traversalPath);
-		} else if (current === 'globals') {
-			return me.globals.get(traversalPath);
-		} else if (me.state === ContextState.TEMPORARY) {
-			return me.previous?.get(path);
-		}
-
-		return me.locals.scope.get(path);
-	}
-
-	getCallable(path: string[]): Promise<Callable> {
-		const me = this;
-		const traversalPath = [].concat(path);
-		const current = traversalPath.shift();
-
-		if (current === 'locals') {
-			return me.locals.getCallable(traversalPath);
-		} else if (current === 'globals') {
-			return me.globals.getCallable(traversalPath);
-		}
-
-		return me.locals.scope.getCallable(path);
-	}
-
-	setMemory(key: string, value: any): OperationContext {
-		const me = this;
-		me.memory.set(key, value);
-		return me;
-	}
-
-	getMemory(key: string): any {
-		const me = this;
-		return me.memory.get(key);
-	}
-
-	fork({
-		type,
-		state,
-		target,
-		injected
-	}: OperationContextForkOptions): OperationContext {
-		const me = this;
-		const opc = new OperationContext({
-			target: target || me.target,
-			previous: me,
-			type,
-			state,
-			debugger: me.debugger,
-			cps: me.cps,
-			processState: me.processState,
-			injected: injected || me.injected
-		});
-
-		if (type !== ContextType.FUNCTION) {
-			if (type !== ContextType.LOOP) {
-				opc.setMemory('loopContext', me.getMemory('loopContext'));
-			}
-
-			opc.setMemory('functionContext', me.getMemory('functionContext'));
-		}
-
-		return opc;
-	}
+    return newContext;
+  }
 }

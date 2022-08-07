@@ -1,74 +1,60 @@
-import { Operation } from '../types/operation';
-import { ASTBase } from 'greybel-core';
-import { Expression } from '../types/expression';
-import { OperationContext, ContextState, ContextType } from '../context';
-import BodyOperation from './body';
-import { isCustomValue } from '../typer';
+import { ASTWhileStatement } from 'greyscript-core';
 
-export interface WhileOperationOptions {
-	condition: any;
-	body: BodyOperation;
-}
+import context, { ContextState, ContextType, LoopState } from '../context';
+import Defaults from '../types/default';
+import { CustomValue } from '../types/generics';
+import Block from './block';
+import Operation, { CPSVisit } from './operation';
 
-export default class WhileOperation extends Operation {
-	condition: any;
-	body: BodyOperation;
+export default class While extends Operation {
+  readonly item: ASTWhileStatement;
+  block: Block;
+  condition: Operation;
 
-	constructor(ast: ASTBase, options: WhileOperationOptions) {
-		super();
-		const me = this;
-		me.ast = ast;
-		me.condition = options.condition;
-		me.body = options.body;
-	}
+  constructor(item: ASTWhileStatement, target?: string) {
+    super(null, target);
+    this.item = item;
+  }
 
-	async run(operationContext: OperationContext): Promise<void> {
-		const me = this;
-		const opc = operationContext.fork({
-			type: ContextType.LOOP,
-			state: ContextState.TEMPORARY
-		});
-		const loopContext = {
-			isBreak: false,
-			isContinue: false
-		};
-		const resolveCondition = async function(item: any): Promise<boolean> {
-			if (item instanceof Expression) {
-				const value = await item.get(opc);
-				return value.toTruthy();
-			} else if (item instanceof Operation) {
-				const value = await item.get(opc);
-				return value.toTruthy();
-			} else if (isCustomValue(item)) {
-				return item.toTruthy();
-			}
+  async build(visit: CPSVisit): Promise<Operation> {
+    const stack = await Promise.all(
+      this.item.body.map((child) => visit(child))
+    );
+    this.block = new Block(stack);
+    this.condition = await visit(this.item.condition);
+    return this;
+  }
 
-			operationContext.debugger.raise('Unexpected condition', me, item);
-		};
+  async handle(ctx: context): Promise<CustomValue> {
+    const whileCtx = ctx.fork({
+      type: ContextType.Loop,
+      state: ContextState.Temporary
+    });
+    const loopState = new LoopState();
 
-		opc.setMemory('loopContext', loopContext);
+    whileCtx.loopState = loopState;
 
-		return new Promise((resolve, reject) => {
-			const iteration = async (): Promise<void> => {
-				loopContext.isContinue = false;
-				const condition = await resolveCondition(me.condition);
-	
-				if (!condition) {
-					resolve();
-					return;
-				}
-	
-				await me.body.run(opc);
-	
-				if (loopContext.isBreak || operationContext.isExit()) {
-					resolve();
-					return;
-				}
-	
-				process.nextTick(iteration);
-			};
+    return new Promise((resolve, _reject) => {
+      const iteration = async (): Promise<void> => {
+        const conditionResult = await this.condition.handle(whileCtx);
 
-			iteration();
-		});
-	}
+        if (!conditionResult.toTruthy()) {
+          resolve(Defaults.Void);
+          return;
+        }
+
+        loopState.isContinue = false;
+        await this.block.handle(whileCtx);
+
+        if (loopState.isBreak || ctx.isExit()) {
+          resolve(Defaults.Void);
+          return;
+        }
+
+        process.nextTick(iteration);
+      };
+
+      iteration();
+    });
+  }
 }
