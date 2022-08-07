@@ -48,8 +48,8 @@
         "typescript": "^4.5.4"
     },
     "dependencies": {
-        "greybel-core": "^0.2.6",
-        "greyscript-core": "^0.2.7"
+        "greybel-core": "^0.3.0",
+        "greyscript-core": "^0.2.8"
     },
     "keywords": [
         "greyscript",
