@@ -103,7 +103,7 @@ export class Debugger {
           this.nextStep = false;
           resolve();
         } else {
-          process.nextTick(check);
+          setTimeout(check, 10);
         }
       };
 
@@ -286,7 +286,7 @@ export default class OperationContext {
             this.processState.isExit = false;
             resolve(this);
           } else {
-            process.nextTick(check);
+            setTimeout(check, 10);
           }
         };
 
