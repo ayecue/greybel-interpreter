@@ -44,7 +44,7 @@ export default class CustomFunction extends CustomValue {
   readonly scope?: OperationContext;
   readonly name: string;
   readonly callback: Callback;
-  readonly injectSelf: boolean;
+  private injectSelf: boolean;
   readonly argumentDefs: Array<Argument>;
 
   static createExternalAnonymous(callback: Callback): CustomFunction {
@@ -74,6 +74,11 @@ export default class CustomFunction extends CustomValue {
     this.callback = callback;
     this.injectSelf = injectSelf;
     this.argumentDefs = [];
+  }
+
+  setInjectSelf(injectSelf: boolean): CustomFunction {
+    this.injectSelf = injectSelf;
+    return this;
   }
 
   addArgument(
