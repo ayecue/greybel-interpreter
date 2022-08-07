@@ -253,6 +253,29 @@ export default class OperationContext {
     return this;
   }
 
+  lookupAllOfType(
+    validate: (type: ContextType) => boolean
+  ): OperationContext[] {
+    const me = this;
+    const result = [];
+
+    if (validate(me.type)) {
+      result.push(me);
+    }
+
+    let current = me.previous;
+
+    while (current) {
+      if (validate(current.type)) {
+        result.push(current);
+      }
+
+      current = current.previous;
+    }
+
+    return result;
+  }
+
   exit(): Promise<OperationContext> {
     if (this.processState.isPending) {
       this.processState.isExit = true;
@@ -290,6 +313,12 @@ export default class OperationContext {
     }
 
     return null;
+  }
+
+  lookupAllScopes(): OperationContext[] {
+    return this.lookupAllOfType((type: ContextType) =>
+      [ContextType.Global, ContextType.Function].includes(type)
+    );
   }
 
   lookupApi(): OperationContext {
