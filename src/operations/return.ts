@@ -4,6 +4,7 @@ import context from '../context';
 import Defaults from '../types/default';
 import { CustomValue } from '../types/generics';
 import Operation, { CPSVisit } from './operation';
+import Reference from './reference';
 
 export default class Return extends Operation {
   readonly item: ASTReturnStatement;
@@ -15,7 +16,11 @@ export default class Return extends Operation {
   }
 
   async build(visit: CPSVisit): Promise<Operation> {
-    this.arg = await visit(this.item.argument);
+    if (this.item.argument) {
+      this.arg = await visit(this.item.argument);
+    } else {
+      this.arg = new Reference(Defaults.Void);
+    }
     return this;
   }
 
