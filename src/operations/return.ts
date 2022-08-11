@@ -25,7 +25,7 @@ export default class Return extends Operation {
   }
 
   async handle(ctx: context): Promise<CustomValue> {
-    //no typesafe equal
+    // no typesafe equal
     if (ctx.functionState != null) {
       ctx.functionState.value = await this.arg.handle(ctx);
       ctx.functionState.isReturn = true;
