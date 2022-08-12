@@ -34,24 +34,28 @@ export default class While extends Operation {
 
     whileCtx.loopState = loopState;
 
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve, reject) => {
       const iteration = async (): Promise<void> => {
-        const conditionResult = await this.condition.handle(whileCtx);
+        try {
+          const conditionResult = await this.condition.handle(whileCtx);
 
-        if (!conditionResult.toTruthy()) {
-          resolve(Defaults.Void);
-          return;
+          if (!conditionResult.toTruthy()) {
+            resolve(Defaults.Void);
+            return;
+          }
+
+          loopState.isContinue = false;
+          await this.block.handle(whileCtx);
+
+          if (loopState.isBreak || ctx.isExit()) {
+            resolve(Defaults.Void);
+            return;
+          }
+
+          process.nextTick(iteration);
+        } catch (err: any) {
+          reject(err);
         }
-
-        loopState.isContinue = false;
-        await this.block.handle(whileCtx);
-
-        if (loopState.isBreak || ctx.isExit()) {
-          resolve(Defaults.Void);
-          return;
-        }
-
-        process.nextTick(iteration);
       };
 
       iteration();

@@ -42,30 +42,34 @@ export default class For extends Operation {
 
     forCtx.loopState = loopState;
 
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve, reject) => {
       const iterator = iteratorValue[Symbol.iterator]();
       let iteratorResult = iterator.next();
 
       const iteration = async (): Promise<void> => {
-        if (iteratorResult.done) {
-          resolve(Defaults.Void);
-          return;
+        try {
+          if (iteratorResult.done) {
+            resolve(Defaults.Void);
+            return;
+          }
+
+          const current = iteratorResult.value as CustomValue;
+
+          loopState.isContinue = false;
+
+          forCtx.set(resolveResult.path, current);
+          await this.block.handle(forCtx);
+
+          if (loopState.isBreak || ctx.isExit()) {
+            resolve(Defaults.Void);
+            return;
+          }
+
+          iteratorResult = iterator.next();
+          process.nextTick(iteration);
+        } catch (err: any) {
+          reject(err);
         }
-
-        const current = iteratorResult.value as CustomValue;
-
-        loopState.isContinue = false;
-
-        forCtx.set(resolveResult.path, current);
-        await this.block.handle(forCtx);
-
-        if (loopState.isBreak || ctx.isExit()) {
-          resolve(Defaults.Void);
-          return;
-        }
-
-        iteratorResult = iterator.next();
-        process.nextTick(iteration);
       };
 
       iteration();
