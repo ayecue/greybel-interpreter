@@ -91,13 +91,13 @@ export class Debugger {
   }
 
   resume(): Promise<void> {
-    if (this.breakpoint) {
+    if (!this.breakpoint) {
       return Promise.resolve();
     }
 
     return new Promise((resolve) => {
       const check = () => {
-        if (this.breakpoint) {
+        if (!this.breakpoint) {
           resolve();
         } else if (this.nextStep) {
           this.nextStep = false;
