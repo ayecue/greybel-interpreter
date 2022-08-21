@@ -49,4 +49,5 @@ myObject = { "test": 123, "abc": 456 }
 for o in myObject
 	print(o.key)
 	print(o.value)
+	print(__o_idx)
 end for

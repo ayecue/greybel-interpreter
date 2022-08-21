@@ -661,14 +661,26 @@ CustomNumber {
 `;
 
 exports[`interpreter default scripts loops.src 9`] = `
+CustomNumber {
+  "value": 0,
+}
+`;
+
+exports[`interpreter default scripts loops.src 10`] = `
 CustomString {
   "value": "abc",
 }
 `;
 
-exports[`interpreter default scripts loops.src 10`] = `
+exports[`interpreter default scripts loops.src 11`] = `
 CustomNumber {
   "value": 456,
+}
+`;
+
+exports[`interpreter default scripts loops.src 12`] = `
+CustomNumber {
+  "value": 1,
 }
 `;
 

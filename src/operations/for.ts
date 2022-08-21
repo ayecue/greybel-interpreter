@@ -3,6 +3,7 @@ import { ASTForGenericStatement } from 'greyscript-core';
 import context, { ContextState, ContextType, LoopState } from '../context';
 import Defaults from '../types/default';
 import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
+import CustomNumber from '../types/number';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 import Resolve from './resolve';
@@ -39,6 +40,7 @@ export default class For extends Operation {
       ctx
     )) as CustomValueWithIntrinsics;
     const loopState = new LoopState();
+    let index = 0;
 
     forCtx.loopState = loopState;
 
@@ -57,6 +59,7 @@ export default class For extends Operation {
 
           loopState.isContinue = false;
 
+          forCtx.set(`__${resolveResult.path}_idx`, new CustomNumber(index++));
           forCtx.set(resolveResult.path, current);
           await this.block.handle(forCtx);
 
