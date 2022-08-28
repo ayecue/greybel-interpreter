@@ -15,6 +15,8 @@ import { CustomValue } from './types/generics';
 import CustomList from './types/list';
 import CustomString from './types/string';
 
+export const PARAMS_PROPERTY = new CustomString('params');
+
 export interface InterpreterOptions {
   target?: string;
   api?: Map<string, CustomValue>;
@@ -162,13 +164,18 @@ export default class Interpreter extends EventEmitter {
       throw new Error('Process already running.');
     }
 
-    this.apiContext.extend(this.api);
+    const api = Array.from(this.api.entries()).reduce((result, [key, value]) => {
+      result.set(new CustomString(key), value);
+      return result;
+    }, new Map<CustomValue, CustomValue>());
+
+    this.apiContext.extend(api);
 
     const newParams = new CustomList(
       this.params.map((item) => new CustomString(item))
     );
 
-    this.globalContext.scope.set('params', newParams);
+    this.globalContext.scope.set(PARAMS_PROPERTY, newParams);
 
     try {
       this.apiContext.setPending(true);
@@ -210,14 +217,14 @@ export default class Interpreter extends EventEmitter {
 
   setGlobalVariable(path: string, value: CustomValue): Interpreter {
     if (this.globalContext != null) {
-      this.globalContext.set(path, value);
+      this.globalContext.set(new CustomString(path), value);
     }
     return this;
   }
 
   getGlobalVariable(path: string): CustomValue {
     if (this.globalContext != null) {
-      this.globalContext.get(path);
+      this.globalContext.get(new CustomString(path));
     }
     return Defaults.Void;
   }

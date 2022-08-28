@@ -5,7 +5,11 @@ import context, { ContextState, ContextType } from '../context';
 import Defaults from '../types/default';
 import { CustomValue } from '../types/generics';
 import CustomMap from '../types/map';
+import CustomString from '../types/string';
 import Operation, { CPSVisit } from './operation';
+
+export const MODULE_PROPERTY = new CustomString('module');
+export const EXPORTS_PROPERTY = new CustomString('exports');
 
 export default class Include extends Operation {
   readonly item: ASTFeatureImportExpression;
@@ -33,16 +37,16 @@ export default class Include extends Operation {
       target: this.target
     });
     const moduleMap = new CustomMap();
-    importCtx.set('module', moduleMap);
+    importCtx.set(MODULE_PROPERTY, moduleMap);
 
     await this.top.handle(importCtx);
 
-    const item = moduleMap.has('exports')
-      ? moduleMap.get('exports')
+    const item = moduleMap.has(EXPORTS_PROPERTY)
+      ? moduleMap.get(EXPORTS_PROPERTY)
       : Defaults.Void;
     const identifier = this.item.name as ASTIdentifier;
 
-    ctx.set(identifier.name, item);
+    ctx.set(new CustomString(identifier.name), item);
 
     return Defaults.Void;
   }

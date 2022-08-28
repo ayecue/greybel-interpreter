@@ -9,10 +9,13 @@ import OperationContext, { FunctionState } from '../context';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
 import { CustomValue } from '../types/generics';
+import CustomString from '../types/string';
 import Path from '../utils/path';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 import Reference from './reference';
+
+export const SELF_PROPERTY = new CustomString('self');
 
 export default class FunctionOperation extends Operation {
   readonly item: ASTFunctionStatement;
@@ -62,10 +65,10 @@ export default class FunctionOperation extends Operation {
       ): Promise<CustomValue> => {
         fnCtx.functionState = new FunctionState();
 
-        fnCtx.set(new Path<string>(['self']), self);
+        fnCtx.set(SELF_PROPERTY, self);
 
         for (const [key, value] of args) {
-          fnCtx.set(new Path<string>([key]), value);
+          fnCtx.set(new CustomString(key), value);
         }
 
         await this.block.handle(fnCtx);

@@ -1,5 +1,6 @@
 import IntrinsicsContainer from '../intrinsics-container';
 import Path from '../utils/path';
+import Defaults from './default';
 import CustomFunction from './function';
 import {
   CustomObject,
@@ -9,11 +10,41 @@ import {
 import CustomNil from './nil';
 import CustomString from './string';
 
+export const CLASS_ID_PROPERTY = new CustomString('classID');
+
+export const getValue = (map: CustomMap, mapKey: CustomValue): CustomValue => {
+  for (const [key, value] of map.value) {
+    if (key.value === mapKey.value) {
+      return value;
+    }
+  }
+  return Defaults.Void;
+};
+
+export const hasValue = (map: CustomMap, mapKey: CustomValue): boolean => {
+  for (const key of map.value.keys()) {
+    if (key.value === mapKey.value) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const setValue = (map: CustomMap, mapKey: CustomValue, mapValue: CustomValue): void => {
+  for (const key of map.value.keys()) {
+    if (key.value === mapKey.value) {
+      map.value.set(key, mapValue);
+      return;
+    }
+  }
+  map.value.set(mapKey, mapValue);
+};
+
 export class CustomMapIterator implements Iterator<CustomValue> {
-  value: Map<string, CustomValue>;
+  value: Map<CustomValue, CustomValue>;
   index: number;
 
-  constructor(value: Map<string, CustomValue>) {
+  constructor(value: Map<CustomValue, CustomValue>) {
     const me = this;
     me.value = value;
     me.index = 0;
@@ -33,12 +64,10 @@ export class CustomMapIterator implements Iterator<CustomValue> {
     const key = keys[me.index++];
 
     return {
-      value: new CustomMap(
-        new Map([
-          ['key', new CustomString(key)],
-          ['value', me.value.get(key)]
-        ])
-      ),
+      value: new CustomMap(new Map<CustomValue, CustomValue>([
+        [new CustomString('key'), key],
+        [new CustomString('value'), me.value.get(key)]
+      ])),
       done: false
     };
   }
@@ -55,19 +84,19 @@ export default class CustomMap extends CustomObject {
     this.intrinsics.add(name, fn);
   }
 
-  readonly value: Map<string, CustomValue>;
+  readonly value: Map<CustomValue, CustomValue>;
   private isInstance: boolean = false;
 
   constructor(
-    value: Map<string, CustomValue> = new Map<string, CustomValue>()
+    value: Map<CustomValue, CustomValue> = new Map<CustomValue, CustomValue>()
   ) {
     super();
-    this.value = new Map<string, CustomValue>(value);
+    this.value = new Map<CustomValue, CustomValue>(value);
   }
 
   getCustomType(): string {
-    if (this.has('classID')) {
-      return this.get('classID').toString();
+    if (hasValue(this, CLASS_ID_PROPERTY)) {
+      return getValue(this, CLASS_ID_PROPERTY).toString();
     }
 
     return 'map';
@@ -103,29 +132,29 @@ export default class CustomMap extends CustomObject {
     return new CustomMapIterator(this.value);
   }
 
-  extend(map: CustomMap | Map<string, CustomValue>): CustomMap {
+  extend(map: CustomMap | Map<CustomValue, CustomValue>): CustomMap {
     if (map instanceof CustomMap) {
       map = map.value;
     }
 
     for (const [key, value] of map) {
-      this.value.set(key, value);
+      setValue(this, key, value);
     }
 
     return this;
   }
 
-  has(path: Path<string> | string): boolean {
-    if (typeof path === 'string') {
-      return this.has(new Path<string>([path]));
+  has(path: Path<CustomValue> | CustomValue): boolean {
+    if (path instanceof CustomValue) {
+      return this.has(new Path<CustomValue>([path]));
     }
 
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
     if (current !== null) {
-      if (this.value.has(current)) {
-        const sub = this.value.get(current);
+      if (hasValue(this, current)) {
+        const sub = getValue(this, current);
 
         if (
           traversalPath.count() > 0 &&
@@ -141,9 +170,9 @@ export default class CustomMap extends CustomObject {
     return false;
   }
 
-  set(path: Path<string> | string, newValue: CustomValue): void {
-    if (typeof path === 'string') {
-      return this.set(new Path<string>([path]), newValue);
+  set(path: Path<CustomValue> | CustomValue, newValue: CustomValue): void {
+    if (path instanceof CustomValue) {
+      return this.set(new Path<CustomValue>([path]), newValue);
     }
 
     const traversalPath = path.clone();
@@ -151,8 +180,8 @@ export default class CustomMap extends CustomObject {
     const current = traversalPath.next();
 
     if (current !== null) {
-      if (this.value.has(current)) {
-        const sub = this.value.get(current);
+      if (hasValue(this, current)) {
+        const sub = getValue(this, current);
 
         if (sub instanceof CustomValueWithIntrinsics) {
           sub.set(traversalPath, newValue);
@@ -163,20 +192,20 @@ export default class CustomMap extends CustomObject {
       throw new Error(`Cannot set path ${path.toString()}.`);
     }
 
-    this.value.set(last, newValue);
+    setValue(this, last, newValue);
   }
 
-  get(path: Path<string> | string): CustomValue {
-    if (typeof path === 'string') {
-      return this.get(new Path<string>([path]));
+  get(path: Path<CustomValue> | CustomValue): CustomValue {
+    if (path instanceof CustomValue) {
+      return this.get(new Path<CustomValue>([path]));
     }
 
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
     if (current !== null) {
-      if (this.value.has(current)) {
-        const sub = this.value.get(current);
+      if (hasValue(this, current)) {
+        const sub = getValue(this, current);
 
         if (traversalPath.count() > 0) {
           if (sub instanceof CustomValueWithIntrinsics) {
@@ -185,8 +214,8 @@ export default class CustomMap extends CustomObject {
         } else if (traversalPath.count() === 0) {
           return sub;
         }
-      } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
-        return CustomMap.getIntrinsics().get(current);
+      } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current.toString())) {
+        return CustomMap.getIntrinsics().get(current.toString());
       }
     }
 

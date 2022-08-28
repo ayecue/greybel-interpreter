@@ -3,6 +3,7 @@ import Path from '../utils/path';
 import Defaults from './default';
 import CustomFunction from './function';
 import { CustomValue, CustomValueWithIntrinsics } from './generics';
+import CustomNumber from './number';
 
 export class CustomStringIterator implements Iterator<CustomValue> {
   value: string;
@@ -105,55 +106,48 @@ export default class CustomString extends CustomValueWithIntrinsics {
     return CustomString.getCharIndex(this, index);
   }
 
-  has(path: Path<string> | string): boolean {
-    if (typeof path === 'string') {
-      return this.has(new Path<string>([path]));
+  has(path: Path<CustomValue> | CustomValue): boolean {
+    if (path instanceof CustomValue) {
+      return this.has(new Path<CustomValue>([path]));
     }
 
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
-    if (current !== null) {
-      const index = parseInt(current);
-
-      if (Number.isNaN(index)) {
-        return false;
-      }
-
+    if (current instanceof CustomNumber) {
+      const index = current.toInt();
       return !!this.value[index];
     }
 
     return false;
   }
 
-  set(_path: Path<string> | string, _newValue: CustomValue) {
+  set(_path: Path<CustomValue> | CustomValue, _newValue: CustomValue) {
     throw new Error('Mutable operations are not allowed on a string.');
   }
 
-  get(path: Path<string> | string): CustomValue {
-    if (typeof path === 'string') {
-      return this.get(new Path<string>([path]));
+  get(path: Path<CustomValue> | CustomValue): CustomValue {
+    if (path instanceof CustomValue) {
+      return this.get(new Path<CustomValue>([path]));
     }
 
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
-    if (current !== null) {
-      let currentIndex = parseInt(current);
-      const isCurrentNumber = !Number.isNaN(currentIndex);
+    if (current instanceof CustomNumber) {
+      const currentIndex = this.getCharIndex(current.toInt());
+      const segment = this.value[currentIndex];
 
-      if (isCurrentNumber) {
-        currentIndex = this.getCharIndex(currentIndex);
+      if (segment) {
+        return new CustomString(segment);
       }
 
-      if (isCurrentNumber) {
-        return new CustomString(this.value[currentIndex].toString());
-      } else if (
-        path.count() === 1 &&
-        CustomString.getIntrinsics().has(current)
-      ) {
-        return CustomString.intrinsics.get(current);
-      }
+      throw new Error(`Index error (string index ${currentIndex} out of range).`);
+    } else if (
+      path.count() === 1 &&
+      CustomString.getIntrinsics().has(current.toString())
+    ) {
+      return CustomString.intrinsics.get(current.toString());
     }
 
     return Defaults.Void;

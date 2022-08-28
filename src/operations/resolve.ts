@@ -57,10 +57,10 @@ export type Segment =
   | OperationSegment;
 
 export class ResolveResult {
-  readonly path: Path<string>;
+  readonly path: Path<CustomValue>;
   readonly handle: CustomValue;
 
-  constructor(path: Path<string>, handle: CustomValue) {
+  constructor(path: Path<CustomValue>, handle: CustomValue) {
     this.path = path;
     this.handle = handle;
   }
@@ -122,7 +122,7 @@ export default class Resolve extends Operation {
   }
 
   async getResult(ctx: OperationContext): Promise<ResolveResult> {
-    let traversedPath = new Path<string>();
+    let traversedPath = new Path<CustomValue>();
     let handle: CustomValue = Defaults.Void;
     const maxIndex = this.path.length;
     const lastIndex = maxIndex - 1;
@@ -136,7 +136,7 @@ export default class Resolve extends Operation {
       } else if (current instanceof IdentifierSegment) {
         const identifierSegment = current as IdentifierSegment;
 
-        traversedPath.add(identifierSegment.value);
+        traversedPath.add(new CustomString(identifierSegment.value));
 
         if (index === lastIndex) {
           break;
@@ -159,12 +159,12 @@ export default class Resolve extends Operation {
           handle = await handle.run(previous || Defaults.Void, []);
         }
 
-        traversedPath = new Path<string>();
+        traversedPath = new Path<CustomValue>();
       } else if (current instanceof IndexSegment) {
         const indexSegment = current as IndexSegment;
         const indexValue = await indexSegment.op.handle(ctx);
 
-        traversedPath.add(indexValue.toString());
+        traversedPath.add(indexValue);
 
         if (index === lastIndex) {
           break;
@@ -181,7 +181,7 @@ export default class Resolve extends Operation {
           handle = ctx.get(traversedPath);
         }
 
-        traversedPath = new Path<string>();
+        traversedPath = new Path<CustomValue>();
       } else if (current instanceof SliceSegment) {
         const sliceSegment = current as SliceSegment;
         const left = await sliceSegment.left.handle(ctx);

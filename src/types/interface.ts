@@ -2,6 +2,7 @@ import Path from '../utils/path';
 import Defaults from './default';
 import CustomFunction from './function';
 import { CustomObject, CustomValue } from './generics';
+import CustomString from './string';
 
 export class CustomInterfaceIterator implements Iterator<CustomValue> {
   next(): IteratorResult<CustomValue> {
@@ -13,13 +14,14 @@ export class CustomInterfaceIterator implements Iterator<CustomValue> {
 }
 
 export default class CustomInterface extends CustomObject {
-  private readonly interfaceFns: Map<string, CustomFunction>;
+  private readonly interfaceFns: Map<CustomValue, CustomFunction>;
   private readonly type: string;
+  readonly value: Object = {};
 
   constructor(type: string) {
     super();
     this.type = type;
-    this.interfaceFns = new Map<string, CustomFunction>();
+    this.interfaceFns = new Map<CustomValue, CustomFunction>();
   }
 
   getCustomType(): string {
@@ -50,9 +52,9 @@ export default class CustomInterface extends CustomObject {
     return new CustomInterfaceIterator();
   }
 
-  has(path: Path<string> | string): boolean {
-    if (typeof path === 'string') {
-      return this.has(new Path<string>([path]));
+  has(path: Path<CustomValue> | CustomValue): boolean {
+    if (path instanceof CustomValue) {
+      return this.has(new Path<CustomValue>([path]));
     }
 
     const traversalPath = path.clone();
@@ -65,13 +67,13 @@ export default class CustomInterface extends CustomObject {
     return false;
   }
 
-  set(_path: Path<string> | string, _newValue: CustomValue) {
+  set(_path: Path<CustomValue> | CustomValue, _newValue: CustomValue) {
     throw new Error('Cannot set property on an interface.');
   }
 
-  get(path: Path<string> | string): CustomValue {
-    if (typeof path === 'string') {
-      return this.get(new Path<string>([path]));
+  get(path: Path<CustomValue> | CustomValue): CustomValue {
+    if (path instanceof CustomValue) {
+      return this.get(new Path<CustomValue>([path]));
     }
 
     if (path.count() === 0) {
@@ -91,7 +93,7 @@ export default class CustomInterface extends CustomObject {
   }
 
   addFunction(name: string, fn: CustomFunction): CustomInterface {
-    this.interfaceFns.set(name, fn);
+    this.interfaceFns.set(new CustomString(name), fn);
     return this;
   }
 }

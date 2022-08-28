@@ -76,13 +76,19 @@ exports[`interpreter default scripts cast.src 1`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "was" => CustomNumber {
+    CustomString {
+      "value": "was",
+    } => CustomNumber {
       "value": 1,
     },
-    "foo" => CustomBoolean {
+    CustomString {
+      "value": "foo",
+    } => CustomBoolean {
       "value": false,
     },
-    "bar" => CustomString {
+    CustomString {
+      "value": "bar",
+    } => CustomString {
       "value": "xxx",
     },
   },
@@ -93,13 +99,19 @@ exports[`interpreter default scripts cast.src 2`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "was" => CustomNumber {
+    CustomString {
+      "value": "was",
+    } => CustomNumber {
       "value": 1,
     },
-    "foo" => CustomBoolean {
+    CustomString {
+      "value": "foo",
+    } => CustomBoolean {
       "value": false,
     },
-    "bar" => CustomString {
+    CustomString {
+      "value": "bar",
+    } => CustomString {
       "value": "xxx",
     },
   },
@@ -140,7 +152,11 @@ CustomBoolean {
 }
 `;
 
-exports[`interpreter default scripts cast.src 7`] = `CustomNil {}`;
+exports[`interpreter default scripts cast.src 7`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
 exports[`interpreter default scripts cast.src 8`] = `
 CustomList {
@@ -162,10 +178,14 @@ exports[`interpreter default scripts cast.src 9`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "foo" => CustomNumber {
+    CustomString {
+      "value": "foo",
+    } => CustomNumber {
       "value": 2,
     },
-    "bar" => CustomNumber {
+    CustomString {
+      "value": "bar",
+    } => CustomNumber {
       "value": 123,
     },
   },
@@ -190,13 +210,29 @@ CustomNumber {
 }
 `;
 
-exports[`interpreter default scripts cast.src 13`] = `CustomNil {}`;
+exports[`interpreter default scripts cast.src 13`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
-exports[`interpreter default scripts cast.src 14`] = `CustomNil {}`;
+exports[`interpreter default scripts cast.src 14`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
-exports[`interpreter default scripts cast.src 15`] = `CustomNil {}`;
+exports[`interpreter default scripts cast.src 15`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
-exports[`interpreter default scripts cast.src 16`] = `CustomNil {}`;
+exports[`interpreter default scripts cast.src 16`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
 exports[`interpreter default scripts cast.src 17`] = `
 CustomNumber {
@@ -462,7 +498,11 @@ CustomString {
 }
 `;
 
-exports[`interpreter default scripts if-shorthand.src 11`] = `CustomNil {}`;
+exports[`interpreter default scripts if-shorthand.src 11`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
 exports[`interpreter default scripts imports.src 1`] = `
 CustomString {
@@ -676,16 +716,24 @@ exports[`interpreter default scripts manipulation.src 1`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "see" => CustomString {
+    CustomString {
+      "value": "see",
+    } => CustomString {
       "value": "124578",
     },
-    "foo" => CustomNumber {
+    CustomString {
+      "value": "foo",
+    } => CustomNumber {
       "value": 123,
     },
-    "bar" => CustomBoolean {
+    CustomString {
+      "value": "bar",
+    } => CustomBoolean {
       "value": true,
     },
-    "lore" => CustomString {
+    CustomString {
+      "value": "lore",
+    } => CustomString {
       "value": "moo",
     },
   },
@@ -715,13 +763,19 @@ exports[`interpreter default scripts manipulation.src 3`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "foo" => CustomNumber {
+    CustomString {
+      "value": "foo",
+    } => CustomNumber {
       "value": 123,
     },
-    "bar" => CustomBoolean {
+    CustomString {
+      "value": "bar",
+    } => CustomBoolean {
       "value": true,
     },
-    "lore" => CustomString {
+    CustomString {
+      "value": "lore",
+    } => CustomString {
       "value": "moo",
     },
   },
@@ -760,10 +814,14 @@ exports[`interpreter default scripts manipulation.src 7`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "bar" => CustomBoolean {
+    CustomString {
+      "value": "bar",
+    } => CustomBoolean {
       "value": true,
     },
-    "lore" => CustomString {
+    CustomString {
+      "value": "lore",
+    } => CustomString {
       "value": "moo",
     },
   },
@@ -787,13 +845,19 @@ exports[`interpreter default scripts manipulation.src 9`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "foo" => CustomNumber {
+    CustomString {
+      "value": "foo",
+    } => CustomNumber {
       "value": 123,
     },
-    "bar" => CustomBoolean {
+    CustomString {
+      "value": "bar",
+    } => CustomBoolean {
       "value": true,
     },
-    "lore" => CustomString {
+    CustomString {
+      "value": "lore",
+    } => CustomString {
       "value": "moo",
     },
   },
@@ -860,7 +924,9 @@ CustomList {
     CustomMap {
       "isInstance": false,
       "value": Map {
-        "another" => CustomString {
+        CustomString {
+          "value": "another",
+        } => CustomString {
           "value": "123",
         },
       },
@@ -887,7 +953,11 @@ CustomString {
 }
 `;
 
-exports[`interpreter default scripts simple-object.src 2`] = `CustomNil {}`;
+exports[`interpreter default scripts simple-object.src 2`] = `
+CustomNil {
+  "value": null,
+}
+`;
 
 exports[`interpreter default scripts slice.src 1`] = `
 CustomList {
@@ -956,13 +1026,19 @@ exports[`interpreter default scripts uglified.src 1`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "B" => CustomMap {
+    CustomString {
+      "value": "B",
+    } => CustomMap {
       "isInstance": false,
       "value": Map {
-        "exports" => CustomMap {
+        CustomString {
+          "value": "exports",
+        } => CustomMap {
           "isInstance": false,
           "value": Map {
-            "bar" => CustomNumber {
+            CustomString {
+              "value": "bar",
+            } => CustomNumber {
               "value": 123,
             },
           },
@@ -983,10 +1059,14 @@ exports[`interpreter default scripts uglified.src 3`] = `
 CustomMap {
   "isInstance": false,
   "value": Map {
-    "exports" => CustomMap {
+    CustomString {
+      "value": "exports",
+    } => CustomMap {
       "isInstance": false,
       "value": Map {
-        "bar" => CustomNumber {
+        CustomString {
+          "value": "bar",
+        } => CustomNumber {
           "value": 123,
         },
       },
