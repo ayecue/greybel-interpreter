@@ -133,7 +133,7 @@ CustomMap.getIntrinsics().add(
   'hasIndex',
   CustomFunction.createExternalWithSelf('hasIndex', (fnCtx, self, args) => {
     const value = args.get('value');
-    const result = self.value.has(value.toString());
+    const result = self.has(value);
     return new CustomBoolean(result);
   }).addArgument('value')
 );
@@ -172,7 +172,8 @@ describe('interpreter', function () {
           await interpreter.run();
           success = true;
         } catch (e) {
-          console.log(`${filepath} failed with: `, e);
+          const opc = interpreter.apiContext.getLastActive() || interpreter.globalContext;
+          console.log(`Line: ${opc.stackItem?.start.line}`, `${filepath} failed with: `, e);
         }
 
         expect(success).toEqual(true);

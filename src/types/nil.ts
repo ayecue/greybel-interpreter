@@ -1,6 +1,8 @@
 import { CustomValue } from './generics';
 
 export default class CustomNil extends CustomValue {
+  value: null = null;
+
   getCustomType(): string {
     return 'null';
   }

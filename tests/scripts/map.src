@@ -1,0 +1,25 @@
+test = {
+    {"myTest": 0, 1: 2}: true
+}
+test2 = {
+    [12, 14]: true
+}
+test3 = {
+    test: 234
+}
+test4 = {
+    true: "foo"
+}
+test5 = {
+    123: "bar"
+}
+
+print(test)
+print(test2)
+print(test3)
+print(test4)
+print(test5)
+
+print(test3[test])
+print(test4[true])
+print(test5[123])

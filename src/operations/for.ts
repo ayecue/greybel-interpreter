@@ -1,9 +1,10 @@
-import { ASTForGenericStatement } from 'greyscript-core';
+import { ASTForGenericStatement, ASTIdentifier } from 'greyscript-core';
 
 import context, { ContextState, ContextType, LoopState } from '../context';
 import Defaults from '../types/default';
 import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
 import CustomNumber from '../types/number';
+import CustomString from '../types/string';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 import Resolve from './resolve';
@@ -11,7 +12,7 @@ import Resolve from './resolve';
 export default class For extends Operation {
   readonly item: ASTForGenericStatement;
   block: Block;
-  variable: Resolve;
+  variable: ASTIdentifier;
   iterator: Operation;
 
   constructor(item: ASTForGenericStatement, target?: string) {
@@ -24,8 +25,7 @@ export default class For extends Operation {
       this.item.body.map((child) => visit(child))
     );
     this.block = new Block(stack);
-    this.variable = new Resolve(this.item.variable);
-    await this.variable.build(visit);
+    this.variable = this.item.variable as ASTIdentifier;
     this.iterator = await visit(this.item.iterator);
     return this;
   }
@@ -35,7 +35,7 @@ export default class For extends Operation {
       type: ContextType.Loop,
       state: ContextState.Temporary
     });
-    const resolveResult = await this.variable.getResult(ctx);
+    const identifier = this.variable.name;
     const iteratorValue = (await this.iterator.handle(
       ctx
     )) as CustomValueWithIntrinsics;
@@ -46,6 +46,8 @@ export default class For extends Operation {
 
     return new Promise((resolve, reject) => {
       const iterator = iteratorValue[Symbol.iterator]();
+      const idxIdentifier = new CustomString(`__${identifier}_idx`);
+      const varIdentifier = new CustomString(identifier);
       let iteratorResult = iterator.next();
 
       const iteration = async (): Promise<void> => {
@@ -59,8 +61,8 @@ export default class For extends Operation {
 
           loopState.isContinue = false;
 
-          forCtx.set(`__${resolveResult.path}_idx`, new CustomNumber(index++));
-          forCtx.set(resolveResult.path, current);
+          forCtx.set(idxIdentifier, new CustomNumber(index++));
+          forCtx.set(varIdentifier, current);
           await this.block.handle(forCtx);
 
           if (loopState.isBreak || ctx.isExit()) {

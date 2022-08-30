@@ -43,7 +43,7 @@ export class Argument {
 export default class CustomFunction extends CustomValue {
   readonly scope?: OperationContext;
   readonly name: string;
-  readonly callback: Callback;
+  readonly value: Callback;
   private injectSelf: boolean;
   readonly argumentDefs: Array<Argument>;
 
@@ -71,7 +71,7 @@ export default class CustomFunction extends CustomValue {
     super();
     this.scope = scope;
     this.name = name;
-    this.callback = callback;
+    this.value = callback;
     this.injectSelf = injectSelf;
     this.argumentDefs = [];
   }
@@ -90,7 +90,7 @@ export default class CustomFunction extends CustomValue {
   }
 
   fork(): CustomValue {
-    return new CustomFunction(this.scope, this.name, this.callback);
+    return new CustomFunction(this.scope, this.name, this.value);
   }
 
   getCustomType(): string {
@@ -138,6 +138,6 @@ export default class CustomFunction extends CustomValue {
       );
     }
 
-    return this.callback(fnCtx || callContext, self, argMap);
+    return this.value(fnCtx || callContext, self, argMap);
   }
 }

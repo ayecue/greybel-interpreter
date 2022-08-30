@@ -1,6 +1,7 @@
 import Path from '../utils/path';
 
 export abstract class CustomValue {
+  abstract value: any;
   abstract getCustomType(): string;
   abstract toNumber(): number;
   abstract toInt(): number;
@@ -10,9 +11,9 @@ export abstract class CustomValue {
 }
 
 export abstract class CustomValueWithIntrinsics extends CustomValue {
-  abstract has(path: Path<string> | string): boolean;
-  abstract set(path: Path<string> | string, value: CustomValue): void;
-  abstract get(path: Path<string> | string): CustomValue;
+  abstract has(path: Path<CustomValue> | CustomValue): boolean;
+  abstract set(path: Path<CustomValue> | CustomValue, value: CustomValue): void;
+  abstract get(path: Path<CustomValue> | CustomValue): CustomValue;
   abstract [Symbol.iterator](): Iterator<CustomValue>;
 }
 
