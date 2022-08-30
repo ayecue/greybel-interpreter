@@ -2,7 +2,6 @@ import Path from '../utils/path';
 import Defaults from './default';
 import CustomFunction from './function';
 import { CustomObject, CustomValue } from './generics';
-import CustomString from './string';
 
 export class CustomInterfaceIterator implements Iterator<CustomValue> {
   next(): IteratorResult<CustomValue> {
@@ -14,14 +13,14 @@ export class CustomInterfaceIterator implements Iterator<CustomValue> {
 }
 
 export default class CustomInterface extends CustomObject {
-  private readonly interfaceFns: Map<CustomValue, CustomFunction>;
+  private readonly interfaceFns: Map<string, CustomFunction>;
   private readonly type: string;
   readonly value: Object = {};
 
   constructor(type: string) {
     super();
     this.type = type;
-    this.interfaceFns = new Map<CustomValue, CustomFunction>();
+    this.interfaceFns = new Map<string, CustomFunction>();
   }
 
   getCustomType(): string {
@@ -61,7 +60,7 @@ export default class CustomInterface extends CustomObject {
     const current = traversalPath.next();
 
     if (current !== null) {
-      return this.interfaceFns.has(current);
+      return this.interfaceFns.has(current.toString());
     }
 
     return false;
@@ -84,8 +83,8 @@ export default class CustomInterface extends CustomObject {
     const current = traversalPath.next();
 
     if (current !== null) {
-      if (this.interfaceFns.has(current)) {
-        return this.interfaceFns.get(current);
+      if (this.interfaceFns.has(current.toString())) {
+        return this.interfaceFns.get(current.toString());
       }
     }
 
@@ -93,7 +92,7 @@ export default class CustomInterface extends CustomObject {
   }
 
   addFunction(name: string, fn: CustomFunction): CustomInterface {
-    this.interfaceFns.set(new CustomString(name), fn);
+    this.interfaceFns.set(name, fn);
     return this;
   }
 }
