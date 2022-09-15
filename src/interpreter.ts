@@ -117,8 +117,6 @@ export default class Interpreter extends EventEmitter {
       return this.cps.visit(chunk);
     } catch (err: any) {
       this.handler.errorHandler.raise(err);
-    } finally {
-      this.apiContext.setPending(false);
     }
 
     return Promise.resolve(new Noop());
