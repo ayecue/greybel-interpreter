@@ -10,7 +10,6 @@ import Defaults from '../types/default';
 import CustomFunction from '../types/function';
 import { CustomValue } from '../types/generics';
 import CustomString from '../types/string';
-import Path from '../utils/path';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 import Reference from './reference';

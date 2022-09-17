@@ -30,7 +30,11 @@ export const hasValue = (map: CustomMap, mapKey: CustomValue): boolean => {
   return false;
 };
 
-export const setValue = (map: CustomMap, mapKey: CustomValue, mapValue: CustomValue): void => {
+export const setValue = (
+  map: CustomMap,
+  mapKey: CustomValue,
+  mapValue: CustomValue
+): void => {
   for (const key of map.value.keys()) {
     if (key.value === mapKey.value) {
       map.value.set(key, mapValue);
@@ -64,10 +68,12 @@ export class CustomMapIterator implements Iterator<CustomValue> {
     const key = keys[me.index++];
 
     return {
-      value: new CustomMap(new Map<CustomValue, CustomValue>([
-        [new CustomString('key'), key],
-        [new CustomString('value'), me.value.get(key)]
-      ])),
+      value: new CustomMap(
+        new Map<CustomValue, CustomValue>([
+          [new CustomString('key'), key],
+          [new CustomString('value'), me.value.get(key)]
+        ])
+      ),
       done: false
     };
   }
@@ -214,7 +220,10 @@ export default class CustomMap extends CustomObject {
         } else if (traversalPath.count() === 0) {
           return sub;
         }
-      } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current.toString())) {
+      } else if (
+        path.count() === 1 &&
+        CustomMap.getIntrinsics().has(current.toString())
+      ) {
         return CustomMap.getIntrinsics().get(current.toString());
       }
     }

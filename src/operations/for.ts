@@ -1,3 +1,4 @@
+import asap from 'asap';
 import { ASTForGenericStatement, ASTIdentifier } from 'greyscript-core';
 
 import context, { ContextState, ContextType, LoopState } from '../context';
@@ -7,7 +8,6 @@ import CustomNumber from '../types/number';
 import CustomString from '../types/string';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
-import Resolve from './resolve';
 
 export default class For extends Operation {
   readonly item: ASTForGenericStatement;
@@ -71,7 +71,7 @@ export default class For extends Operation {
           }
 
           iteratorResult = iterator.next();
-          process.nextTick(iteration);
+          asap(iteration);
         } catch (err: any) {
           reject(err);
         }

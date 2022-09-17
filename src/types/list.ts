@@ -148,9 +148,7 @@ export default class CustomList extends CustomObject {
       const currentIndex = this.getItemIndex(current.toInt());
       const sub = this.value[currentIndex];
 
-      if (
-        sub
-      ) {
+      if (sub) {
         if (
           traversalPath.count() > 0 &&
           sub instanceof CustomValueWithIntrinsics
@@ -164,7 +162,7 @@ export default class CustomList extends CustomObject {
     }
 
     if (last instanceof CustomNumber) {
-      let lastIndex = this.getItemIndex(last.toInt());
+      const lastIndex = this.getItemIndex(last.toInt());
 
       if (lastIndex >= 0 && lastIndex < this.value.length) {
         this.value[lastIndex] = newValue;
@@ -188,10 +186,7 @@ export default class CustomList extends CustomObject {
     if (current instanceof CustomNumber) {
       const currentIndex = this.getItemIndex(current.toInt());
 
-      if (
-        currentIndex >= 0 &&
-        currentIndex < this.value.length
-      ) {
+      if (currentIndex >= 0 && currentIndex < this.value.length) {
         const sub = this.value[currentIndex];
 
         if (traversalPath.count() > 0) {
@@ -203,10 +198,11 @@ export default class CustomList extends CustomObject {
         }
       }
 
-      throw new Error(
-        `Index error (list index ${currentIndex} out of range).`
-      );
-    } else if (path.count() === 1 && CustomList.getIntrinsics().has(current.toString())) {
+      throw new Error(`Index error (list index ${currentIndex} out of range).`);
+    } else if (
+      path.count() === 1 &&
+      CustomList.getIntrinsics().has(current.toString())
+    ) {
       return CustomList.getIntrinsics().get(current.toString());
     }
 

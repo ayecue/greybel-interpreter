@@ -1,3 +1,4 @@
+import asap from 'asap';
 import { ASTWhileStatement } from 'greyscript-core';
 
 import context, { ContextState, ContextType, LoopState } from '../context';
@@ -52,7 +53,7 @@ export default class While extends Operation {
             return;
           }
 
-          process.nextTick(iteration);
+          asap(iteration);
         } catch (err: any) {
           reject(err);
         }

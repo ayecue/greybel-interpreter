@@ -142,7 +142,9 @@ export default class CustomString extends CustomValueWithIntrinsics {
         return new CustomString(segment);
       }
 
-      throw new Error(`Index error (string index ${currentIndex} out of range).`);
+      throw new Error(
+        `Index error (string index ${currentIndex} out of range).`
+      );
     } else if (
       path.count() === 1 &&
       CustomString.getIntrinsics().has(current.toString())

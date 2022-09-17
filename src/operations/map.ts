@@ -18,7 +18,10 @@ export default class MapOperation extends Operation {
     this.fields = new Map<Operation, Operation>();
     const defers = this.item.fields.map(async (child) => {
       const mapKeyString = child as ASTMapKeyString;
-      this.fields.set(await visit(mapKeyString.key), await visit(mapKeyString.value));
+      this.fields.set(
+        await visit(mapKeyString.key),
+        await visit(mapKeyString.value)
+      );
     });
     await Promise.all(defers);
     return this;

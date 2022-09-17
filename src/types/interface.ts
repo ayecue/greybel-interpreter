@@ -51,7 +51,7 @@ export default class CustomInterface extends CustomObject {
     return new CustomInterfaceIterator();
   }
 
-  has(path: Path<CustomValue> | CustomValue): boolean {
+  has(path: Path<CustomValue> | CustomValue): boolean {
     if (path instanceof CustomValue) {
       return this.has(new Path<CustomValue>([path]));
     }
@@ -66,7 +66,7 @@ export default class CustomInterface extends CustomObject {
     return false;
   }
 
-  set(_path: Path<CustomValue> | CustomValue, _newValue: CustomValue) {
+  set(_path: Path<CustomValue> | CustomValue, _newValue: CustomValue) {
     throw new Error('Cannot set property on an interface.');
   }
 
