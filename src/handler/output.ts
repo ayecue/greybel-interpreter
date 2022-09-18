@@ -1,7 +1,7 @@
 export abstract class OutputHandler {
   abstract print(message: string): void;
   abstract progress(timeout: number): Promise<void>;
-  abstract waitForInput(): Promise<string>;
+  abstract waitForInput(isPassword: boolean): Promise<string>;
   abstract waitForKeyPress(): Promise<number>;
 }
 
@@ -16,7 +16,7 @@ export class DefaultOutputHandler extends OutputHandler {
     });
   }
 
-  waitForInput(): Promise<string> {
+  waitForInput(_isPassword: boolean): Promise<string> {
     return Promise.resolve('test');
   }
 
