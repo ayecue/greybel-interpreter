@@ -3,6 +3,7 @@ export abstract class OutputHandler {
   abstract progress(timeout: number): Promise<void>;
   abstract waitForInput(isPassword: boolean): Promise<string>;
   abstract waitForKeyPress(): Promise<number>;
+  abstract clear(): void;
 }
 
 export class DefaultOutputHandler extends OutputHandler {
@@ -22,5 +23,9 @@ export class DefaultOutputHandler extends OutputHandler {
 
   waitForKeyPress(): Promise<number> {
     return Promise.resolve(13);
+  }
+
+  clear() {
+    console.clear();
   }
 }
