@@ -1,8 +1,13 @@
+export interface KeyEvent {
+  keyCode: number;
+  code: string;
+}
+
 export abstract class OutputHandler {
   abstract print(message: string): void;
   abstract progress(timeout: number): Promise<void>;
   abstract waitForInput(isPassword: boolean): Promise<string>;
-  abstract waitForKeyPress(): Promise<number>;
+  abstract waitForKeyPress(): Promise<KeyEvent>;
   abstract clear(): void;
 }
 
@@ -21,8 +26,11 @@ export class DefaultOutputHandler extends OutputHandler {
     return Promise.resolve('test');
   }
 
-  waitForKeyPress(): Promise<number> {
-    return Promise.resolve(13);
+  waitForKeyPress(): Promise<KeyEvent> {
+    return Promise.resolve({
+      keyCode: 13,
+      code: 'Enter'
+    });
   }
 
   clear() {

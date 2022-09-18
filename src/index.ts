@@ -12,7 +12,7 @@ export {
 } from './context';
 export { default as CPS, CPSContext } from './cps';
 export { DefaultErrorHandler, ErrorHandler } from './handler/error';
-export { DefaultOutputHandler, OutputHandler } from './handler/output';
+export { DefaultOutputHandler, OutputHandler, KeyEvent } from './handler/output';
 export { DefaultResourceHandler, ResourceHandler } from './handler/resource';
 export { default as HandlerContainer } from './handler-container';
 export { default as Interpreter, InterpreterOptions } from './interpreter';
