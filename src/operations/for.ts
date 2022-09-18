@@ -1,4 +1,3 @@
-import asap from 'asap';
 import { ASTForGenericStatement, ASTIdentifier } from 'greyscript-core';
 
 import context, { ContextState, ContextType, LoopState } from '../context';
@@ -71,7 +70,7 @@ export default class For extends Operation {
           }
 
           iteratorResult = iterator.next();
-          asap(iteration);
+          process.nextTick(iteration);
         } catch (err: any) {
           reject(err);
         }
