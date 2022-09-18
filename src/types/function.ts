@@ -117,7 +117,7 @@ export default class CustomFunction extends CustomValue {
   async run(
     self: CustomValue,
     args: Array<CustomValue>,
-    callContext?: OperationContext
+    callContext: OperationContext
   ): Promise<CustomValue> {
     const fnCtx = this.scope?.fork({
       type: ContextType.Function,

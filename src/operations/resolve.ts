@@ -156,7 +156,7 @@ export default class Resolve extends Operation {
         }
 
         if (handle instanceof CustomFunction) {
-          handle = await handle.run(previous || Defaults.Void, []);
+          handle = await handle.run(previous || Defaults.Void, [], ctx);
         }
 
         traversedPath = new Path<CustomValue>();
@@ -212,7 +212,7 @@ export default class Resolve extends Operation {
     if (result.handle !== Defaults.Void) {
       if (result.path.count() === 0) {
         if (autoCall && result.handle instanceof CustomFunction) {
-          return result.handle.run(Defaults.Void, []);
+          return result.handle.run(Defaults.Void, [], ctx);
         }
 
         return result.handle;
@@ -227,7 +227,7 @@ export default class Resolve extends Operation {
         // support index bug in greyscript
         !(this.last instanceof IndexSegment)
       ) {
-        return child.run(customValueCtx, []);
+        return child.run(customValueCtx, [], ctx);
       }
 
       return child;
@@ -236,7 +236,7 @@ export default class Resolve extends Operation {
     const handle = ctx.get(result.path);
 
     if (autoCall && handle instanceof CustomFunction) {
-      return handle.run(Defaults.Void, []);
+      return handle.run(Defaults.Void, [], ctx);
     }
 
     return handle;
