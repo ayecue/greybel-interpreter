@@ -8,7 +8,6 @@ import { CustomValue } from './types/generics';
 import CustomMap from './types/map';
 import CustomNil from './types/nil';
 import Path from './utils/path';
-import asap from 'asap';
 
 export enum ContextType {
   Api,
@@ -104,7 +103,7 @@ export class Debugger {
           this.nextStep = false;
           resolve();
         } else {
-          asap(check);
+          setTimeout(check);
         }
       };
 
@@ -287,7 +286,7 @@ export default class OperationContext {
             this.processState.isExit = false;
             resolve(this);
           } else {
-            asap(check);
+            setTimeout(check);
           }
         };
 
