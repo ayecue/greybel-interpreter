@@ -86,3 +86,4 @@ export { default as CustomNil } from './types/nil';
 export { default as CustomNumber } from './types/number';
 export { default as CustomString, CustomStringIterator } from './types/string';
 export { default as Path } from './utils/path';
+export { default as deepEqual } from './utils/deep-equal';

@@ -10,11 +10,13 @@ import {
 import CustomNil from './nil';
 import CustomString from './string';
 
+import deepEqual from '../utils/deep-equal';
+
 export const CLASS_ID_PROPERTY = new CustomString('classID');
 
 export const getValue = (map: CustomMap, mapKey: CustomValue): CustomValue => {
   for (const [key, value] of map.value) {
-    if (key.value === mapKey.value) {
+    if (deepEqual(key, mapKey)) {
       return value;
     }
   }
@@ -23,7 +25,7 @@ export const getValue = (map: CustomMap, mapKey: CustomValue): CustomValue => {
 
 export const hasValue = (map: CustomMap, mapKey: CustomValue): boolean => {
   for (const key of map.value.keys()) {
-    if (key.value === mapKey.value) {
+    if (deepEqual(key, mapKey)) {
       return true;
     }
   }
@@ -36,7 +38,7 @@ export const setValue = (
   mapValue: CustomValue
 ): void => {
   for (const key of map.value.keys()) {
-    if (key.value === mapKey.value) {
+    if (deepEqual(key, mapKey)) {
       map.value.set(key, mapValue);
       return;
     }
