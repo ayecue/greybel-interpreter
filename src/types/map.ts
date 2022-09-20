@@ -15,7 +15,7 @@ import deepEqual from '../utils/deep-equal';
 export const CLASS_ID_PROPERTY = new CustomString('classID');
 
 export const getValue = (map: CustomMap, mapKey: CustomValue): CustomValue => {
-  for (const [key, value] of map.value) {
+  for (const [key, value] of map.value.entries()) {
     if (deepEqual(key, mapKey)) {
       return value;
     }

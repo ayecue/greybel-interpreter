@@ -1,0 +1,23 @@
+
+a = [0,0,0,1]
+b = [0,0,0,1]
+c = [0,0,1,0]
+print(a == b)
+print(a == c)
+
+key = [0,0,0,1]
+test = {[0,0,0,1]:"test"}
+print(test[[0,0,0,1]])
+
+far = {"was":1,"second":2}
+print(far == {"was":1,"second":2})
+print(far == {"second":2,"was":1})
+print(far == {"second":2,"was":1,"xxx":2})
+
+key = {"was":1,"second":2}
+bar = {key:"test"}
+print(bar[{"second":2,"was":1}])
+
+foo = {"was":1,"second":2}
+foo[foo] = foo
+print(foo[foo])
