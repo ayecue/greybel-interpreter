@@ -10,6 +10,7 @@ import CustomMap from '../types/map';
 import CustomNil from '../types/nil';
 import CustomNumber from '../types/number';
 import CustomString from '../types/string';
+import deepEqual from '../utils/deep-equal';
 import Operation, { CPSVisit } from './operation';
 
 export interface ProcessorHandlerFunction {
@@ -83,7 +84,7 @@ export const ListProcessorHandler: ProcessorHandler = {
   [Operator.GreaterThanOrEqual]: (left: CustomList, right: CustomList) =>
     new CustomBoolean(left.value.length >= right.value.length),
   [Operator.Equal]: (left: CustomList, right: CustomList) =>
-    new CustomBoolean(left.value === right.value),
+    new CustomBoolean(deepEqual(left, right)),
   [Operator.LessThanOrEqual]: (left: CustomList, right: CustomList) =>
     new CustomBoolean(left.value.length <= right.value.length),
   [Operator.NotEqual]: (left: CustomList, right: CustomList) =>
@@ -100,7 +101,7 @@ export const MapProcessorHandler: ProcessorHandler = {
   [Operator.GreaterThanOrEqual]: (left: CustomMap, right: CustomMap) =>
     new CustomBoolean(left.value.size >= right.value.size),
   [Operator.Equal]: (left: CustomMap, right: CustomMap) =>
-    new CustomBoolean(left.value === right.value),
+    new CustomBoolean(deepEqual(left, right)),
   [Operator.LessThanOrEqual]: (left: CustomMap, right: CustomMap) =>
     new CustomBoolean(left.value.size <= right.value.size),
   [Operator.NotEqual]: (left: CustomMap, right: CustomMap) =>

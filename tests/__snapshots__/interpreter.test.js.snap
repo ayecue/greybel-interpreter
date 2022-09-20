@@ -252,6 +252,67 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts deep-equal.src 1`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 2`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 3`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 4`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 5`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 6`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 7`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 8`] = `
+CustomMap {
+  "isInstance": false,
+  "value": Map {
+    CustomString {
+      "value": "was",
+    } => CustomNumber {
+      "value": 1,
+    },
+    CustomString {
+      "value": "second",
+    } => CustomNumber {
+      "value": 2,
+    },
+    [Circular] => [Circular],
+  },
+}
+`;
+
 exports[`interpreter default scripts default-args.src 1`] = `
 CustomNumber {
   "value": 0,
