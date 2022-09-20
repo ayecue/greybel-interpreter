@@ -1,8 +1,4 @@
-'use strict';
-
 import { CustomObject, CustomValue } from '../types/generics';
-import CustomList from '../types/list';
-import CustomMap from '../types/map';
 
 function equalInner(a: CustomValue, b: CustomValue, maxDepth: number, depth: number = 0) {
   if (maxDepth <= depth) return a === b;
@@ -11,14 +7,14 @@ function equalInner(a: CustomValue, b: CustomValue, maxDepth: number, depth: num
   if (a && b && a instanceof CustomObject && b instanceof CustomObject) {
     if (a.constructor !== b.constructor) return false;
 
-    if (a instanceof CustomList && b instanceof CustomList) {
+    if (Array.isArray(a.value)) {
       const length = a.value.length;
       if (length !== b.value.length) return false;
       for (let i = length; i-- !== 0; ) if (!equalInner(a.value[i], b.value[i], maxDepth, depth + 1)) return false;
       return true;
     }
 
-    if (a instanceof CustomMap && b instanceof CustomMap) {
+    if (a.value instanceof Map) {
       if (a.value.size !== b.value.size) return false;
       for (const i of a.value.keys()) if (!b.has(i) || !equalInner(a.get(i), b.get(i), maxDepth, depth + 1)) return false;
       return true;
