@@ -75,6 +75,7 @@ CustomBoolean {
 exports[`interpreter default scripts cast.src 1`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "was",
@@ -98,6 +99,7 @@ CustomMap {
 exports[`interpreter default scripts cast.src 2`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "was",
@@ -177,6 +179,7 @@ CustomList {
 exports[`interpreter default scripts cast.src 9`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "foo",
@@ -297,6 +300,7 @@ CustomString {
 exports[`interpreter default scripts deep-equal.src 8`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "was",
@@ -788,6 +792,7 @@ CustomNumber {
 exports[`interpreter default scripts manipulation.src 1`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "see",
@@ -835,6 +840,7 @@ CustomList {
 exports[`interpreter default scripts manipulation.src 3`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "foo",
@@ -886,6 +892,7 @@ CustomString {
 exports[`interpreter default scripts manipulation.src 7`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "bar",
@@ -917,6 +924,7 @@ CustomList {
 exports[`interpreter default scripts manipulation.src 9`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "foo",
@@ -956,9 +964,11 @@ CustomList {
 exports[`interpreter default scripts map.src 1`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomMap {
       "isInstance": false,
+      "isa": Map {},
       "value": Map {
         CustomString {
           "value": "myTest",
@@ -981,6 +991,7 @@ CustomMap {
 exports[`interpreter default scripts map.src 2`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomList {
       "value": Array [
@@ -1001,12 +1012,15 @@ CustomMap {
 exports[`interpreter default scripts map.src 3`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomMap {
       "isInstance": false,
+      "isa": Map {},
       "value": Map {
         CustomMap {
           "isInstance": false,
+          "isa": Map {},
           "value": Map {
             CustomString {
               "value": "myTest",
@@ -1033,6 +1047,7 @@ CustomMap {
 exports[`interpreter default scripts map.src 4`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomBoolean {
       "value": true,
@@ -1046,6 +1061,7 @@ CustomMap {
 exports[`interpreter default scripts map.src 5`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomNumber {
       "value": 123,
@@ -1117,6 +1133,7 @@ CustomList {
   "value": Array [
     CustomMap {
       "isInstance": false,
+      "isa": Map {},
       "value": Map {
         CustomString {
           "value": "another",
@@ -1219,16 +1236,19 @@ CustomString {
 exports[`interpreter default scripts uglified.src 1`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "B",
     } => CustomMap {
       "isInstance": false,
+      "isa": Map {},
       "value": Map {
         CustomString {
           "value": "exports",
         } => CustomMap {
           "isInstance": false,
+          "isa": Map {},
           "value": Map {
             CustomString {
               "value": "bar",
@@ -1252,11 +1272,13 @@ CustomString {
 exports[`interpreter default scripts uglified.src 3`] = `
 CustomMap {
   "isInstance": false,
+  "isa": Map {},
   "value": Map {
     CustomString {
       "value": "exports",
     } => CustomMap {
       "isInstance": false,
+      "isa": Map {},
       "value": Map {
         CustomString {
           "value": "bar",

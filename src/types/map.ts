@@ -13,9 +13,10 @@ import CustomString from './string';
 import deepEqual from '../utils/deep-equal';
 
 export const CLASS_ID_PROPERTY = new CustomString('classID');
+export const ISA_PROPERTY = new CustomString('classID');
 
-export const getValue = (map: CustomMap, mapKey: CustomValue): CustomValue => {
-  for (const [key, value] of map.value.entries()) {
+export const getValue = (map: Map<CustomValue, CustomValue>, mapKey: CustomValue): CustomValue => {
+  for (const [key, value] of map.entries()) {
     if (deepEqual(key, mapKey)) {
       return value;
     }
@@ -23,8 +24,8 @@ export const getValue = (map: CustomMap, mapKey: CustomValue): CustomValue => {
   return Defaults.Void;
 };
 
-export const hasValue = (map: CustomMap, mapKey: CustomValue): boolean => {
-  for (const key of map.value.keys()) {
+export const hasValue = (map: Map<CustomValue, CustomValue>, mapKey: CustomValue): boolean => {
+  for (const key of map.keys()) {
     if (deepEqual(key, mapKey)) {
       return true;
     }
@@ -33,17 +34,17 @@ export const hasValue = (map: CustomMap, mapKey: CustomValue): boolean => {
 };
 
 export const setValue = (
-  map: CustomMap,
+  map: Map<CustomValue, CustomValue>,
   mapKey: CustomValue,
   mapValue: CustomValue
 ): void => {
-  for (const key of map.value.keys()) {
+  for (const key of map.keys()) {
     if (deepEqual(key, mapKey)) {
-      map.value.set(key, mapValue);
+      map.set(key, mapValue);
       return;
     }
   }
-  map.value.set(mapKey, mapValue);
+  map.set(mapKey, mapValue);
 };
 
 export class CustomMapIterator implements Iterator<CustomValue> {
@@ -93,31 +94,38 @@ export default class CustomMap extends CustomObject {
   }
 
   readonly value: Map<CustomValue, CustomValue>;
+  readonly isa: Map<CustomValue, CustomValue>;
   private isInstance: boolean = false;
 
   constructor(
-    value: Map<CustomValue, CustomValue> = new Map<CustomValue, CustomValue>()
+    value: Map<CustomValue, CustomValue> = new Map<CustomValue, CustomValue>(),
+    isa: Map<CustomValue, CustomValue> = new Map()
   ) {
     super();
     this.value = new Map<CustomValue, CustomValue>(value);
+    this.isa = isa;
   }
 
   getCustomType(): string {
-    if (hasValue(this, CLASS_ID_PROPERTY)) {
-      return getValue(this, CLASS_ID_PROPERTY).toString();
+    if (hasValue(this.value, CLASS_ID_PROPERTY)) {
+      return getValue(this.value, CLASS_ID_PROPERTY).toString();
     }
 
     return 'map';
   }
 
   toString(): string {
-    const values = [];
+    const json: { [key: string]: any } = { [ISA_PROPERTY.toString()]: {} };
 
-    for (const [key, value] of this.value) {
-      values.push(`${key}: ${value.toString()}`);
+    for (const [key, value] of this.value.entries()) {
+      json.__isa[key.toString()] = value.toString();
     }
 
-    return `{ ${values.join(', ')} }`;
+    for (const [key, value] of this.value.entries()) {
+      json[key.toString()] = value.toString();
+    }
+
+    return JSON.stringify(json, null, 4);
   }
 
   fork(): CustomMap {
@@ -146,7 +154,7 @@ export default class CustomMap extends CustomObject {
     }
 
     for (const [key, value] of map) {
-      setValue(this, key, value);
+      setValue(this.value, key, value);
     }
 
     return this;
@@ -161,8 +169,19 @@ export default class CustomMap extends CustomObject {
     const current = traversalPath.next();
 
     if (current !== null) {
-      if (hasValue(this, current)) {
-        const sub = getValue(this, current);
+      if (hasValue(this.value, current)) {
+        const sub = getValue(this.value, current);
+
+        if (
+          traversalPath.count() > 0 &&
+          sub instanceof CustomValueWithIntrinsics
+        ) {
+          return sub.has(traversalPath);
+        }
+
+        return traversalPath.count() === 0;
+      } else if (hasValue(this.isa, current)) {
+        const sub = getValue(this.isa, current);
 
         if (
           traversalPath.count() > 0 &&
@@ -188,8 +207,8 @@ export default class CustomMap extends CustomObject {
     const current = traversalPath.next();
 
     if (current !== null) {
-      if (hasValue(this, current)) {
-        const sub = getValue(this, current);
+      if (hasValue(this.value, current)) {
+        const sub = getValue(this.value, current);
 
         if (sub instanceof CustomValueWithIntrinsics) {
           sub.set(traversalPath, newValue);
@@ -200,7 +219,7 @@ export default class CustomMap extends CustomObject {
       throw new Error(`Cannot set path ${path.toString()}.`);
     }
 
-    setValue(this, last, newValue);
+    setValue(this.value, last, newValue);
   }
 
   get(path: Path<CustomValue> | CustomValue): CustomValue {
@@ -212,8 +231,8 @@ export default class CustomMap extends CustomObject {
     const current = traversalPath.next();
 
     if (current !== null) {
-      if (hasValue(this, current)) {
-        const sub = getValue(this, current);
+      if (hasValue(this.value, current)) {
+        const sub = getValue(this.value, current);
 
         if (traversalPath.count() > 0) {
           if (sub instanceof CustomValueWithIntrinsics) {
@@ -221,6 +240,36 @@ export default class CustomMap extends CustomObject {
           }
         } else if (traversalPath.count() === 0) {
           return sub;
+        }
+      } else if (hasValue(this.isa, current)) {
+        const sub = getValue(this.isa, current);
+
+        if (traversalPath.count() > 0) {
+          if (sub instanceof CustomValueWithIntrinsics) {
+            return sub.get(traversalPath);
+          }
+        } else if (traversalPath.count() === 0) {
+          return sub;
+        }
+      } else if (
+        current.toString() === ISA_PROPERTY.toString()
+      ) {
+        if (path.count() === 0) {
+          return new CustomMap(this.isa);
+        } else if (path.count() === 1) {
+          const ahead = traversalPath.next();
+
+          if (hasValue(this.isa, ahead)) {
+            const sub = getValue(this.isa, ahead);
+    
+            if (traversalPath.count() > 0) {
+              if (sub instanceof CustomValueWithIntrinsics) {
+                return sub.get(traversalPath);
+              }
+            } else if (traversalPath.count() === 0) {
+              return sub;
+            }
+          }
         }
       } else if (
         path.count() === 1 &&
@@ -234,7 +283,7 @@ export default class CustomMap extends CustomObject {
   }
 
   createInstance(): CustomMap {
-    const newInstance = new CustomMap(this.value);
+    const newInstance = new CustomMap(new Map(), this.value);
     newInstance.isInstance = true;
     return newInstance;
   }
