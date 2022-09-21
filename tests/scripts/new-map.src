@@ -28,3 +28,7 @@ stringify(testInstance)
 stringify(testInstance2)
 stringify(testInstance3)
 stringify(testInstance4)
+
+print(testInstance4.__isa)
+print(testInstance4.__isa.foo)
+print(testInstance4.__isa.foo.split(""))

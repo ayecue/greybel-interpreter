@@ -1329,6 +1329,65 @@ exports[`interpreter default scripts new-map.src 11`] = `"{\\"__isa\\":{\\"{\\\\
 
 exports[`interpreter default scripts new-map.src 12`] = `"{\\"__isa\\":{\\"{\\\\\\"1\\\\\\":\\\\\\"2\\\\\\",\\\\\\"__isa\\\\\\":{},\\\\\\"myTest\\\\\\":\\\\\\"0\\\\\\"}\\":\\"change\\",\\"foo\\":\\"bar\\",\\"moo\\":\\"123\\"}}"`;
 
+exports[`interpreter default scripts new-map.src 13`] = `
+CustomMap {
+  "isInstance": false,
+  "isa": Map {},
+  "value": Map {
+    CustomMap {
+      "isInstance": false,
+      "isa": Map {},
+      "value": Map {
+        CustomString {
+          "value": "myTest",
+        } => CustomNumber {
+          "value": 0,
+        },
+        CustomNumber {
+          "value": 1,
+        } => CustomNumber {
+          "value": 2,
+        },
+      },
+    } => CustomString {
+      "value": "change",
+    },
+    CustomString {
+      "value": "foo",
+    } => CustomString {
+      "value": "bar",
+    },
+    CustomString {
+      "value": "moo",
+    } => CustomString {
+      "value": "123",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts new-map.src 14`] = `
+CustomString {
+  "value": "bar",
+}
+`;
+
+exports[`interpreter default scripts new-map.src 15`] = `
+CustomList {
+  "value": Array [
+    CustomString {
+      "value": "b",
+    },
+    CustomString {
+      "value": "a",
+    },
+    CustomString {
+      "value": "r",
+    },
+  ],
+}
+`;
+
 exports[`interpreter default scripts obj-init.src 1`] = `
 CustomList {
   "value": Array [

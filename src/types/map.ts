@@ -1,4 +1,5 @@
 import IntrinsicsContainer from '../intrinsics-container';
+import deepEqual from '../utils/deep-equal';
 import Path from '../utils/path';
 import Defaults from './default';
 import CustomFunction from './function';
@@ -10,12 +11,13 @@ import {
 import CustomNil from './nil';
 import CustomString from './string';
 
-import deepEqual from '../utils/deep-equal';
-
 export const CLASS_ID_PROPERTY = new CustomString('classID');
 export const ISA_PROPERTY = new CustomString('__isa');
 
-export const getValue = (map: Map<CustomValue, CustomValue>, mapKey: CustomValue): CustomValue => {
+export const getValue = (
+  map: Map<CustomValue, CustomValue>,
+  mapKey: CustomValue
+): CustomValue => {
   for (const [key, value] of map.entries()) {
     if (deepEqual(key, mapKey)) {
       return value;
@@ -24,7 +26,10 @@ export const getValue = (map: Map<CustomValue, CustomValue>, mapKey: CustomValue
   return Defaults.Void;
 };
 
-export const hasValue = (map: Map<CustomValue, CustomValue>, mapKey: CustomValue): boolean => {
+export const hasValue = (
+  map: Map<CustomValue, CustomValue>,
+  mapKey: CustomValue
+): boolean => {
   for (const key of map.keys()) {
     if (deepEqual(key, mapKey)) {
       return true;
@@ -251,17 +256,15 @@ export default class CustomMap extends CustomObject {
         } else if (traversalPath.count() === 0) {
           return sub;
         }
-      } else if (
-        current.toString() === ISA_PROPERTY.toString()
-      ) {
-        if (path.count() === 0) {
+      } else if (current.toString() === ISA_PROPERTY.toString()) {
+        if (path.count() === 1) {
           return new CustomMap(this.isa);
-        } else if (path.count() === 1) {
+        } else {
           const ahead = traversalPath.next();
 
           if (hasValue(this.isa, ahead)) {
             const sub = getValue(this.isa, ahead);
-    
+
             if (traversalPath.count() > 0) {
               if (sub instanceof CustomValueWithIntrinsics) {
                 return sub.get(traversalPath);
