@@ -10,7 +10,7 @@ export interface Callback {
     ctx: OperationContext,
     self: CustomValue,
     args: Map<string, CustomValue>
-  ): Promise<CustomValue>;
+  ): Promise<NonNullable<CustomValue>>;
 }
 
 export class Argument {
