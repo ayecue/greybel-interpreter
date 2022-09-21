@@ -283,7 +283,10 @@ export default class CustomMap extends CustomObject {
   }
 
   createInstance(): CustomMap {
-    const newInstance = new CustomMap(new Map(), this.value);
+    const newInstance = new CustomMap(new Map(), new Map([
+      ...this.isa,
+      ...this.value
+    ]));
     newInstance.isInstance = true;
     return newInstance;
   }

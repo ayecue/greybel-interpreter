@@ -1112,6 +1112,122 @@ CustomList {
 }
 `;
 
+exports[`interpreter default scripts new-map.src 1`] = `
+CustomMap {
+  "isInstance": false,
+  "isa": Map {},
+  "value": Map {
+    CustomMap {
+      "isInstance": false,
+      "isa": Map {},
+      "value": Map {
+        CustomString {
+          "value": "myTest",
+        } => CustomNumber {
+          "value": 0,
+        },
+        CustomNumber {
+          "value": 1,
+        } => CustomNumber {
+          "value": 2,
+        },
+      },
+    } => CustomBoolean {
+      "value": true,
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts new-map.src 2`] = `
+CustomMap {
+  "isInstance": true,
+  "isa": Map {
+    CustomMap {
+      "isInstance": false,
+      "isa": Map {},
+      "value": Map {
+        CustomString {
+          "value": "myTest",
+        } => CustomNumber {
+          "value": 0,
+        },
+        CustomNumber {
+          "value": 1,
+        } => CustomNumber {
+          "value": 2,
+        },
+      },
+    } => CustomBoolean {
+      "value": true,
+    },
+  },
+  "value": Map {
+    CustomString {
+      "value": "foo",
+    } => CustomString {
+      "value": "bar",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts new-map.src 3`] = `
+CustomMap {
+  "isInstance": true,
+  "isa": Map {
+    CustomMap {
+      "isInstance": false,
+      "isa": Map {},
+      "value": Map {
+        CustomString {
+          "value": "myTest",
+        } => CustomNumber {
+          "value": 0,
+        },
+        CustomNumber {
+          "value": 1,
+        } => CustomNumber {
+          "value": 2,
+        },
+      },
+    } => CustomBoolean {
+      "value": true,
+    },
+    CustomString {
+      "value": "foo",
+    } => CustomString {
+      "value": "bar",
+    },
+  },
+  "value": Map {
+    CustomString {
+      "value": "moo",
+    } => CustomString {
+      "value": "123",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts new-map.src 4`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts new-map.src 5`] = `
+CustomString {
+  "value": "123",
+}
+`;
+
+exports[`interpreter default scripts new-map.src 6`] = `
+CustomString {
+  "value": "bar",
+}
+`;
+
 exports[`interpreter default scripts obj-init.src 1`] = `
 CustomList {
   "value": Array [
