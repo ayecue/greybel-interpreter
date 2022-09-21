@@ -1321,6 +1321,14 @@ CustomMap {
 }
 `;
 
+exports[`interpreter default scripts new-map.src 9`] = `"{\\"__isa\\":{\\"{\\\\\\"1\\\\\\":\\\\\\"2\\\\\\",\\\\\\"__isa\\\\\\":{},\\\\\\"myTest\\\\\\":\\\\\\"0\\\\\\"}\\":\\"true\\"},\\"foo\\":\\"bar\\"}"`;
+
+exports[`interpreter default scripts new-map.src 10`] = `"{\\"__isa\\":{\\"{\\\\\\"1\\\\\\":\\\\\\"2\\\\\\",\\\\\\"__isa\\\\\\":{},\\\\\\"myTest\\\\\\":\\\\\\"0\\\\\\"}\\":\\"true\\",\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"}"`;
+
+exports[`interpreter default scripts new-map.src 11`] = `"{\\"__isa\\":{\\"{\\\\\\"1\\\\\\":\\\\\\"2\\\\\\",\\\\\\"__isa\\\\\\":{},\\\\\\"myTest\\\\\\":\\\\\\"0\\\\\\"}\\":\\"true\\",\\"foo\\":\\"bar\\",\\"moo\\":\\"123\\"},\\"{\\\\\\"1\\\\\\":\\\\\\"2\\\\\\",\\\\\\"__isa\\\\\\":{},\\\\\\"myTest\\\\\\":\\\\\\"0\\\\\\"}\\":\\"change\\"}"`;
+
+exports[`interpreter default scripts new-map.src 12`] = `"{\\"__isa\\":{\\"{\\\\\\"1\\\\\\":\\\\\\"2\\\\\\",\\\\\\"__isa\\\\\\":{},\\\\\\"myTest\\\\\\":\\\\\\"0\\\\\\"}\\":\\"change\\",\\"foo\\":\\"bar\\",\\"moo\\":\\"123\\"}}"`;
+
 exports[`interpreter default scripts obj-init.src 1`] = `
 CustomList {
   "value": Array [

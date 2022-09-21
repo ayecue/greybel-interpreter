@@ -23,3 +23,8 @@ print(testInstance3)
 testInstance4 = new testInstance3
 
 print(testInstance4)
+
+stringify(testInstance)
+stringify(testInstance2)
+stringify(testInstance3)
+stringify(testInstance4)

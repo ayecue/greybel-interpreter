@@ -13,7 +13,7 @@ import CustomString from './string';
 import deepEqual from '../utils/deep-equal';
 
 export const CLASS_ID_PROPERTY = new CustomString('classID');
-export const ISA_PROPERTY = new CustomString('classID');
+export const ISA_PROPERTY = new CustomString('__isa');
 
 export const getValue = (map: Map<CustomValue, CustomValue>, mapKey: CustomValue): CustomValue => {
   for (const [key, value] of map.entries()) {
@@ -117,7 +117,7 @@ export default class CustomMap extends CustomObject {
   toString(): string {
     const json: { [key: string]: any } = { [ISA_PROPERTY.toString()]: {} };
 
-    for (const [key, value] of this.value.entries()) {
+    for (const [key, value] of this.isa.entries()) {
       json.__isa[key.toString()] = value.toString();
     }
 
@@ -125,7 +125,7 @@ export default class CustomMap extends CustomObject {
       json[key.toString()] = value.toString();
     }
 
-    return JSON.stringify(json, null, 4);
+    return JSON.stringify(json);
   }
 
   fork(): CustomMap {
