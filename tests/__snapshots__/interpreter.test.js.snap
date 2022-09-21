@@ -1228,6 +1228,99 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts new-map.src 7`] = `
+CustomMap {
+  "isInstance": true,
+  "isa": Map {
+    CustomMap {
+      "isInstance": false,
+      "isa": Map {},
+      "value": Map {
+        CustomString {
+          "value": "myTest",
+        } => CustomNumber {
+          "value": 0,
+        },
+        CustomNumber {
+          "value": 1,
+        } => CustomNumber {
+          "value": 2,
+        },
+      },
+    } => CustomBoolean {
+      "value": true,
+    },
+    CustomString {
+      "value": "foo",
+    } => CustomString {
+      "value": "bar",
+    },
+    CustomString {
+      "value": "moo",
+    } => CustomString {
+      "value": "123",
+    },
+  },
+  "value": Map {
+    CustomMap {
+      "isInstance": false,
+      "isa": Map {},
+      "value": Map {
+        CustomString {
+          "value": "myTest",
+        } => CustomNumber {
+          "value": 0,
+        },
+        CustomNumber {
+          "value": 1,
+        } => CustomNumber {
+          "value": 2,
+        },
+      },
+    } => CustomString {
+      "value": "change",
+    },
+  },
+}
+`;
+
+exports[`interpreter default scripts new-map.src 8`] = `
+CustomMap {
+  "isInstance": true,
+  "isa": Map {
+    CustomMap {
+      "isInstance": false,
+      "isa": Map {},
+      "value": Map {
+        CustomString {
+          "value": "myTest",
+        } => CustomNumber {
+          "value": 0,
+        },
+        CustomNumber {
+          "value": 1,
+        } => CustomNumber {
+          "value": 2,
+        },
+      },
+    } => CustomString {
+      "value": "change",
+    },
+    CustomString {
+      "value": "foo",
+    } => CustomString {
+      "value": "bar",
+    },
+    CustomString {
+      "value": "moo",
+    } => CustomString {
+      "value": "123",
+    },
+  },
+  "value": Map {},
+}
+`;
+
 exports[`interpreter default scripts obj-init.src 1`] = `
 CustomList {
   "value": Array [

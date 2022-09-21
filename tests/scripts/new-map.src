@@ -13,3 +13,13 @@ print(testInstance2)
 print(testInstance2[{"myTest": 0, 1: 2}])
 print(testInstance2.moo)
 print(testInstance2.foo)
+
+testInstance3 = new testInstance2
+
+testInstance3[{"myTest": 0, 1: 2}] = "change"
+
+print(testInstance3)
+
+testInstance4 = new testInstance3
+
+print(testInstance4)
