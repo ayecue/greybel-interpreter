@@ -1,0 +1,34 @@
+test = {
+    {"myTest": 0, 1: 2}: true
+}
+testInstance = new test
+testInstance.foo = "bar"
+testInstance2 = new testInstance
+testInstance2.moo = "123"
+
+print(test)
+print(testInstance)
+print(testInstance2)
+
+print(testInstance2[{"myTest": 0, 1: 2}])
+print(testInstance2.moo)
+print(testInstance2.foo)
+
+testInstance3 = new testInstance2
+
+testInstance3[{"myTest": 0, 1: 2}] = "change"
+
+print(testInstance3)
+
+testInstance4 = new testInstance3
+
+print(testInstance4)
+
+stringify(testInstance)
+stringify(testInstance2)
+stringify(testInstance3)
+stringify(testInstance4)
+
+print(testInstance4.__isa)
+print(testInstance4.__isa.foo)
+print(testInstance4.__isa.foo.split(""))

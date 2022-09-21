@@ -22,6 +22,13 @@ function setupAPI() {
     );
 
     api.set(
+        'stringify',
+        CustomFunction.createExternal('print', (fnCtx, self, args) => {
+            fnCtx.handler.outputHandler.print(args.get('value').toString());
+        }).addArgument('value')
+    );
+
+    api.set(
         'valueOfTest',
         CustomFunction.createExternal('valueOfTest', (fnCtx, self, args) => {
             return args.get('value');
