@@ -8,7 +8,7 @@ export default class CustomNil extends CustomValue {
   }
 
   toString(): string {
-    return '';
+    return 'null';
   }
 
   fork(): CustomNil {

@@ -162,10 +162,13 @@ export default class Interpreter extends EventEmitter {
       throw new Error('Process already running.');
     }
 
-    const api = Array.from(this.api.entries()).reduce((result, [key, value]) => {
-      result.set(new CustomString(key), value);
-      return result;
-    }, new Map<CustomValue, CustomValue>());
+    const api = Array.from(this.api.entries()).reduce(
+      (result, [key, value]) => {
+        result.set(new CustomString(key), value);
+        return result;
+      },
+      new Map<CustomValue, CustomValue>()
+    );
 
     this.apiContext.extend(api);
 

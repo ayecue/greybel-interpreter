@@ -51,7 +51,10 @@ export class Scope extends CustomMap {
       return super.get(path);
     } else if (this.context.api.scope.has(path)) {
       return this.context.api.scope.get(path);
-    } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current.toString())) {
+    } else if (
+      path.count() === 1 &&
+      CustomMap.getIntrinsics().has(current.toString())
+    ) {
       return CustomMap.getIntrinsics().get(current.toString());
     } else if (this.context.previous !== null) {
       return this.context.previous.get(path);

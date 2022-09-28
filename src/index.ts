@@ -12,7 +12,11 @@ export {
 } from './context';
 export { default as CPS, CPSContext } from './cps';
 export { DefaultErrorHandler, ErrorHandler } from './handler/error';
-export { DefaultOutputHandler, OutputHandler, KeyEvent } from './handler/output';
+export {
+  DefaultOutputHandler,
+  KeyEvent,
+  OutputHandler
+} from './handler/output';
 export { DefaultResourceHandler, ResourceHandler } from './handler/resource';
 export { default as HandlerContainer } from './handler-container';
 export { default as Interpreter, InterpreterOptions } from './interpreter';
@@ -85,5 +89,5 @@ export { default as CustomMap, CustomMapIterator } from './types/map';
 export { default as CustomNil } from './types/nil';
 export { default as CustomNumber } from './types/number';
 export { default as CustomString, CustomStringIterator } from './types/string';
-export { default as Path } from './utils/path';
 export { default as deepEqual } from './utils/deep-equal';
+export { default as Path } from './utils/path';

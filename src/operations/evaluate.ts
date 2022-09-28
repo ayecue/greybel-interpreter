@@ -5,6 +5,7 @@ import CustomBoolean from '../types/boolean';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
 import { CustomValue } from '../types/generics';
+import CustomInterface from '../types/interface';
 import CustomList from '../types/list';
 import CustomMap from '../types/map';
 import CustomNil from '../types/nil';
@@ -75,36 +76,99 @@ export const StringProcessorHandler: ProcessorHandler = {
 };
 
 export const ListProcessorHandler: ProcessorHandler = {
-  [Operator.Plus]: (left: CustomList, right: CustomList) =>
-    left.fork().extend(right),
-  [Operator.LessThan]: (left: CustomList, right: CustomList) =>
-    new CustomBoolean(left.value.length < right.value.length),
-  [Operator.GreaterThan]: (left: CustomList, right: CustomList) =>
-    new CustomBoolean(left.value.length > right.value.length),
-  [Operator.GreaterThanOrEqual]: (left: CustomList, right: CustomList) =>
-    new CustomBoolean(left.value.length >= right.value.length),
-  [Operator.Equal]: (left: CustomList, right: CustomList) =>
-    new CustomBoolean(deepEqual(left, right)),
-  [Operator.LessThanOrEqual]: (left: CustomList, right: CustomList) =>
-    new CustomBoolean(left.value.length <= right.value.length),
-  [Operator.NotEqual]: (left: CustomList, right: CustomList) =>
-    new CustomBoolean(left.value !== right.value)
+  [Operator.Plus]: (left: CustomList, right: CustomValue) => {
+    if (right instanceof CustomList) {
+      return left.fork().extend(right);
+    }
+    return left;
+  },
+  [Operator.LessThan]: (left: CustomList, right: CustomValue) => {
+    if (right instanceof CustomList) {
+      return new CustomBoolean(left.value.length < right.value.length);
+    }
+    return Defaults.Void;
+  },
+  [Operator.GreaterThan]: (left: CustomList, right: CustomValue) => {
+    if (right instanceof CustomList) {
+      return new CustomBoolean(left.value.length > right.value.length);
+    }
+    return Defaults.Void;
+  },
+  [Operator.GreaterThanOrEqual]: (left: CustomList, right: CustomValue) => {
+    if (right instanceof CustomList) {
+      return new CustomBoolean(left.value.length >= right.value.length);
+    }
+    return Defaults.Void;
+  },
+  [Operator.Equal]: (left: CustomList, right: CustomValue) => {
+    if (right instanceof CustomList) {
+      return new CustomBoolean(deepEqual(left, right));
+    }
+    return Defaults.Void;
+  },
+  [Operator.LessThanOrEqual]: (left: CustomList, right: CustomValue) => {
+    if (right instanceof CustomList) {
+      return new CustomBoolean(left.value.length <= right.value.length);
+    }
+    return Defaults.Void;
+  },
+  [Operator.NotEqual]: (left: CustomList, right: CustomValue) => {
+    if (right instanceof CustomList) {
+      return new CustomBoolean(!deepEqual(left, right));
+    }
+    return Defaults.Void;
+  }
 };
 
 export const MapProcessorHandler: ProcessorHandler = {
-  [Operator.Plus]: (left: CustomMap, right: CustomMap) =>
-    left.fork().extend(right),
-  [Operator.LessThan]: (left: CustomMap, right: CustomMap) =>
-    new CustomBoolean(left.value.size < right.value.size),
-  [Operator.GreaterThan]: (left: CustomMap, right: CustomMap) =>
-    new CustomBoolean(left.value.size > right.value.size),
-  [Operator.GreaterThanOrEqual]: (left: CustomMap, right: CustomMap) =>
-    new CustomBoolean(left.value.size >= right.value.size),
-  [Operator.Equal]: (left: CustomMap, right: CustomMap) =>
-    new CustomBoolean(deepEqual(left, right)),
-  [Operator.LessThanOrEqual]: (left: CustomMap, right: CustomMap) =>
-    new CustomBoolean(left.value.size <= right.value.size),
-  [Operator.NotEqual]: (left: CustomMap, right: CustomMap) =>
+  [Operator.Plus]: (left: CustomMap, right: CustomValue) => {
+    if (right instanceof CustomMap) {
+      return left.fork().extend(right);
+    }
+    return left;
+  },
+  [Operator.LessThan]: (left: CustomMap, right: CustomValue) => {
+    if (right instanceof CustomMap) {
+      return new CustomBoolean(left.value.size < right.value.size);
+    }
+    return Defaults.Void;
+  },
+  [Operator.GreaterThan]: (left: CustomMap, right: CustomValue) => {
+    if (right instanceof CustomMap) {
+      return new CustomBoolean(left.value.size > right.value.size);
+    }
+    return Defaults.Void;
+  },
+  [Operator.GreaterThanOrEqual]: (left: CustomMap, right: CustomValue) => {
+    if (right instanceof CustomMap) {
+      return new CustomBoolean(left.value.size >= right.value.size);
+    }
+    return Defaults.Void;
+  },
+  [Operator.Equal]: (left: CustomMap, right: CustomValue) => {
+    if (right instanceof CustomMap) {
+      return new CustomBoolean(deepEqual(left, right));
+    }
+    return Defaults.Void;
+  },
+  [Operator.LessThanOrEqual]: (left: CustomMap, right: CustomValue) => {
+    if (right instanceof CustomMap) {
+      return new CustomBoolean(left.value.size <= right.value.size);
+    }
+    return Defaults.Void;
+  },
+  [Operator.NotEqual]: (left: CustomMap, right: CustomValue) => {
+    if (right instanceof CustomMap) {
+      return new CustomBoolean(!deepEqual(left, right));
+    }
+    return Defaults.Void;
+  }
+};
+
+export const InterfaceProcessorHandler: ProcessorHandler = {
+  [Operator.Equal]: (left: CustomInterface, right: CustomValue) =>
+    new CustomBoolean(left.value === right.value),
+  [Operator.NotEqual]: (left: CustomInterface, right: CustomValue) =>
     new CustomBoolean(left.value !== right.value)
 };
 
@@ -144,7 +208,7 @@ export const handleBoolean: ProcessorHandlerFunction = (op, a, b) => {
 
 export const handleList: ProcessorHandlerFunction = (op, a, b) => {
   const left = a as CustomList;
-  const right = b instanceof CustomList ? (b as CustomList) : new CustomList();
+  const right = b;
 
   if (op in ListProcessorHandler) {
     return ListProcessorHandler[op](left, right);
@@ -157,10 +221,23 @@ export const handleList: ProcessorHandlerFunction = (op, a, b) => {
 
 export const handleMap: ProcessorHandlerFunction = (op, a, b) => {
   const left = a as CustomMap;
-  const right = b instanceof CustomMap ? (b as CustomMap) : new CustomMap();
+  const right = b;
 
   if (op in MapProcessorHandler) {
     return MapProcessorHandler[op](left, right);
+  } else if (op in GenericProcessorHandler) {
+    return GenericProcessorHandler[op](a, b);
+  }
+
+  return Defaults.Void;
+};
+
+export const handleInterface: ProcessorHandlerFunction = (op, a, b) => {
+  const left = a as CustomInterface;
+  const right = b;
+
+  if (op in InterfaceProcessorHandler) {
+    return InterfaceProcessorHandler[op](left, right);
   } else if (op in GenericProcessorHandler) {
     return GenericProcessorHandler[op](a, b);
   }
@@ -203,6 +280,8 @@ export const handle = (
     return handleList(op, a, b);
   } else if (a instanceof CustomMap) {
     return handleMap(op, a, b);
+  } else if (a instanceof CustomInterface) {
+    return handleInterface(op, a, b);
   } else if (a instanceof CustomFunction) {
     return handleFunction(op, a, b);
   } else if (a instanceof CustomNil) {

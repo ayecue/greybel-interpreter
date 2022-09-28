@@ -21,3 +21,9 @@ print(bar[{"second":2,"was":1}])
 foo = {"was":1,"second":2}
 foo[foo] = foo
 print(foo[foo])
+
+print([] == null)
+print({} == null)
+print(null == [])
+print(null == {})
+print([] == {})

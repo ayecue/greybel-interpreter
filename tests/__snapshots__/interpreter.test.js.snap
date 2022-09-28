@@ -317,6 +317,36 @@ CustomMap {
 }
 `;
 
+exports[`interpreter default scripts deep-equal.src 9`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 10`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 11`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 12`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 13`] = `
+CustomNil {
+  "value": null,
+}
+`;
+
 exports[`interpreter default scripts default-args.src 1`] = `
 CustomNumber {
   "value": 0,
