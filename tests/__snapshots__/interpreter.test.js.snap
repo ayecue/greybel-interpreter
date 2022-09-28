@@ -318,14 +318,14 @@ CustomMap {
 `;
 
 exports[`interpreter default scripts deep-equal.src 9`] = `
-CustomNil {
-  "value": null,
+CustomBoolean {
+  "value": false,
 }
 `;
 
 exports[`interpreter default scripts deep-equal.src 10`] = `
-CustomNil {
-  "value": null,
+CustomBoolean {
+  "value": false,
 }
 `;
 
@@ -342,8 +342,14 @@ CustomBoolean {
 `;
 
 exports[`interpreter default scripts deep-equal.src 13`] = `
-CustomNil {
-  "value": null,
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts deep-equal.src 14`] = `
+CustomBoolean {
+  "value": false,
 }
 `;
 

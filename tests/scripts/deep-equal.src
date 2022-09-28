@@ -27,3 +27,5 @@ print({} == null)
 print(null == [])
 print(null == {})
 print([] == {})
+
+print("null" == null)

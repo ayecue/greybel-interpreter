@@ -270,6 +270,12 @@ export const handle = (
   a: CustomValue,
   b: CustomValue
 ): CustomValue => {
+  if (op === Operator.Equal && a.getCustomType() !== b.getCustomType()) {
+    return Defaults.False;
+  } else if (op === Operator.NotEqual && a.getCustomType() !== b.getCustomType()) {
+    return Defaults.True;
+  }
+
   if (a instanceof CustomString || b instanceof CustomString) {
     return handleString(op, a, b);
   } else if (a instanceof CustomNumber || b instanceof CustomNumber) {
