@@ -202,10 +202,6 @@ export const handleString: ProcessorHandlerFunction = (op, a, b) => {
   return Defaults.Void;
 };
 
-export const handleBoolean: ProcessorHandlerFunction = (op, a, b) => {
-  return handleNumber(op, a, b);
-};
-
 export const handleList: ProcessorHandlerFunction = (op, a, b) => {
   const left = a as CustomList;
   const right = b;
@@ -270,6 +266,14 @@ export const handle = (
   a: CustomValue,
   b: CustomValue
 ): CustomValue => {
+  if (a instanceof CustomBoolean) {
+    a = new CustomNumber(a.toInt());
+  }
+
+  if (b instanceof CustomBoolean) {
+    b = new CustomNumber(b.toInt());
+  }
+
   if (op === Operator.Equal && a.getCustomType() !== b.getCustomType()) {
     return Defaults.False;
   } else if (op === Operator.NotEqual && a.getCustomType() !== b.getCustomType()) {
@@ -280,8 +284,6 @@ export const handle = (
     return handleString(op, a, b);
   } else if (a instanceof CustomNumber || b instanceof CustomNumber) {
     return handleNumber(op, a, b);
-  } else if (a instanceof CustomBoolean || b instanceof CustomBoolean) {
-    return handleBoolean(op, a, b);
   } else if (a instanceof CustomList) {
     return handleList(op, a, b);
   } else if (a instanceof CustomMap) {

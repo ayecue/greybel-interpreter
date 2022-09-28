@@ -353,6 +353,12 @@ CustomBoolean {
 }
 `;
 
+exports[`interpreter default scripts deep-equal.src 15`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
 exports[`interpreter default scripts default-args.src 1`] = `
 CustomNumber {
   "value": 0,
