@@ -165,27 +165,6 @@ export default class Interpreter extends EventEmitter {
       throw new Error('Process already running.');
     }
 
-    const api = Array.from(this.api.entries()).reduce(
-      (result, [key, value]) => {
-        result.set(key, value);
-        return result;
-      },
-      new ObjectValue()
-    );
-
-    this.apiContext.extend(api);
-
-    const newParams = new CustomList(
-      this.params.map((item) => new CustomString(item))
-    );
-
-    this.globalContext.scope.set(PARAMS_PROPERTY, newParams);
-
-    this.globalContext.set(
-      new CustomString('globals'),
-      this.globalContext.scope
-    );
-
     const stringIntrinsics = CustomMap.createWithInitialValue(
       CustomString.intrinsics
     );
@@ -199,10 +178,22 @@ export default class Interpreter extends EventEmitter {
       CustomMap.intrinsics
     );
 
-    this.globalContext.set(new CustomString('string'), stringIntrinsics);
-    this.globalContext.set(new CustomString('number'), numberIntrinsics);
-    this.globalContext.set(new CustomString('list'), listIntrinsics);
-    this.globalContext.set(new CustomString('map'), mapIntrinsics);
+    this.apiContext.set(new CustomString('string'), stringIntrinsics);
+    this.apiContext.set(new CustomString('number'), numberIntrinsics);
+    this.apiContext.set(new CustomString('list'), listIntrinsics);
+    this.apiContext.set(new CustomString('map'), mapIntrinsics);
+    this.apiContext.extend(this.api);
+
+    const newParams = new CustomList(
+      this.params.map((item) => new CustomString(item))
+    );
+
+    this.globalContext.scope.set(PARAMS_PROPERTY, newParams);
+
+    this.globalContext.set(
+      new CustomString('globals'),
+      this.globalContext.scope
+    );
 
     try {
       this.apiContext.setPending(true);
