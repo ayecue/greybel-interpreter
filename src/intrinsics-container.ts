@@ -1,7 +1,8 @@
 import CustomFunction from './types/function';
+import { ObjectValue } from './types/generics';
 
 export default class IntrinsicsContainer {
-  private readonly intrinsics: Map<string, CustomFunction> = new Map();
+  private readonly intrinsics: ObjectValue = new ObjectValue();
 
   add(name: string, fn: CustomFunction): IntrinsicsContainer {
     this.intrinsics.set(name, fn);

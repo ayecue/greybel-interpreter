@@ -78,7 +78,9 @@ export {
 export {
   CustomObject,
   CustomValue,
-  CustomValueWithIntrinsics
+  CustomValueWithIntrinsics,
+  CustomNil,
+  ObjectValue
 } from './types/generics';
 export {
   default as CustomInterface,
@@ -86,7 +88,6 @@ export {
 } from './types/interface';
 export { default as CustomList, CustomListIterator } from './types/list';
 export { default as CustomMap, CustomMapIterator } from './types/map';
-export { default as CustomNil } from './types/nil';
 export { default as CustomNumber } from './types/number';
 export { default as CustomString, CustomStringIterator } from './types/string';
 export { default as deepEqual } from './utils/deep-equal';

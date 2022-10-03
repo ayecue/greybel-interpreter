@@ -32,3 +32,6 @@ export default class CustomBoolean extends CustomValue {
     return this.value;
   }
 }
+
+export const DefaultTrue = new CustomBoolean(true);
+export const DefaultFalse = new CustomBoolean(false);

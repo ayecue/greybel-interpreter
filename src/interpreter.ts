@@ -11,7 +11,7 @@ import HandlerContainer from './handler-container';
 import Noop from './operations/noop';
 import Operation from './operations/operation';
 import Defaults from './types/default';
-import { CustomValue } from './types/generics';
+import { CustomValue, ObjectValue } from './types/generics';
 import CustomList from './types/list';
 import CustomString from './types/string';
 
@@ -167,7 +167,7 @@ export default class Interpreter extends EventEmitter {
         result.set(new CustomString(key), value);
         return result;
       },
-      new Map<CustomValue, CustomValue>()
+      new ObjectValue()
     );
 
     this.apiContext.extend(api);

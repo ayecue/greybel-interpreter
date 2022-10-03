@@ -1,7 +1,7 @@
 import { ASTMapConstructorExpression, ASTMapKeyString } from 'greyscript-core';
 
 import context from '../context';
-import { CustomValue } from '../types/generics';
+import { CustomValue, ObjectValue } from '../types/generics';
 import CustomMap from '../types/map';
 import Operation, { CPSVisit } from './operation';
 
@@ -28,7 +28,7 @@ export default class MapOperation extends Operation {
   }
 
   async handle(ctx: context): Promise<CustomValue> {
-    const newMap = new Map<CustomValue, CustomValue>();
+    const newMap = new ObjectValue();
 
     for (const [key, value] of this.fields) {
       newMap.set(await key.handle(ctx), await value.handle(ctx));

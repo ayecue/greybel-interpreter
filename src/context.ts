@@ -4,9 +4,8 @@ import CPS from './cps';
 import HandlerContainer from './handler-container';
 import Operation from './operations/operation';
 import Defaults from './types/default';
-import { CustomValue } from './types/generics';
+import { CustomValue, CustomNil, ObjectValue } from './types/generics';
 import CustomMap from './types/map';
-import CustomNil from './types/nil';
 import Path from './utils/path';
 
 export enum ContextType {
@@ -334,7 +333,7 @@ export default class OperationContext {
     return this.lookupType(OperationContext.lookupLocalsType);
   }
 
-  extend(map: Map<CustomValue, CustomValue>): OperationContext {
+  extend(map: ObjectValue): OperationContext {
     if (this.state === ContextState.Temporary) {
       this.previous?.extend(map);
     } else {
