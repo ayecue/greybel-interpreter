@@ -38,6 +38,11 @@ export default class For extends Operation {
     const iteratorValue = (await this.iterator.handle(
       ctx
     )) as CustomValueWithIntrinsics;
+
+    if (typeof iteratorValue[Symbol.iterator] !== 'function') {
+      return Promise.resolve(Defaults.Void);
+    }
+
     const loopState = new LoopState();
     let index = 0;
 
