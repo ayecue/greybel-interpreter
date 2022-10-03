@@ -1,7 +1,8 @@
-import IntrinsicsContainer from '../intrinsics-container';
+import ObjectValue from '../utils/object-value';
 import Path from '../utils/path';
-import CustomFunction from './function';
-import { CustomValue, CustomValueWithIntrinsics, Void } from './generics';
+import CustomValue from './base';
+import { Void } from './nil';
+import { CustomValueWithIntrinsics } from './with-intrinsics';
 
 export class CustomNumberIterator implements Iterator<CustomValue> {
   next(): IteratorResult<CustomValue> {
@@ -13,17 +14,8 @@ export class CustomNumberIterator implements Iterator<CustomValue> {
 }
 
 export default class CustomNumber extends CustomValueWithIntrinsics {
+  static readonly intrinsics: ObjectValue = new ObjectValue();
   readonly value: number;
-
-  private static intrinsics: IntrinsicsContainer = new IntrinsicsContainer();
-
-  static getIntrinsics(): IntrinsicsContainer {
-    return this.intrinsics;
-  }
-
-  static addIntrinsic(name: string, fn: CustomFunction) {
-    this.intrinsics.add(name, fn);
-  }
 
   constructor(value: number) {
     super();
@@ -58,7 +50,7 @@ export default class CustomNumber extends CustomValueWithIntrinsics {
     return new CustomNumberIterator();
   }
 
-  has(path: Path<CustomValue> | CustomValue): boolean {
+  has(_path: Path<CustomValue> | CustomValue): boolean {
     return false;
   }
 
@@ -74,11 +66,8 @@ export default class CustomNumber extends CustomValueWithIntrinsics {
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
-    if (
-      path.count() === 1 &&
-      CustomNumber.getIntrinsics().has(current.toString())
-    ) {
-      return CustomNumber.intrinsics.get(current.toString());
+    if (path.count() === 1 && CustomNumber.getIntrinsics().has(current)) {
+      return CustomNumber.intrinsics.get(current);
     }
 
     return Void;

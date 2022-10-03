@@ -1,5 +1,5 @@
-import { DefaultTrue, DefaultFalse } from './boolean';
-import { Void } from './generics';
+import { DefaultFalse, DefaultTrue } from './boolean';
+import { Void } from './nil';
 import { NegativeOne, PositiveOne, Zero } from './number';
 
 export default class Defaults {

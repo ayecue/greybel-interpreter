@@ -1,4 +1,4 @@
-import { CustomValue } from './generics';
+import CustomValue from './base';
 
 export default class CustomBoolean extends CustomValue {
   readonly value: boolean;

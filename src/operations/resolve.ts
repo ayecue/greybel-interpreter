@@ -8,11 +8,12 @@ import {
 } from 'greyscript-core';
 
 import OperationContext from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
-import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
 import CustomList from '../types/list';
 import CustomString from '../types/string';
+import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import Path from '../utils/path';
 import Operation, { CPSVisit } from './operation';
 

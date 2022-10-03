@@ -1,8 +1,8 @@
 import { ASTWhileStatement } from 'greyscript-core';
 
 import context, { ContextState, ContextType, LoopState } from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
-import { CustomValue } from '../types/generics';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 

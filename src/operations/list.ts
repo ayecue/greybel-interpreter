@@ -1,7 +1,7 @@
 import { ASTListConstructorExpression, ASTListValue } from 'greyscript-core';
 
 import context from '../context';
-import { CustomValue } from '../types/generics';
+import CustomValue from '../types/base';
 import CustomList from '../types/list';
 import Operation, { CPSVisit } from './operation';
 

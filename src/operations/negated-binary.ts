@@ -1,7 +1,7 @@
 import { ASTUnaryExpression, Operator } from 'greyscript-core';
 
 import context from '../context';
-import { CustomValue } from '../types/generics';
+import CustomValue from '../types/base';
 import CustomNumber from '../types/number';
 import Operation, { CPSVisit } from './operation';
 

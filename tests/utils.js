@@ -15,28 +15,28 @@ function setupAPI() {
     const api = new Map();
 
     api.set(
-        'print',
+        new CustomString('print'),
         CustomFunction.createExternal('print', (fnCtx, self, args) => {
             fnCtx.handler.outputHandler.print(args.get('value'));
         }).addArgument('value')
     );
 
     api.set(
-        'stringify',
+        new CustomString('stringify'),
         CustomFunction.createExternal('print', (fnCtx, self, args) => {
             fnCtx.handler.outputHandler.print(args.get('value').toString());
         }).addArgument('value')
     );
 
     api.set(
-        'valueOfTest',
+        new CustomString('valueOfTest'),
         CustomFunction.createExternal('valueOfTest', (fnCtx, self, args) => {
             return args.get('value');
         }).addArgument('value')
     );
 
     api.set(
-        'typeof',
+        new CustomString('typeof'),
         CustomFunction.createExternal('typeof', (fnCtx, self, args) => {
             const value = args.get('value');
             return new CustomString(value.getCustomType());
@@ -44,7 +44,7 @@ function setupAPI() {
     );
 
     api.set(
-        'returnString',
+        new CustomString('returnString'),
         CustomFunction.createExternal(
             'returnString',
             (fnCtx, self, args) => new CustomString('string')
@@ -52,7 +52,7 @@ function setupAPI() {
     );
 
     api.set(
-        'returnNil',
+        new CustomString('returnNil'),
         CustomFunction.createExternal(
             'returnNil',
             (fnCtx, self, args) => Defaults.Void
@@ -60,7 +60,7 @@ function setupAPI() {
     );
 
     api.set(
-        'mapToObject',
+        new CustomString('mapToObject'),
         CustomFunction.createExternal('mapToObject', (fnCtx, self, args) => {
             const value = args.get('value');
 
@@ -90,18 +90,18 @@ function setupAPI() {
         }
     );
 
-    api.set('pop', pop);
+    api.set(new CustomString('pop'), pop);
 
-    CustomString.getIntrinsics().add(
-        'len',
+    CustomString.addIntrinsic(
+        new CustomString('len'),
         CustomFunction.createExternalWithSelf(
             'len',
             (fnCtx, self, args) => new CustomNumber(self.value.length)
         )
     );
 
-    CustomString.getIntrinsics().add(
-        'split',
+    CustomString.addIntrinsic(
+        new CustomString('split'),
         CustomFunction.createExternalWithSelf('split', (fnCtx, self, args) => {
             const delimiter = args.get('delimiter');
             const values = self.value
@@ -112,16 +112,16 @@ function setupAPI() {
         }).addArgument('delimiter', new CustomString(','))
     );
 
-    CustomList.getIntrinsics().add(
-        'len',
+    CustomList.addIntrinsic(
+        new CustomString('len'),
         CustomFunction.createExternalWithSelf(
             'len',
             (fnCtx, self, args) => new CustomNumber(self.value.length)
         )
     );
 
-    CustomList.getIntrinsics().add(
-        'push',
+    CustomList.addIntrinsic(
+        new CustomString('push'),
         CustomFunction.createExternalWithSelf('push', (fnCtx, self, args) => {
             const value = args.get('value');
             const nextIndex = self.value.push(value);
@@ -130,10 +130,10 @@ function setupAPI() {
         }).addArgument('value', new CustomString(','))
     );
 
-    CustomList.getIntrinsics().add('pop', pop);
+    CustomList.addIntrinsic(new CustomString('pop'), pop);
 
-    CustomMap.getIntrinsics().add(
-        'hasIndex',
+    CustomMap.addIntrinsic(
+        new CustomString('hasIndex'),
         CustomFunction.createExternalWithSelf('hasIndex', (fnCtx, self, args) => {
             const value = args.get('value');
             const result = self.has(value);
@@ -141,7 +141,7 @@ function setupAPI() {
         }).addArgument('value')
     );
 
-    CustomMap.getIntrinsics().add('pop', pop);
+    CustomMap.addIntrinsic(new CustomString('pop'), pop);
 
     return api;
 }

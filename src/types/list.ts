@@ -1,12 +1,8 @@
-import IntrinsicsContainer from '../intrinsics-container';
+import ObjectValue from '../utils/object-value';
 import Path from '../utils/path';
-import CustomFunction from './function';
-import {
-  CustomObject,
-  CustomValue,
-  CustomValueWithIntrinsics
-} from './generics';
+import CustomValue from './base';
 import CustomNumber from './number';
+import { CustomObject, CustomValueWithIntrinsics } from './with-intrinsics';
 
 export class CustomListIterator implements Iterator<CustomValue> {
   value: Array<CustomValue>;
@@ -36,21 +32,13 @@ export class CustomListIterator implements Iterator<CustomValue> {
 }
 
 export default class CustomList extends CustomObject {
+  static readonly intrinsics: ObjectValue = new ObjectValue();
+
   static getItemIndex(item: CustomList, index: number): number {
     let n = index | 0;
     if (n < 0) n += item.value.length;
     if (n < 0 || n >= item.value.length) return -1;
     return n;
-  }
-
-  private static intrinsics: IntrinsicsContainer = new IntrinsicsContainer();
-
-  static getIntrinsics(): IntrinsicsContainer {
-    return this.intrinsics;
-  }
-
-  static addIntrinsic(name: string, fn: CustomFunction) {
-    this.intrinsics.add(name, fn);
   }
 
   readonly value: Array<CustomValue>;
@@ -199,11 +187,8 @@ export default class CustomList extends CustomObject {
       }
 
       throw new Error(`Index error (list index ${currentIndex} out of range).`);
-    } else if (
-      path.count() === 1 &&
-      CustomList.getIntrinsics().has(current.toString())
-    ) {
-      return CustomList.getIntrinsics().get(current.toString());
+    } else if (path.count() === 1 && CustomList.getIntrinsics().has(current)) {
+      return CustomList.getIntrinsics().get(current);
     }
 
     throw new Error(`Unknown path in list ${path.toString()}.`);

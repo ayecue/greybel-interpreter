@@ -1,8 +1,9 @@
 import { ASTMapConstructorExpression, ASTMapKeyString } from 'greyscript-core';
 
 import context from '../context';
-import { CustomValue, ObjectValue } from '../types/generics';
+import CustomValue from '../types/base';
 import CustomMap from '../types/map';
+import ObjectValue from '../utils/object-value';
 import Operation, { CPSVisit } from './operation';
 
 export default class MapOperation extends Operation {

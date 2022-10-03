@@ -1,8 +1,9 @@
 import OperationContext, { ContextState, ContextType } from '../context';
 import Operation from '../operations/operation';
 import Reference from '../operations/reference';
+import CustomValue from './base';
 import Defaults from './default';
-import { CustomValue, CustomNil } from './generics';
+import CustomNil from './nil';
 
 export interface Callback {
   (

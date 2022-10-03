@@ -1,13 +1,14 @@
 import { ASTEvaluationExpression, ASTType, Operator } from 'greyscript-core';
 
 import OperationContext from '../context';
+import CustomValue from '../types/base';
 import CustomBoolean from '../types/boolean';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
-import { CustomValue, CustomNil } from '../types/generics';
 import CustomInterface from '../types/interface';
 import CustomList from '../types/list';
 import CustomMap from '../types/map';
+import CustomNil from '../types/nil';
 import CustomNumber from '../types/number';
 import CustomString from '../types/string';
 import deepEqual from '../utils/deep-equal';
@@ -275,7 +276,10 @@ export const handle = (
 
   if (op === Operator.Equal && a.getCustomType() !== b.getCustomType()) {
     return Defaults.False;
-  } else if (op === Operator.NotEqual && a.getCustomType() !== b.getCustomType()) {
+  } else if (
+    op === Operator.NotEqual &&
+    a.getCustomType() !== b.getCustomType()
+  ) {
     return Defaults.True;
   }
 

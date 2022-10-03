@@ -1,9 +1,9 @@
 import { ASTLiteral, ASTType } from 'greyscript-core';
 
 import context from '../context';
+import CustomValue from '../types/base';
 import CustomBoolean from '../types/boolean';
 import Defaults from '../types/default';
-import { CustomValue } from '../types/generics';
 import CustomNumber from '../types/number';
 import CustomString from '../types/string';
 import Operation, { CPSVisit } from './operation';

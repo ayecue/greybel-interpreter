@@ -1,14 +1,9 @@
-import IntrinsicsContainer from '../intrinsics-container';
+import ObjectValue from '../utils/object-value';
 import Path from '../utils/path';
-import CustomFunction from './function';
-import {
-  CustomObject,
-  CustomValue,
-  CustomValueWithIntrinsics,
-  Void,
-  ObjectValue
-} from './generics';
+import CustomValue from './base';
+import { Void } from './nil';
 import CustomString from './string';
+import { CustomObject, CustomValueWithIntrinsics } from './with-intrinsics';
 
 export const CLASS_ID_PROPERTY = new CustomString('classID');
 export const ISA_PROPERTY = new CustomString('__isa');
@@ -49,24 +44,19 @@ export class CustomMapIterator implements Iterator<CustomValue> {
 }
 
 export default class CustomMap extends CustomObject {
-  private static intrinsics: IntrinsicsContainer = new IntrinsicsContainer();
+  static readonly intrinsics: ObjectValue = new ObjectValue();
 
-  static getIntrinsics(): IntrinsicsContainer {
-    return this.intrinsics;
-  }
-
-  static addIntrinsic(name: string, fn: CustomFunction) {
-    this.intrinsics.add(name, fn);
-  }
-
-  readonly value: ObjectValue;
+  value: ObjectValue;
   readonly isa: ObjectValue;
   private isInstance: boolean = false;
 
-  constructor(
-    value: ObjectValue = new ObjectValue(),
-    isa: ObjectValue = new ObjectValue()
-  ) {
+  static createWithInitialValue(value: ObjectValue): CustomMap {
+    const map = new CustomMap();
+    map.value = value;
+    return map;
+  }
+
+  constructor(value?: ObjectValue, isa?: ObjectValue) {
     super();
     this.value = new ObjectValue(value);
     this.isa = new ObjectValue(isa);
@@ -146,8 +136,8 @@ export default class CustomMap extends CustomObject {
         }
 
         return traversalPath.count() === 0;
-      } else if (this.value.has(current)) {
-        const sub = this.value.get(current);
+      } else if (this.isa.has(current)) {
+        const sub = this.isa.get(current);
 
         if (
           traversalPath.count() > 0 &&
@@ -235,11 +225,8 @@ export default class CustomMap extends CustomObject {
             }
           }
         }
-      } else if (
-        path.count() === 1 &&
-        CustomMap.getIntrinsics().has(current.toString())
-      ) {
-        return CustomMap.getIntrinsics().get(current.toString());
+      } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
+        return CustomMap.getIntrinsics().get(current);
       }
     }
 
@@ -247,7 +234,10 @@ export default class CustomMap extends CustomObject {
   }
 
   createInstance(): CustomMap {
-    const newInstance = new CustomMap(new ObjectValue(), new ObjectValue(this.isa));
+    const newInstance = new CustomMap(
+      new ObjectValue(),
+      new ObjectValue(this.isa)
+    );
 
     for (const [k, v] of this.value.entries()) {
       newInstance.isa.set(k, v);

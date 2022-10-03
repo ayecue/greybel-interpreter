@@ -6,9 +6,9 @@ import {
 } from 'greyscript-core';
 
 import OperationContext, { FunctionState } from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
-import { CustomValue } from '../types/generics';
 import CustomString from '../types/string';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';

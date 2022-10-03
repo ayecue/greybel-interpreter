@@ -2,8 +2,8 @@ import { ASTFeatureImportExpression, Parser } from 'greybel-core';
 import { ASTBase, ASTIdentifier } from 'greyscript-core';
 
 import context, { ContextState, ContextType } from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
-import { CustomValue } from '../types/generics';
 import CustomMap from '../types/map';
 import CustomString from '../types/string';
 import Operation, { CPSVisit } from './operation';

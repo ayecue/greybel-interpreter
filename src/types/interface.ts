@@ -1,7 +1,8 @@
 import Path from '../utils/path';
+import CustomValue from './base';
 import Defaults from './default';
 import CustomFunction from './function';
-import { CustomObject, CustomValue } from './generics';
+import { CustomObject } from './with-intrinsics';
 
 export class CustomInterfaceIterator implements Iterator<CustomValue> {
   next(): IteratorResult<CustomValue> {
