@@ -45,9 +45,7 @@ export class Scope extends CustomMap {
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
-    if (current.value === 'locals' || current.value === 'globals') {
-      return this.context.get(traversalPath);
-    } else if (this.has(path)) {
+    if (this.has(path)) {
       return super.get(path);
     } else if (this.context.api.scope.has(path)) {
       return this.context.api.scope.get(path);
@@ -351,14 +349,7 @@ export default class OperationContext {
       return;
     }
 
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
-    if (current.value === 'locals') {
-      this.locals.set(traversalPath, value);
-    } else if (current.value === 'globals') {
-      this.globals.set(traversalPath, value);
-    } else if (this.state === ContextState.Temporary) {
+    if (this.state === ContextState.Temporary) {
       this.previous?.set(path, value);
     } else {
       this.locals.scope.set(path, value);
@@ -374,14 +365,7 @@ export default class OperationContext {
       return this.scope;
     }
 
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
-    if (current.value === 'locals') {
-      return this.locals.get(traversalPath);
-    } else if (current.value === 'globals') {
-      return this.globals.get(traversalPath);
-    } else if (this.state === ContextState.Temporary) {
+    if (this.state === ContextState.Temporary) {
       return this.previous?.get(path);
     }
 

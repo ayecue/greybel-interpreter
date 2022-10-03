@@ -1476,6 +1476,30 @@ CustomNumber {
 }
 `;
 
+exports[`interpreter default scripts scopes.src 1`] = `
+CustomString {
+  "value": "main local",
+}
+`;
+
+exports[`interpreter default scripts scopes.src 2`] = `
+CustomString {
+  "value": "test fn local",
+}
+`;
+
+exports[`interpreter default scripts scopes.src 3`] = `
+CustomString {
+  "value": "main local",
+}
+`;
+
+exports[`interpreter default scripts scopes.src 4`] = `
+CustomString {
+  "value": "test bar local",
+}
+`;
+
 exports[`interpreter default scripts simple-object.src 1`] = `
 CustomString {
   "value": "was",
