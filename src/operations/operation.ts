@@ -1,4 +1,4 @@
-import { ASTBase } from 'greybel-core';
+import { ASTBase } from 'greyscript-core';
 
 import OperationContext from '../context';
 import CustomValue from '../types/base';

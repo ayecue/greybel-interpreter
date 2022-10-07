@@ -17,6 +17,7 @@ import {
   ASTListConstructorExpression,
   ASTLiteral,
   ASTMapConstructorExpression,
+  ASTParenthesisExpression,
   ASTReturnStatement,
   ASTType,
   ASTUnaryExpression,
@@ -91,7 +92,7 @@ const visit = async (
         currentTarget
       ).build(defaultVisit);
     case ASTType.InvalidCodeExpression:
-      return new Noop(item).build(defaultVisit);
+      return new Noop(item, currentTarget).build(defaultVisit);
     case ASTType.WhileStatement:
       return new While(item as ASTWhileStatement, currentTarget).build(
         defaultVisit
@@ -213,6 +214,10 @@ const visit = async (
     }
     case ASTType.Chunk:
       return new Chunk(item as ASTChunk, currentTarget).build(defaultVisit);
+    case ASTType.Comment:
+      return new Noop(item, currentTarget);
+    case ASTType.ParenthesisExpression:
+      return defaultVisit((item as ASTParenthesisExpression).expression);
     default:
       throw new Error(`Unexpected AST type ${item.type}.`);
   }
