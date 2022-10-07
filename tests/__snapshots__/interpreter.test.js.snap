@@ -443,7 +443,7 @@ exports[`interpreter default scripts extend-intrinsics.src 7`] = `"[ bar, moo, a
 
 exports[`interpreter default scripts gs-bug-index.src 1`] = `
 CustomString {
-  "value": "function",
+  "value": "string",
 }
 `;
 
@@ -455,7 +455,7 @@ CustomString {
 
 exports[`interpreter default scripts gs-bug-index.src 3`] = `
 CustomString {
-  "value": "testfoo",
+  "value": "testnull",
 }
 `;
 

@@ -5,7 +5,7 @@ E=function(r)
 if not C.hasIndex(r) then
 exit((("Module " + r) + " cannot be found..."))
 end if
-G=C[r]
+G=@C[r]
 return @G(r).exports
 end function
 C["B"]=function(r)

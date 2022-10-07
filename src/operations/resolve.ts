@@ -171,6 +171,8 @@ export default class Resolve extends Operation {
           break;
         }
 
+        const previous = handle;
+
         if (handle !== Defaults.Void) {
           if (handle instanceof CustomValueWithIntrinsics) {
             const customValueCtx = handle as CustomValueWithIntrinsics;
@@ -180,6 +182,10 @@ export default class Resolve extends Operation {
           }
         } else {
           handle = ctx.get(traversedPath);
+        }
+
+        if (handle instanceof CustomFunction) {
+          handle = await handle.run(previous || Defaults.Void, [], ctx);
         }
 
         traversedPath = new Path<CustomValue>();
@@ -222,12 +228,7 @@ export default class Resolve extends Operation {
       const customValueCtx = result.handle as CustomValueWithIntrinsics;
       const child = customValueCtx.get(result.path);
 
-      if (
-        autoCall &&
-        child instanceof CustomFunction &&
-        // support index bug in greyscript
-        !(this.last instanceof IndexSegment)
-      ) {
+      if (autoCall && child instanceof CustomFunction) {
         return child.run(customValueCtx, [], ctx);
       }
 

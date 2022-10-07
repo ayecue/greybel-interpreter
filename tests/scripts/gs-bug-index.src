@@ -8,4 +8,4 @@ print(typeof(@myMap.myFunc))
 
 ref = myMap["myFunc"]
 
-print(ref("foo"))
+print(ref)
