@@ -31,4 +31,11 @@ export default class ObjectValue extends Map<CustomValue, CustomValue> {
     super.set(mapKey, mapValue);
     return this;
   }
+
+  extend(objVal: ObjectValue): this {
+    for (const [key, value] of objVal) {
+      this.set(key, value);
+    }
+    return this;
+  }
 }

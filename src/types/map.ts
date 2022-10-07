@@ -108,11 +108,7 @@ export default class CustomMap extends CustomObject {
     if (map instanceof CustomMap) {
       map = map.value;
     }
-
-    for (const [key, value] of map) {
-      this.value.set(key, value);
-    }
-
+    this.value.extend(map);
     return this;
   }
 

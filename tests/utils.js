@@ -7,12 +7,13 @@ const {
   CustomBoolean,
   CustomNumber,
   Defaults,
-  OutputHandler
+  OutputHandler,
+  ObjectValue
 } = require('../dist');
 let printMock = jest.fn();
 
 function setupAPI() {
-  const api = new Map();
+  const api = new ObjectValue();
 
   api.set(
     new CustomString('print'),

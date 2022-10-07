@@ -3,7 +3,8 @@ const {
   CustomFunction,
   HandlerContainer,
   CustomString,
-  Defaults
+  Defaults,
+  ObjectValue
 } = require('../dist');
 const fs = require('fs');
 const path = require('path');

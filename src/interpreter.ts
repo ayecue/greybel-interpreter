@@ -22,7 +22,7 @@ export const PARAMS_PROPERTY = new CustomString('params');
 
 export interface InterpreterOptions {
   target?: string;
-  api?: Map<CustomValue, CustomValue>;
+  api?: ObjectValue;
   params?: Array<string>;
   handler?: HandlerContainer;
   debugger?: Debugger;
@@ -30,7 +30,7 @@ export interface InterpreterOptions {
 
 export default class Interpreter extends EventEmitter {
   target: string;
-  api: Map<CustomValue, CustomValue>;
+  api: ObjectValue;
   params: Array<string>;
   handler: HandlerContainer;
   debugger: Debugger;
@@ -44,7 +44,7 @@ export default class Interpreter extends EventEmitter {
     this.handler = options.handler || new HandlerContainer();
     this.debugger = options.debugger || new Debugger();
 
-    this.api = options.api || new Map();
+    this.api = options.api || new ObjectValue();
     this.params = options.params || [];
 
     this.apiContext = null;
@@ -91,7 +91,7 @@ export default class Interpreter extends EventEmitter {
     return this;
   }
 
-  setApi(newApi: Map<CustomValue, CustomValue>): Interpreter {
+  setApi(newApi: ObjectValue): Interpreter {
     if (this.apiContext !== null && this.apiContext.isPending()) {
       throw new Error('You cannot set a target while a process is running.');
     }
