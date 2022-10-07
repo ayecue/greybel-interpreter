@@ -1,12 +1,12 @@
-import CustomBoolean from './boolean';
-import CustomNil from './nil';
-import CustomNumber from './number';
+import { DefaultFalse, DefaultTrue } from './boolean';
+import { Void } from './nil';
+import { NegativeOne, PositiveOne, Zero } from './number';
 
 export default class Defaults {
-  static readonly Void = new CustomNil();
-  static readonly True = new CustomBoolean(true);
-  static readonly False = new CustomBoolean(false);
-  static readonly NegativeOne = new CustomNumber(-1);
-  static readonly PositiveOne = new CustomNumber(1);
-  static readonly Zero = new CustomNumber(0);
+  static readonly Void = Void;
+  static readonly True = DefaultTrue;
+  static readonly False = DefaultFalse;
+  static readonly NegativeOne = NegativeOne;
+  static readonly PositiveOne = PositiveOne;
+  static readonly Zero = Zero;
 }

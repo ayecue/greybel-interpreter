@@ -1,8 +1,8 @@
 import { ASTUnaryExpression } from 'greyscript-core';
 
 import context from '../context';
+import CustomValue from '../types/base';
 import CustomBoolean from '../types/boolean';
-import { CustomValue } from '../types/generics';
 import Operation, { CPSVisit } from './operation';
 
 export default class Not extends Operation {

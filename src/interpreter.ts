@@ -10,16 +10,19 @@ import CPS, { CPSContext } from './cps';
 import HandlerContainer from './handler-container';
 import Noop from './operations/noop';
 import Operation from './operations/operation';
+import CustomValue from './types/base';
 import Defaults from './types/default';
-import { CustomValue } from './types/generics';
 import CustomList from './types/list';
+import CustomMap from './types/map';
+import CustomNumber from './types/number';
 import CustomString from './types/string';
+import ObjectValue from './utils/object-value';
 
 export const PARAMS_PROPERTY = new CustomString('params');
 
 export interface InterpreterOptions {
   target?: string;
-  api?: Map<string, CustomValue>;
+  api?: Map<CustomValue, CustomValue>;
   params?: Array<string>;
   handler?: HandlerContainer;
   debugger?: Debugger;
@@ -27,7 +30,7 @@ export interface InterpreterOptions {
 
 export default class Interpreter extends EventEmitter {
   target: string;
-  api: Map<string, CustomValue>;
+  api: Map<CustomValue, CustomValue>;
   params: Array<string>;
   handler: HandlerContainer;
   debugger: Debugger;
@@ -88,7 +91,7 @@ export default class Interpreter extends EventEmitter {
     return this;
   }
 
-  setApi(newApi: Map<string, CustomValue>): Interpreter {
+  setApi(newApi: Map<CustomValue, CustomValue>): Interpreter {
     if (this.apiContext !== null && this.apiContext.isPending()) {
       throw new Error('You cannot set a target while a process is running.');
     }
@@ -162,21 +165,35 @@ export default class Interpreter extends EventEmitter {
       throw new Error('Process already running.');
     }
 
-    const api = Array.from(this.api.entries()).reduce(
-      (result, [key, value]) => {
-        result.set(new CustomString(key), value);
-        return result;
-      },
-      new Map<CustomValue, CustomValue>()
+    const stringIntrinsics = CustomMap.createWithInitialValue(
+      CustomString.intrinsics
+    );
+    const numberIntrinsics = CustomMap.createWithInitialValue(
+      CustomNumber.intrinsics
+    );
+    const listIntrinsics = CustomMap.createWithInitialValue(
+      CustomList.intrinsics
+    );
+    const mapIntrinsics = CustomMap.createWithInitialValue(
+      CustomMap.intrinsics
     );
 
-    this.apiContext.extend(api);
+    this.apiContext.set(new CustomString('string'), stringIntrinsics);
+    this.apiContext.set(new CustomString('number'), numberIntrinsics);
+    this.apiContext.set(new CustomString('list'), listIntrinsics);
+    this.apiContext.set(new CustomString('map'), mapIntrinsics);
+    this.apiContext.extend(this.api);
 
     const newParams = new CustomList(
       this.params.map((item) => new CustomString(item))
     );
 
     this.globalContext.scope.set(PARAMS_PROPERTY, newParams);
+
+    this.globalContext.set(
+      new CustomString('globals'),
+      this.globalContext.scope
+    );
 
     try {
       this.apiContext.setPending(true);

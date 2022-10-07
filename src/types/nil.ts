@@ -1,4 +1,4 @@
-import { CustomValue } from './generics';
+import CustomValue from './base';
 
 export default class CustomNil extends CustomValue {
   value: null = null;
@@ -27,3 +27,5 @@ export default class CustomNil extends CustomValue {
     return false;
   }
 }
+
+export const Void = new CustomNil();

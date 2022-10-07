@@ -1,8 +1,9 @@
 import { ASTUnaryExpression } from 'greyscript-core';
 
 import OperationContext from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
-import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
+import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import Operation, { CPSVisit } from './operation';
 import Resolve from './resolve';
 

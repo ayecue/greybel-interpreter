@@ -1,7 +1,9 @@
 const {
   Interpreter,
   CustomFunction,
-  HandlerContainer
+  HandlerContainer,
+  CustomString,
+  Defaults
 } = require('../dist');
 const fs = require('fs');
 const path = require('path');
@@ -35,9 +37,10 @@ describe('interpreter', function () {
         let success = false;
 
         pseudoAPI.set(
-          'exit',
+          new CustomString('exit'),
           CustomFunction.createExternal('exit', (fnCtx, self, args) => {
             interpreter.exit();
+            return Promise.resolve(Defaults.Void);
           })
         );
 

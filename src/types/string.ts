@@ -1,9 +1,9 @@
-import IntrinsicsContainer from '../intrinsics-container';
+import ObjectValue from '../utils/object-value';
 import Path from '../utils/path';
+import CustomValue from './base';
 import Defaults from './default';
-import CustomFunction from './function';
-import { CustomValue, CustomValueWithIntrinsics } from './generics';
 import CustomNumber from './number';
+import { CustomValueWithIntrinsics } from './with-intrinsics';
 
 export class CustomStringIterator implements Iterator<CustomValue> {
   value: string;
@@ -33,21 +33,13 @@ export class CustomStringIterator implements Iterator<CustomValue> {
 }
 
 export default class CustomString extends CustomValueWithIntrinsics {
+  static readonly intrinsics: ObjectValue = new ObjectValue();
+
   static getCharIndex(item: CustomString, index: number): number {
     let n = index | 0;
     if (n < 0) n += item.value.length;
     if (n < 0 || n >= item.value.length) return -1;
     return n;
-  }
-
-  private static intrinsics: IntrinsicsContainer = new IntrinsicsContainer();
-
-  static getIntrinsics(): IntrinsicsContainer {
-    return this.intrinsics;
-  }
-
-  static addIntrinsic(name: string, fn: CustomFunction) {
-    this.intrinsics.add(name, fn);
   }
 
   readonly value: string;
@@ -147,9 +139,9 @@ export default class CustomString extends CustomValueWithIntrinsics {
       );
     } else if (
       path.count() === 1 &&
-      CustomString.getIntrinsics().has(current.toString())
+      CustomString.getIntrinsics().has(current)
     ) {
-      return CustomString.intrinsics.get(current.toString());
+      return CustomString.intrinsics.get(current);
     }
 
     return Defaults.Void;

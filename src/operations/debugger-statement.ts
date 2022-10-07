@@ -1,8 +1,8 @@
 import { ASTBase } from 'greyscript-core';
 
 import context from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
-import { CustomValue } from '../types/generics';
 import Operation, { CPSVisit } from './operation';
 
 export default class DebuggerStatement extends Operation {

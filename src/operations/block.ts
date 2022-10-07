@@ -1,6 +1,7 @@
 import OperationContext, { ContextType } from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
-import { CustomValue } from '../types/generics';
+import CustomString from '../types/string';
 import Operation, { CPSVisit } from './operation';
 
 export interface IsEOL {
@@ -26,6 +27,12 @@ export default class Block extends Operation {
       isEOL = () => ctx.loopState.isBreak || ctx.loopState.isContinue;
     } else if (ctx.type === ContextType.Function) {
       isEOL = () => ctx.functionState.isReturn;
+    }
+
+    ctx.set(new CustomString('locals'), ctx.locals.scope);
+
+    if (ctx.previous && ctx.previous.type !== ContextType.Api) {
+      ctx.set(new CustomString('outer'), ctx.previous.locals.scope);
     }
 
     for (let index = 0; index < this.stack.length; index++) {

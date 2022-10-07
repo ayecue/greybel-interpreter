@@ -1,4 +1,5 @@
-import { CustomObject, CustomValue } from '../types/generics';
+import CustomValue from '../types/base';
+import { CustomObject } from '../types/with-intrinsics';
 
 function equalInner(
   a: CustomValue,

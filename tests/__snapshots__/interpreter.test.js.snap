@@ -407,6 +407,40 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts extend-intrinsics.src 1`] = `
+CustomString {
+  "value": "was2",
+}
+`;
+
+exports[`interpreter default scripts extend-intrinsics.src 2`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts extend-intrinsics.src 3`] = `
+CustomNumber {
+  "value": 10,
+}
+`;
+
+exports[`interpreter default scripts extend-intrinsics.src 4`] = `
+CustomString {
+  "value": "something",
+}
+`;
+
+exports[`interpreter default scripts extend-intrinsics.src 5`] = `
+CustomString {
+  "value": "foo",
+}
+`;
+
+exports[`interpreter default scripts extend-intrinsics.src 6`] = `"[ bar, moo ]"`;
+
+exports[`interpreter default scripts extend-intrinsics.src 7`] = `"[ bar, moo, another ]"`;
+
 exports[`interpreter default scripts gs-bug-index.src 1`] = `
 CustomString {
   "value": "function",
@@ -1473,6 +1507,30 @@ CustomList {
 exports[`interpreter default scripts print.src 1`] = `
 CustomNumber {
   "value": 123,
+}
+`;
+
+exports[`interpreter default scripts scopes.src 1`] = `
+CustomString {
+  "value": "main local",
+}
+`;
+
+exports[`interpreter default scripts scopes.src 2`] = `
+CustomString {
+  "value": "test fn local",
+}
+`;
+
+exports[`interpreter default scripts scopes.src 3`] = `
+CustomString {
+  "value": "main local",
+}
+`;
+
+exports[`interpreter default scripts scopes.src 4`] = `
+CustomString {
+  "value": "test bar local",
 }
 `;
 

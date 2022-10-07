@@ -20,7 +20,6 @@ export {
 export { DefaultResourceHandler, ResourceHandler } from './handler/resource';
 export { default as HandlerContainer } from './handler-container';
 export { default as Interpreter, InterpreterOptions } from './interpreter';
-export { default as IntrinsicsContainer } from './intrinsics-container';
 export { default as Assign } from './operations/assign';
 export { default as Block, IsEOL } from './operations/block';
 export { default as Break } from './operations/break';
@@ -32,11 +31,11 @@ export {
   default as Evaluate,
   GenericProcessorHandler,
   handle,
+  handleInterface,
   handleList,
   handleMap,
   handleNumber,
   handleString,
-  handleInterface,
   ListProcessorHandler,
   MapProcessorHandler,
   NumberProcessorHandler,
@@ -68,6 +67,7 @@ export {
 } from './operations/resolve';
 export { default as Return } from './operations/return';
 export { default as While } from './operations/while';
+export { default as CustomValue } from './types/base';
 export { default as CustomBoolean } from './types/boolean';
 export { default as Defaults } from './types/default';
 export {
@@ -75,11 +75,6 @@ export {
   Callback,
   default as CustomFunction
 } from './types/function';
-export {
-  CustomObject,
-  CustomValue,
-  CustomValueWithIntrinsics
-} from './types/generics';
 export {
   default as CustomInterface,
   CustomInterfaceIterator
@@ -89,5 +84,10 @@ export { default as CustomMap, CustomMapIterator } from './types/map';
 export { default as CustomNil } from './types/nil';
 export { default as CustomNumber } from './types/number';
 export { default as CustomString, CustomStringIterator } from './types/string';
+export {
+  CustomObject,
+  CustomValueWithIntrinsics
+} from './types/with-intrinsics';
 export { default as deepEqual } from './utils/deep-equal';
+export { default as ObjectValue } from './utils/object-value';
 export { default as Path } from './utils/path';

@@ -1,7 +1,7 @@
 import { ASTChunk } from 'greyscript-core';
 
 import context from '../context';
-import { CustomValue } from '../types/generics';
+import CustomValue from '../types/base';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 

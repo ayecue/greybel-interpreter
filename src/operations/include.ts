@@ -2,7 +2,7 @@ import { Parser } from 'greybel-core';
 import { ASTBase } from 'greyscript-core';
 
 import context, { ContextState, ContextType } from '../context';
-import { CustomValue } from '../types/generics';
+import CustomValue from '../types/base';
 import Operation, { CPSVisit } from './operation';
 
 export default class Include extends Operation {

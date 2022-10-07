@@ -1,10 +1,11 @@
 import { ASTForGenericStatement, ASTIdentifier } from 'greyscript-core';
 
 import context, { ContextState, ContextType, LoopState } from '../context';
+import CustomValue from '../types/base';
 import Defaults from '../types/default';
-import { CustomValue, CustomValueWithIntrinsics } from '../types/generics';
 import CustomNumber from '../types/number';
 import CustomString from '../types/string';
+import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 
@@ -38,6 +39,11 @@ export default class For extends Operation {
     const iteratorValue = (await this.iterator.handle(
       ctx
     )) as CustomValueWithIntrinsics;
+
+    if (typeof iteratorValue[Symbol.iterator] !== 'function') {
+      return Promise.resolve(Defaults.Void);
+    }
+
     const loopState = new LoopState();
     let index = 0;
 

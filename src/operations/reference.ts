@@ -1,5 +1,5 @@
 import OperationContext from '../context';
-import { CustomValue } from '../types/generics';
+import CustomValue from '../types/base';
 import Operation, { CPSVisit } from './operation';
 
 export default class Reference extends Operation {

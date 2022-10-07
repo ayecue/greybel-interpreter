@@ -1,0 +1,20 @@
+globals.testGlobals = "main global"
+locals.testLocals = "main local"
+
+test = function()
+  print(outer.testLocals)
+
+  locals.testLocals = "test fn local"
+
+  bar = function()
+    print(outer.testLocals)
+    print(outer.outer.testLocals)
+
+    outer.testLocals = "test bar local"
+  end function
+
+  bar
+  print(locals.testLocals)
+end function
+
+test

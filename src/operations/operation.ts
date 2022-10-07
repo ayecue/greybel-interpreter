@@ -1,7 +1,7 @@
-import { ASTBase } from 'greybel-core';
+import { ASTBase } from 'greyscript-core';
 
 import OperationContext from '../context';
-import { CustomValue } from '../types/generics';
+import CustomValue from '../types/base';
 
 export interface CPSVisit {
   /* eslint-disable no-use-before-define */

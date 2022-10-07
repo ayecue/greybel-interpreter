@@ -1,0 +1,48 @@
+string.test = function()
+  return self + 2
+end function
+
+string.mutable = function()
+  self = 2
+end function
+
+print("was".test)
+
+myVar = "test"
+
+myVar.mutable
+
+print(myVar)
+
+number.min = function(x)
+  if (self > x) then
+    return x
+  end if
+  return self
+end function
+
+print((10).min(20))
+
+map.mutable = function()
+  self.bar = "foo"
+end function
+
+myTestMap = {"bar":"something"}
+
+print(myTestMap.bar)
+
+myTestMap.mutable
+
+print(myTestMap.bar)
+
+list.mutable = function()
+  self.push("another")
+end function
+
+myTestList = ["bar", "moo"]
+
+stringify(myTestList)
+
+myTestList.mutable
+
+stringify(myTestList)

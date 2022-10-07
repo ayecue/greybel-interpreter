@@ -3,10 +3,11 @@ import { ASTBase } from 'greyscript-core';
 import CPS from './cps';
 import HandlerContainer from './handler-container';
 import Operation from './operations/operation';
+import CustomValue from './types/base';
 import Defaults from './types/default';
-import { CustomValue } from './types/generics';
 import CustomMap from './types/map';
 import CustomNil from './types/nil';
+import ObjectValue from './utils/object-value';
 import Path from './utils/path';
 
 export enum ContextType {
@@ -45,17 +46,12 @@ export class Scope extends CustomMap {
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
-    if (current.value === 'locals' || current.value === 'globals') {
-      return this.context.get(traversalPath);
-    } else if (this.has(path)) {
+    if (this.has(path)) {
       return super.get(path);
     } else if (this.context.api.scope.has(path)) {
       return this.context.api.scope.get(path);
-    } else if (
-      path.count() === 1 &&
-      CustomMap.getIntrinsics().has(current.toString())
-    ) {
-      return CustomMap.getIntrinsics().get(current.toString());
+    } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
+      return CustomMap.getIntrinsics().get(current);
     } else if (this.context.previous !== null) {
       return this.context.previous.get(path);
     }
@@ -336,7 +332,7 @@ export default class OperationContext {
     return this.lookupType(OperationContext.lookupLocalsType);
   }
 
-  extend(map: Map<CustomValue, CustomValue>): OperationContext {
+  extend(map: ObjectValue): OperationContext {
     if (this.state === ContextState.Temporary) {
       this.previous?.extend(map);
     } else {
@@ -351,14 +347,7 @@ export default class OperationContext {
       return;
     }
 
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
-    if (current.value === 'locals') {
-      this.locals.set(traversalPath, value);
-    } else if (current.value === 'globals') {
-      this.globals.set(traversalPath, value);
-    } else if (this.state === ContextState.Temporary) {
+    if (this.state === ContextState.Temporary) {
       this.previous?.set(path, value);
     } else {
       this.locals.scope.set(path, value);
@@ -374,14 +363,7 @@ export default class OperationContext {
       return this.scope;
     }
 
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
-    if (current.value === 'locals') {
-      return this.locals.get(traversalPath);
-    } else if (current.value === 'globals') {
-      return this.globals.get(traversalPath);
-    } else if (this.state === ContextState.Temporary) {
+    if (this.state === ContextState.Temporary) {
       return this.previous?.get(path);
     }
 
