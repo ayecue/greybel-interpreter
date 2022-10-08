@@ -65,6 +65,8 @@ export default class FunctionOperation extends Operation {
         fnCtx.functionState = new FunctionState();
 
         fnCtx.set(SELF_PROPERTY, self);
+        fnCtx.set(new CustomString('locals'), fnCtx.locals.scope);
+        fnCtx.set(new CustomString('outer'), fnCtx.previous.locals.scope);
 
         for (const [key, value] of args) {
           fnCtx.set(new CustomString(key), value);
