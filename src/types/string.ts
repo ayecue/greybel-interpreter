@@ -86,8 +86,8 @@ export default class CustomString extends CustomValueWithIntrinsics {
     return this.value.length > 0;
   }
 
-  instanceOf(v: CustomString): boolean {
-    return v instanceof CustomNumber;
+  instanceOf(v: CustomValue): boolean {
+    return v.value === CustomString.intrinsics;
   }
 
   slice(a: CustomValue, b: CustomValue): CustomString {

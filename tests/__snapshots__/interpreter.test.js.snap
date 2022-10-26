@@ -756,6 +756,132 @@ CustomBoolean {
 }
 `;
 
+exports[`interpreter default scripts isa.src 1`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts isa.src 2`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 3`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 4`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 5`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 6`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts isa.src 7`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 8`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 9`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 10`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 11`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts isa.src 12`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 13`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 14`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 15`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 16`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
+exports[`interpreter default scripts isa.src 17`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 18`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 19`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 20`] = `
+CustomBoolean {
+  "value": false,
+}
+`;
+
+exports[`interpreter default scripts isa.src 21`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",

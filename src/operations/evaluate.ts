@@ -347,6 +347,11 @@ export default class Evaluate extends Operation {
       const expr = op as Evaluate;
 
       switch (expr.type) {
+        case ASTType.IsaExpression: {
+          const left = await this.resolve(ctx, expr.left);
+          const right = await this.resolve(ctx, expr.right);
+          return new CustomBoolean(left.instanceOf(right));
+        }
         case ASTType.BinaryExpression:
           return this.resolveBinaryExpression(ctx, expr);
         case ASTType.LogicalExpression:

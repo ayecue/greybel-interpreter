@@ -5,7 +5,7 @@ export default class CustomBoolean extends CustomValue {
 
   constructor(value: boolean) {
     super();
-    this.value = value;
+    this.value = !!value;
   }
 
   getCustomType(): string {

@@ -47,7 +47,7 @@ export default class CustomNumber extends CustomValueWithIntrinsics {
   }
 
   instanceOf(v: CustomValue): boolean {
-    return v instanceof CustomNumber;
+    return v.value === CustomNumber.intrinsics;
   }
 
   [Symbol.iterator](): CustomNumberIterator {

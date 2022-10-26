@@ -73,7 +73,7 @@ export default class CustomList extends CustomObject {
   }
 
   instanceOf(v: CustomValue): boolean {
-    return v instanceof CustomList;
+    return v.value === CustomList.intrinsics;
   }
 
   slice(a: CustomValue, b: CustomValue): CustomList {

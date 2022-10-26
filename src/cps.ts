@@ -188,6 +188,7 @@ const visit = async (
       return new Literal(item as ASTLiteral, currentTarget).build(defaultVisit);
     case ASTType.EmptyExpression:
       return new Noop(item, currentTarget).build(defaultVisit);
+    case ASTType.IsaExpression:
     case ASTType.BinaryExpression:
     case ASTType.LogicalExpression:
       return new Evaluate(item as ASTEvaluationExpression, currentTarget).build(

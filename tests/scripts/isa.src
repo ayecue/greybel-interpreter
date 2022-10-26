@@ -1,0 +1,29 @@
+print(2 isa number)
+print(2 isa string)
+print(2 isa list)
+print(2 isa map)
+
+print("abc" isa number)
+print("abc" isa string)
+print("abc" isa list)
+print("abc" isa map)
+
+print([1,2,3] isa number)
+print([1,2,3] isa string)
+print([1,2,3] isa list)
+print([1,2,3] isa map)
+
+print({} isa number)
+print({} isa string)
+print({} isa list)
+print({} isa map)
+
+iterf = returnInterface
+iterf2 = returnInterface
+
+print(iterf isa number)
+print(iterf isa string)
+print(iterf isa list)
+print(iterf isa map)
+print(iterf isa iterf2)
+
