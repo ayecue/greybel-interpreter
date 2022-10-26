@@ -1706,6 +1706,18 @@ CustomString {
 }
 `;
 
+exports[`interpreter default scripts super.src 1`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts super.src 2`] = `
+CustomNumber {
+  "value": 10,
+}
+`;
+
 exports[`interpreter default scripts uglified.src 1`] = `
 CustomMap {
   "isInstance": false,
