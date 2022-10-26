@@ -86,6 +86,10 @@ export default class CustomString extends CustomValueWithIntrinsics {
     return this.value.length > 0;
   }
 
+  instanceOf(v: CustomValue): boolean {
+    return v.value === CustomString.intrinsics;
+  }
+
   slice(a: CustomValue, b: CustomValue): CustomString {
     return new CustomString(this.value.slice(a.toNumber(), b.toNumber()));
   }

@@ -8,7 +8,8 @@ const {
   CustomNumber,
   Defaults,
   OutputHandler,
-  ObjectValue
+  ObjectValue,
+  CustomInterface
 } = require('../dist');
 let printMock = jest.fn();
 
@@ -58,6 +59,22 @@ function setupAPI() {
     CustomFunction.createExternal('returnNil', (fnCtx, self, args) =>
       Promise.resolve(Defaults.Void)
     )
+  );
+
+  api.set(
+    new CustomString('returnInterface'),
+    CustomFunction.createExternal('returnInterface', (fnCtx, self, args) => {
+      const itrface = new CustomInterface('test');
+
+      itrface.addFunction('foo', CustomFunction.createExternalWithSelf(
+        'foo',
+        async () => {
+          return Promise.resolve(new CustomString("test"));
+        }
+      ));
+
+      return Promise.resolve(itrface);
+    }).addArgument('value')
   );
 
   api.set(

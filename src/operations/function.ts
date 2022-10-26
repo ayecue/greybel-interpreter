@@ -9,12 +9,14 @@ import OperationContext, { FunctionState } from '../context';
 import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
+import CustomMap from '../types/map';
 import CustomString from '../types/string';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
 import Reference from './reference';
 
 export const SELF_PROPERTY = new CustomString('self');
+export const SUPER_PROPERTY = new CustomString('super');
 
 export default class FunctionOperation extends Operation {
   readonly item: ASTFunctionStatement;
@@ -65,6 +67,11 @@ export default class FunctionOperation extends Operation {
         fnCtx.functionState = new FunctionState();
 
         fnCtx.set(SELF_PROPERTY, self);
+
+        if (self instanceof CustomMap && self.isa !== null) {
+          fnCtx.set(SUPER_PROPERTY, self.isa);
+        }
+
         fnCtx.set(new CustomString('locals'), fnCtx.locals.scope);
         fnCtx.set(new CustomString('outer'), fnCtx.previous.locals.scope);
 

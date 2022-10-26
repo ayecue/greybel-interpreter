@@ -5,7 +5,7 @@ export default class CustomBoolean extends CustomValue {
 
   constructor(value: boolean) {
     super();
-    this.value = value;
+    this.value = !!value;
   }
 
   getCustomType(): string {
@@ -30,6 +30,10 @@ export default class CustomBoolean extends CustomValue {
 
   toTruthy(): boolean {
     return this.value;
+  }
+
+  instanceOf(v: CustomValue): boolean {
+    return v instanceof CustomBoolean;
   }
 }
 
