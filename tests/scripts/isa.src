@@ -27,3 +27,4 @@ print(iterf isa list)
 print(iterf isa map)
 print(iterf isa iterf2)
 
+print({} isa map and [1,2,3] isa list)

@@ -882,6 +882,12 @@ CustomBoolean {
 }
 `;
 
+exports[`interpreter default scripts isa.src 22`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
 exports[`interpreter default scripts list.src 1`] = `
 CustomString {
   "value": "bar",
