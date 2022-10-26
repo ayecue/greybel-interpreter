@@ -26,6 +26,10 @@ export default class CustomNil extends CustomValue {
   toTruthy(): boolean {
     return false;
   }
+
+  instanceOf(v: CustomValue): boolean {
+    return v instanceof CustomNil;
+  }
 }
 
 export const Void = new CustomNil();

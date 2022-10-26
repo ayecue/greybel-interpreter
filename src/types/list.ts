@@ -72,6 +72,10 @@ export default class CustomList extends CustomObject {
     return this.value.length > 0;
   }
 
+  instanceOf(v: CustomValue): boolean {
+    return v instanceof CustomList;
+  }
+
   slice(a: CustomValue, b: CustomValue): CustomList {
     return new CustomList(this.value.slice(a.toNumber(), b.toNumber()));
   }

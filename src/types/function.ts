@@ -114,6 +114,10 @@ export default class CustomFunction extends CustomValue {
     return true;
   }
 
+  instanceOf(v: CustomValue): boolean {
+    return v instanceof CustomFunction;
+  }
+
   async run(
     self: CustomValue,
     args: Array<CustomValue>,

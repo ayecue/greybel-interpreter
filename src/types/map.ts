@@ -49,6 +49,7 @@ export default class CustomMap extends CustomObject {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
   value: ObjectValue;
+  /* eslint-disable no-use-before-define */
   readonly isa: CustomMap | null;
   private isInstance: boolean = false;
 
@@ -84,7 +85,10 @@ export default class CustomMap extends CustomObject {
     }
 
     for (const [key, value] of this.value.entries()) {
-      json[key.toString()] = value instanceof CustomMap ? value.toString(depth + 1) : value.toString();
+      json[key.toString()] =
+        value instanceof CustomMap
+          ? value.toString(depth + 1)
+          : value.toString();
     }
 
     return JSON.stringify(json);
@@ -104,6 +108,22 @@ export default class CustomMap extends CustomObject {
 
   toTruthy(): boolean {
     return this.value.size > 0;
+  }
+
+  instanceOf(v: CustomValue): boolean {
+    if (v instanceof CustomMap) {
+      let current: CustomMap | null = this;
+
+      while ((current = current.isa)) {
+        if (current === v) {
+          return true;
+        }
+      }
+
+      return v.value === CustomMap.intrinsics;
+    }
+
+    return false;
   }
 
   [Symbol.iterator](): CustomMapIterator {
@@ -198,8 +218,8 @@ export default class CustomMap extends CustomObject {
         } else {
           const ahead = traversalPath.next();
 
-          if (this.isa?.has(current)) {
-            return this.isa.get(current);
+          if (this.isa?.has(ahead)) {
+            return this.isa.get(ahead);
           }
         }
       } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
@@ -211,10 +231,7 @@ export default class CustomMap extends CustomObject {
   }
 
   createInstance(): CustomMap {
-    const newInstance = new CustomMap(
-      new ObjectValue(),
-      this
-    );
+    const newInstance = new CustomMap(new ObjectValue(), this);
 
     newInstance.isInstance = true;
     return newInstance;

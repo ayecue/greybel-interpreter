@@ -48,6 +48,12 @@ export default class CustomInterface extends CustomObject {
     return true;
   }
 
+  instanceOf(v: CustomValue): boolean {
+    return (
+      v instanceof CustomInterface && v.getCustomType() === this.getCustomType()
+    );
+  }
+
   [Symbol.iterator](): CustomInterfaceIterator {
     return new CustomInterfaceIterator();
   }

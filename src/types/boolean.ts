@@ -31,6 +31,10 @@ export default class CustomBoolean extends CustomValue {
   toTruthy(): boolean {
     return this.value;
   }
+
+  instanceOf(v: CustomValue): boolean {
+    return v instanceof CustomBoolean;
+  }
 }
 
 export const DefaultTrue = new CustomBoolean(true);

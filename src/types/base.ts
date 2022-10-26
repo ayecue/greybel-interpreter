@@ -6,4 +6,5 @@ export default abstract class CustomValue {
   abstract toString(): string;
   abstract toTruthy(): boolean;
   abstract fork(): CustomValue;
+  abstract instanceOf(value: CustomValue): boolean;
 }
