@@ -133,6 +133,8 @@ export class LoopState {
 export class FunctionState {
   value: CustomValue = Defaults.Void;
   isReturn: boolean = false;
+  context: CustomValue = null;
+  super: CustomValue = null;
 }
 
 export interface ContextOptions {

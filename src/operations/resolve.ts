@@ -12,6 +12,7 @@ import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
 import CustomList from '../types/list';
+import CustomMap from '../types/map';
 import CustomString from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import Path from '../utils/path';
@@ -27,19 +28,35 @@ export class SliceSegment {
   }
 }
 
-export class IdentifierSegment {
-  readonly value: string;
-
-  constructor(value: string) {
-    this.value = value;
+export class PathSegment {
+  async toPath(ctx: OperationContext): Promise<CustomValue> {
+    return Promise.resolve(Defaults.Void);
   }
 }
 
-export class IndexSegment {
+export class IdentifierSegment extends PathSegment {
+  readonly value: string;
+
+  constructor(value: string) {
+    super();
+    this.value = value;
+  }
+
+  toPath(ctx: OperationContext): Promise<CustomValue> {
+    return Promise.resolve(new CustomString(this.value));
+  }
+}
+
+export class IndexSegment extends PathSegment {
   readonly op: Operation;
 
   constructor(op: Operation) {
+    super();
     this.op = op;
+  }
+
+  async toPath(ctx: OperationContext): Promise<CustomValue> {
+    return this.op.handle(ctx);
   }
 }
 
@@ -134,10 +151,8 @@ export default class Resolve extends Operation {
       if (current instanceof OperationSegment) {
         const opSegment = current as OperationSegment;
         handle = await opSegment.op.handle(ctx);
-      } else if (current instanceof IdentifierSegment) {
-        const identifierSegment = current as IdentifierSegment;
-
-        traversedPath.add(new CustomString(identifierSegment.value));
+      } else if (current instanceof PathSegment) {
+        traversedPath.add(await current.toPath(ctx));
 
         if (index === lastIndex) {
           break;
@@ -157,35 +172,21 @@ export default class Resolve extends Operation {
         }
 
         if (handle instanceof CustomFunction) {
-          handle = await handle.run(previous || Defaults.Void, [], ctx);
-        }
-
-        traversedPath = new Path<CustomValue>();
-      } else if (current instanceof IndexSegment) {
-        const indexSegment = current as IndexSegment;
-        const indexValue = await indexSegment.op.handle(ctx);
-
-        traversedPath.add(indexValue);
-
-        if (index === lastIndex) {
-          break;
-        }
-
-        const previous = handle;
-
-        if (handle !== Defaults.Void) {
-          if (handle instanceof CustomValueWithIntrinsics) {
-            const customValueCtx = handle as CustomValueWithIntrinsics;
-            handle = customValueCtx.get(traversedPath);
+          if (
+            index === 1 &&
+            traversedPath.toString() === 'super' &&
+            ctx.functionState.context &&
+            previous instanceof CustomMap
+          ) {
+            handle = await handle.run(
+              ctx.functionState.context,
+              [],
+              ctx,
+              previous.isa
+            );
           } else {
-            throw new Error('Handle has no properties.');
+            handle = await handle.run(previous || Defaults.Void, [], ctx);
           }
-        } else {
-          handle = ctx.get(traversedPath);
-        }
-
-        if (handle instanceof CustomFunction) {
-          handle = await handle.run(previous || Defaults.Void, [], ctx);
         }
 
         traversedPath = new Path<CustomValue>();
@@ -229,6 +230,20 @@ export default class Resolve extends Operation {
       const child = customValueCtx.get(result.path);
 
       if (autoCall && child instanceof CustomFunction) {
+        if (
+          this.path[0] instanceof IdentifierSegment &&
+          this.path[0].value === 'super' &&
+          ctx.functionState.context &&
+          customValueCtx instanceof CustomMap
+        ) {
+          return child.run(
+            ctx.functionState.context,
+            [],
+            ctx,
+            customValueCtx.isa
+          );
+        }
+
         return child.run(customValueCtx, [], ctx);
       }
 

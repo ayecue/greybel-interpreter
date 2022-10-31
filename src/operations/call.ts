@@ -4,8 +4,9 @@ import OperationContext from '../context';
 import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
+import CustomMap from '../types/map';
 import Operation, { CPSVisit } from './operation';
-import Resolve from './resolve';
+import Resolve, { IdentifierSegment } from './resolve';
 
 export default class Call extends Operation {
   readonly item: ASTCallExpression;
@@ -36,6 +37,21 @@ export default class Call extends Operation {
 
     if (valueRef instanceof CustomFunction) {
       const func = valueRef as CustomFunction;
+
+      if (
+        this.fnRef.path[0] instanceof IdentifierSegment &&
+        this.fnRef.path[0].value === 'super' &&
+        ctx.functionState.context &&
+        resolveResult.handle instanceof CustomMap
+      ) {
+        return func.run(
+          ctx.functionState.context,
+          fnArgs,
+          ctx,
+          resolveResult.handle.isa
+        );
+      }
+
       return func.run(resolveResult.handle, fnArgs, ctx);
     }
 

@@ -3,13 +3,15 @@ import Operation from '../operations/operation';
 import Reference from '../operations/reference';
 import CustomValue from './base';
 import Defaults from './default';
+import CustomMap from './map';
 import CustomNil from './nil';
 
 export interface Callback {
   (
     ctx: OperationContext,
     self: CustomValue,
-    args: Map<string, CustomValue>
+    args: Map<string, CustomValue>,
+    next?: CustomValue
   ): Promise<NonNullable<CustomValue>>;
 }
 
@@ -121,7 +123,8 @@ export default class CustomFunction extends CustomValue {
   async run(
     self: CustomValue,
     args: Array<CustomValue>,
-    callContext: OperationContext
+    callContext: OperationContext,
+    next?: CustomMap
   ): Promise<CustomValue> {
     const fnCtx = this.scope?.fork({
       type: ContextType.Function,
@@ -142,6 +145,8 @@ export default class CustomFunction extends CustomValue {
       );
     }
 
-    return this.value(fnCtx || callContext, self, argMap);
+    const isa = next || (self instanceof CustomMap ? self.isa : null);
+
+    return this.value(fnCtx || callContext, self, argMap, isa);
   }
 }
