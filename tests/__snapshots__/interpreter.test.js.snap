@@ -1845,10 +1845,42 @@ CustomString {
 `;
 
 exports[`interpreter default scripts super.src 2`] = `
+CustomString {
+  "value": "doing math",
+}
+`;
+
+exports[`interpreter default scripts super.src 3`] = `
+CustomNumber {
+  "value": 3,
+}
+`;
+
+exports[`interpreter default scripts super.src 4`] = `
+CustomNumber {
+  "value": 3,
+}
+`;
+
+exports[`interpreter default scripts super.src 5`] = `
+CustomNumber {
+  "value": 1,
+}
+`;
+
+exports[`interpreter default scripts super.src 6`] = `
 CustomNumber {
   "value": 10,
 }
 `;
+
+exports[`interpreter default scripts super.src 7`] = `
+CustomString {
+  "value": "test",
+}
+`;
+
+exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\":\\"{\\\\\\"__isa\\\\\\":\\\\\\"{\\\\\\\\\\\\\\"__isa\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"{...}\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"test\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"function anonymous()\\\\\\\\\\\\\\"}\\\\\\",\\\\\\"test\\\\\\":\\\\\\"function anonymous()\\\\\\"}\\",\\"lllbefore\\":\\"moo\\",\\"lll\\":\\"was\\"}"`;
 
 exports[`interpreter default scripts uglified.src 1`] = `
 CustomMap {

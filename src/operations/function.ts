@@ -9,7 +9,6 @@ import OperationContext, { FunctionState } from '../context';
 import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
-import CustomMap from '../types/map';
 import CustomString from '../types/string';
 import Block from './block';
 import Operation, { CPSVisit } from './operation';
@@ -62,14 +61,17 @@ export default class FunctionOperation extends Operation {
       async (
         fnCtx: OperationContext,
         self: CustomValue,
-        args: Map<string, CustomValue>
+        args: Map<string, CustomValue>,
+        next: CustomValue
       ): Promise<CustomValue> => {
-        fnCtx.functionState = new FunctionState();
+        const functionState = new FunctionState();
 
         fnCtx.set(SELF_PROPERTY, self);
+        functionState.context = self;
 
-        if (self instanceof CustomMap && self.isa !== null) {
-          fnCtx.set(SUPER_PROPERTY, self.isa);
+        if (next) {
+          fnCtx.set(SUPER_PROPERTY, next);
+          functionState.super = next;
         }
 
         fnCtx.set(new CustomString('locals'), fnCtx.locals.scope);
@@ -79,9 +81,11 @@ export default class FunctionOperation extends Operation {
           fnCtx.set(new CustomString(key), value);
         }
 
+        fnCtx.functionState = functionState;
+
         await this.block.handle(fnCtx);
 
-        return fnCtx.functionState.value;
+        return functionState.value;
       }
     );
 

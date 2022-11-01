@@ -4,6 +4,10 @@ test.foo = function(a, b, c)
 end function
 
 test.ama = function(a, b, c)
+    print("doing math")
+    print(a)
+    print(b)
+    print(c)
     return a * b + c
 end function
 
@@ -19,3 +23,27 @@ test3.bar = function(a, b, c)
 end function
 
 test3.bar
+
+m1 = {}
+m1.test = function()
+    self.lll = "was"
+    print("test")
+end function
+
+m2 = new m1
+
+m3 = new m2
+m3.test = function()
+    self.lllbefore = "moo"
+    super.test
+end function
+
+m4 = new m3
+m4.test = function()
+    super.test
+end function
+
+m5 = new m4
+
+m5.test
+stringify(m5)

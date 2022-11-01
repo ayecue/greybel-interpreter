@@ -12,6 +12,7 @@ import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
 import CustomList from '../types/list';
+import CustomMap from '../types/map';
 import CustomString from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import Path from '../utils/path';
@@ -27,19 +28,35 @@ export class SliceSegment {
   }
 }
 
-export class IdentifierSegment {
-  readonly value: string;
-
-  constructor(value: string) {
-    this.value = value;
+export class PathSegment {
+  async toPath(_ctx: OperationContext): Promise<CustomValue> {
+    return Promise.resolve(Defaults.Void);
   }
 }
 
-export class IndexSegment {
+export class IdentifierSegment extends PathSegment {
+  readonly value: string;
+
+  constructor(value: string) {
+    super();
+    this.value = value;
+  }
+
+  toPath(_ctx: OperationContext): Promise<CustomValue> {
+    return Promise.resolve(new CustomString(this.value));
+  }
+}
+
+export class IndexSegment extends PathSegment {
   readonly op: Operation;
 
   constructor(op: Operation) {
+    super();
     this.op = op;
+  }
+
+  async toPath(ctx: OperationContext): Promise<CustomValue> {
+    return this.op.handle(ctx);
   }
 }
 
@@ -57,6 +74,39 @@ export type Segment =
   | IndexSegment
   | OperationSegment;
 
+export class SegmentContainer {
+  path: Array<Segment>;
+
+  constructor() {
+    this.path = [];
+  }
+
+  push(item: Segment): SegmentContainer {
+    this.path.push(item);
+    return this;
+  }
+
+  count(): number {
+    return this.path.length;
+  }
+
+  at(index: number): Segment {
+    return this.path[index];
+  }
+
+  isSuper(): boolean {
+    return (
+      this.path.length === 2 &&
+      this.path[0] instanceof IdentifierSegment &&
+      this.path[0].value === 'super'
+    );
+  }
+
+  getLast(): Segment {
+    return this.path[this.path.length - 1];
+  }
+}
+
 export class ResolveResult {
   readonly path: Path<CustomValue>;
   readonly handle: CustomValue;
@@ -69,7 +119,7 @@ export class ResolveResult {
 
 export default class Resolve extends Operation {
   readonly item: ASTBase;
-  path: Array<Segment>;
+  path: SegmentContainer;
   last: Segment;
 
   constructor(item: ASTBase, target?: string) {
@@ -116,28 +166,26 @@ export default class Resolve extends Operation {
   }
 
   async build(visit: CPSVisit): Promise<Resolve> {
-    this.path = [];
+    this.path = new SegmentContainer();
     await this.buildProcessor(this.item, visit);
-    this.last = this.path[this.path.length - 1];
+    this.last = this.path.getLast();
     return this;
   }
 
   async getResult(ctx: OperationContext): Promise<ResolveResult> {
     let traversedPath = new Path<CustomValue>();
     let handle: CustomValue = Defaults.Void;
-    const maxIndex = this.path.length;
+    const maxIndex = this.path.count();
     const lastIndex = maxIndex - 1;
 
     for (let index = 0; index < maxIndex; index++) {
-      const current = this.path[index];
+      const current = this.path.at(index);
 
       if (current instanceof OperationSegment) {
         const opSegment = current as OperationSegment;
         handle = await opSegment.op.handle(ctx);
-      } else if (current instanceof IdentifierSegment) {
-        const identifierSegment = current as IdentifierSegment;
-
-        traversedPath.add(new CustomString(identifierSegment.value));
+      } else if (current instanceof PathSegment) {
+        traversedPath.add(await current.toPath(ctx));
 
         if (index === lastIndex) {
           break;
@@ -157,35 +205,21 @@ export default class Resolve extends Operation {
         }
 
         if (handle instanceof CustomFunction) {
-          handle = await handle.run(previous || Defaults.Void, [], ctx);
-        }
-
-        traversedPath = new Path<CustomValue>();
-      } else if (current instanceof IndexSegment) {
-        const indexSegment = current as IndexSegment;
-        const indexValue = await indexSegment.op.handle(ctx);
-
-        traversedPath.add(indexValue);
-
-        if (index === lastIndex) {
-          break;
-        }
-
-        const previous = handle;
-
-        if (handle !== Defaults.Void) {
-          if (handle instanceof CustomValueWithIntrinsics) {
-            const customValueCtx = handle as CustomValueWithIntrinsics;
-            handle = customValueCtx.get(traversedPath);
+          if (
+            index === 1 &&
+            traversedPath.toString() === 'super' &&
+            ctx.functionState.context &&
+            previous instanceof CustomMap
+          ) {
+            handle = await handle.run(
+              ctx.functionState.context,
+              [],
+              ctx,
+              previous.isa
+            );
           } else {
-            throw new Error('Handle has no properties.');
+            handle = await handle.run(previous || Defaults.Void, [], ctx);
           }
-        } else {
-          handle = ctx.get(traversedPath);
-        }
-
-        if (handle instanceof CustomFunction) {
-          handle = await handle.run(previous || Defaults.Void, [], ctx);
         }
 
         traversedPath = new Path<CustomValue>();
@@ -229,6 +263,19 @@ export default class Resolve extends Operation {
       const child = customValueCtx.get(result.path);
 
       if (autoCall && child instanceof CustomFunction) {
+        if (
+          this.path.isSuper() &&
+          ctx.functionState.context &&
+          customValueCtx instanceof CustomMap
+        ) {
+          return child.run(
+            ctx.functionState.context,
+            [],
+            ctx,
+            customValueCtx.isa
+          );
+        }
+
         return child.run(customValueCtx, [], ctx);
       }
 

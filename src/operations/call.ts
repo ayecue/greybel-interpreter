@@ -4,6 +4,7 @@ import OperationContext from '../context';
 import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomFunction from '../types/function';
+import CustomMap from '../types/map';
 import Operation, { CPSVisit } from './operation';
 import Resolve from './resolve';
 
@@ -36,6 +37,20 @@ export default class Call extends Operation {
 
     if (valueRef instanceof CustomFunction) {
       const func = valueRef as CustomFunction;
+
+      if (
+        this.fnRef.path.isSuper() &&
+        ctx.functionState.context &&
+        resolveResult.handle instanceof CustomMap
+      ) {
+        return func.run(
+          ctx.functionState.context,
+          fnArgs,
+          ctx,
+          resolveResult.handle.isa
+        );
+      }
+
       return func.run(resolveResult.handle, fnArgs, ctx);
     }
 
