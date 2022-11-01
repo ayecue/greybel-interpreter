@@ -29,7 +29,7 @@ export class SliceSegment {
 }
 
 export class PathSegment {
-  async toPath(ctx: OperationContext): Promise<CustomValue> {
+  async toPath(_ctx: OperationContext): Promise<CustomValue> {
     return Promise.resolve(Defaults.Void);
   }
 }
@@ -42,7 +42,7 @@ export class IdentifierSegment extends PathSegment {
     this.value = value;
   }
 
-  toPath(ctx: OperationContext): Promise<CustomValue> {
+  toPath(_ctx: OperationContext): Promise<CustomValue> {
     return Promise.resolve(new CustomString(this.value));
   }
 }
@@ -74,6 +74,39 @@ export type Segment =
   | IndexSegment
   | OperationSegment;
 
+export class SegmentContainer {
+  path: Array<Segment>;
+
+  constructor() {
+    this.path = [];
+  }
+
+  push(item: Segment): SegmentContainer {
+    this.path.push(item);
+    return this;
+  }
+
+  count(): number {
+    return this.path.length;
+  }
+
+  at(index: number): Segment {
+    return this.path[index];
+  }
+
+  isSuper(): boolean {
+    return (
+      this.path.length === 2 &&
+      this.path[0] instanceof IdentifierSegment &&
+      this.path[0].value === 'super'
+    );
+  }
+
+  getLast(): Segment {
+    return this.path[this.path.length - 1];
+  }
+}
+
 export class ResolveResult {
   readonly path: Path<CustomValue>;
   readonly handle: CustomValue;
@@ -86,7 +119,7 @@ export class ResolveResult {
 
 export default class Resolve extends Operation {
   readonly item: ASTBase;
-  path: Array<Segment>;
+  path: SegmentContainer;
   last: Segment;
 
   constructor(item: ASTBase, target?: string) {
@@ -133,20 +166,20 @@ export default class Resolve extends Operation {
   }
 
   async build(visit: CPSVisit): Promise<Resolve> {
-    this.path = [];
+    this.path = new SegmentContainer();
     await this.buildProcessor(this.item, visit);
-    this.last = this.path[this.path.length - 1];
+    this.last = this.path.getLast();
     return this;
   }
 
   async getResult(ctx: OperationContext): Promise<ResolveResult> {
     let traversedPath = new Path<CustomValue>();
     let handle: CustomValue = Defaults.Void;
-    const maxIndex = this.path.length;
+    const maxIndex = this.path.count();
     const lastIndex = maxIndex - 1;
 
     for (let index = 0; index < maxIndex; index++) {
-      const current = this.path[index];
+      const current = this.path.at(index);
 
       if (current instanceof OperationSegment) {
         const opSegment = current as OperationSegment;
@@ -231,8 +264,7 @@ export default class Resolve extends Operation {
 
       if (autoCall && child instanceof CustomFunction) {
         if (
-          this.path[0] instanceof IdentifierSegment &&
-          this.path[0].value === 'super' &&
+          this.path.isSuper() &&
           ctx.functionState.context &&
           customValueCtx instanceof CustomMap
         ) {

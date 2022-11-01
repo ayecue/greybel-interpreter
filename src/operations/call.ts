@@ -39,8 +39,7 @@ export default class Call extends Operation {
       const func = valueRef as CustomFunction;
 
       if (
-        this.fnRef.path[0] instanceof IdentifierSegment &&
-        this.fnRef.path[0].value === 'super' &&
+        this.fnRef.path.isSuper() &&
         ctx.functionState.context &&
         resolveResult.handle instanceof CustomMap
       ) {
