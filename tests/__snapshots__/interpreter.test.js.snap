@@ -1880,7 +1880,7 @@ CustomString {
 }
 `;
 
-exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\":\\"{\\\\\\"__isa\\\\\\":\\\\\\"{\\\\\\\\\\\\\\"__isa\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"{...}\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"test\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"function anonymous()\\\\\\\\\\\\\\"}\\\\\\",\\\\\\"test\\\\\\":\\\\\\"function anonymous()\\\\\\"}\\",\\"lll\\":\\"was\\"}"`;
+exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\":\\"{\\\\\\"__isa\\\\\\":\\\\\\"{\\\\\\\\\\\\\\"__isa\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"{...}\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"test\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"function anonymous()\\\\\\\\\\\\\\"}\\\\\\",\\\\\\"test\\\\\\":\\\\\\"function anonymous()\\\\\\"}\\",\\"lllbefore\\":\\"moo\\",\\"lll\\":\\"was\\"}"`;
 
 exports[`interpreter default scripts uglified.src 1`] = `
 CustomMap {
