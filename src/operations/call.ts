@@ -6,7 +6,7 @@ import Defaults from '../types/default';
 import CustomFunction from '../types/function';
 import CustomMap from '../types/map';
 import Operation, { CPSVisit } from './operation';
-import Resolve, { IdentifierSegment } from './resolve';
+import Resolve from './resolve';
 
 export default class Call extends Operation {
   readonly item: ASTCallExpression;
