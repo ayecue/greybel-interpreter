@@ -34,12 +34,13 @@ m2 = new m1
 
 m3 = new m2
 m3.test = function()
-    super.test()
+    self.lllbefore = "moo"
+    super.test
 end function
 
 m4 = new m3
 m4.test = function()
-    super.test()
+    super.test
 end function
 
 m5 = new m4
