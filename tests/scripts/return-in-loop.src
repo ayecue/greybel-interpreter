@@ -1,0 +1,10 @@
+test = function()
+  for v in [1,2,3]
+    if (v == 3) then
+      return true
+    end if
+  end for
+  print("do not reach")
+end function
+
+print(test)

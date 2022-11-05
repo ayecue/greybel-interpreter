@@ -386,8 +386,8 @@ export default class OperationContext {
       processState: this.processState
     });
 
-    if (this.type !== ContextType.Function) {
-      if (this.type !== ContextType.Loop) {
+    if (options.type !== ContextType.Function) {
+      if (options.type !== ContextType.Loop) {
         newContext.loopState = this.loopState;
       }
 

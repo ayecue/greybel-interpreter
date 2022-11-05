@@ -1739,6 +1739,12 @@ CustomNumber {
 }
 `;
 
+exports[`interpreter default scripts return-in-loop.src 1`] = `
+CustomBoolean {
+  "value": true,
+}
+`;
+
 exports[`interpreter default scripts scopes.src 1`] = `
 CustomString {
   "value": "main local",
