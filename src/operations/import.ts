@@ -6,12 +6,14 @@ import CustomValue from '../types/base';
 import Defaults from '../types/default';
 import CustomMap from '../types/map';
 import CustomString from '../types/string';
+import Path from '../utils/path';
 import Operation, { CPSVisit } from './operation';
 
 export const MODULE_PROPERTY = new CustomString('module');
 export const EXPORTS_PROPERTY = new CustomString('exports');
+export const EXPORTS_PATH = new Path([MODULE_PROPERTY, EXPORTS_PROPERTY]);
 
-export default class Include extends Operation {
+export default class Import extends Operation {
   readonly item: ASTFeatureImportExpression;
   code: string;
   chunk: ASTBase;
@@ -33,16 +35,15 @@ export default class Include extends Operation {
   async handle(ctx: context): Promise<CustomValue> {
     const importCtx = ctx.fork({
       type: ContextType.External,
-      state: ContextState.Temporary,
+      state: ContextState.Default,
       target: this.target
     });
-    const moduleMap = new CustomMap();
-    importCtx.set(MODULE_PROPERTY, moduleMap);
+    importCtx.locals.scope.set(MODULE_PROPERTY, new CustomMap());
 
     await this.top.handle(importCtx);
 
-    const item = moduleMap.has(EXPORTS_PROPERTY)
-      ? moduleMap.get(EXPORTS_PROPERTY)
+    const item = importCtx.locals.scope.has(EXPORTS_PATH)
+      ? importCtx.scope.get(EXPORTS_PATH)
       : Defaults.Void;
     const identifier = this.item.name as ASTIdentifier;
 

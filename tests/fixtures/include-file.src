@@ -1,1 +1,3 @@
-includeFileFoo = "foo imported code"
+#include ./sub-include-file.src;
+
+includeFileFoo = "foo included code" + subIncludeFileFoo

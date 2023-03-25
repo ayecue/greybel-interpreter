@@ -1,1 +1,3 @@
-nativeImportFoo = "foo imported code native"
+import_code("my/path":"./sub-native-import")
+
+nativeImportFoo = "foo imported code native" + subNativeImportFoo
