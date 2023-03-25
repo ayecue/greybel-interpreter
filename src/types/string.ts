@@ -53,6 +53,10 @@ export default class CustomString extends CustomValueWithIntrinsics {
     return 'string';
   }
 
+  toJSON(): string {
+    return `"${this.value}"`;
+  }
+
   toString(): string {
     return this.value;
   }

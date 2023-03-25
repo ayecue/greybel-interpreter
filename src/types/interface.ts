@@ -28,6 +28,10 @@ export default class CustomInterface extends CustomObject {
     return this.type;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   toString(): string {
     return this.type;
   }

@@ -73,25 +73,34 @@ export default class CustomMap extends CustomObject {
     return 'map';
   }
 
+  toJSON(depth: number = 0): string {
+    return this.toString(depth);
+  }
+
   toString(depth: number = 0): string {
-    const json: { [key: string]: any } = {};
+    const fields: string[] = [];
 
     if (CUSTOM_MAP_MAX_DEPTH < depth) {
       return CUSTOM_MAP_MAX_DEPTH_VALUE;
     }
 
     if (this.isa) {
-      json[ISA_PROPERTY.toString()] = this.isa.toString(depth + 1);
+      fields.push(`${ISA_PROPERTY.toJSON()}:${this.isa.toJSON(depth + 1)}`);
     }
 
     for (const [key, value] of this.value.entries()) {
-      json[key.toString()] =
-        value instanceof CustomMap
-          ? value.toString(depth + 1)
-          : value.toString();
+      fields.push(
+        `${
+          key instanceof CustomMap ? key.toJSON(depth + 1) : key.toJSON(depth)
+        }:${
+          value instanceof CustomMap
+            ? value.toJSON(depth + 1)
+            : value.toJSON(depth)
+        }`
+      );
     }
 
-    return JSON.stringify(json);
+    return `{${fields.join(',')}}`;
   }
 
   fork(): CustomMap {

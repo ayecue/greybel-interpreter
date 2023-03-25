@@ -26,6 +26,10 @@ export default class CustomNumber extends CustomValueWithIntrinsics {
     return 'number';
   }
 
+  toJSON(): string {
+    return this.value.toString();
+  }
+
   toString(): string {
     return this.value.toString();
   }

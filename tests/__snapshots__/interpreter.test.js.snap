@@ -1,2031 +1,435 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`interpreter default scripts binary-expressions.src 1`] = `
-CustomNumber {
-  "value": 1.5,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 2`] = `
-CustomNumber {
-  "value": 600,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 3`] = `
-CustomNumber {
-  "value": 10,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 4`] = `
-CustomNumber {
-  "value": 50,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 5`] = `
-CustomNumber {
-  "value": 31457280,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 6`] = `
-CustomNumber {
-  "value": 0,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 7`] = `
-CustomNumber {
-  "value": 0,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 8`] = `
-CustomNumber {
-  "value": 30,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 9`] = `
-CustomNumber {
-  "value": 20,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 10`] = `
-CustomNumber {
-  "value": 10,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 11`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts binary-expressions.src 12`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts cast.src 1`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "was",
-    } => CustomNumber {
-      "value": 1,
-    },
-    CustomString {
-      "value": "foo",
-    } => CustomBoolean {
-      "value": false,
-    },
-    CustomString {
-      "value": "bar",
-    } => CustomString {
-      "value": "xxx",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts cast.src 2`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "was",
-    } => CustomNumber {
-      "value": 1,
-    },
-    CustomString {
-      "value": "foo",
-    } => CustomBoolean {
-      "value": false,
-    },
-    CustomString {
-      "value": "bar",
-    } => CustomString {
-      "value": "xxx",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts cast.src 3`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "was",
-    },
-    CustomBoolean {
-      "value": false,
-    },
-    CustomNumber {
-      "value": 4,
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts cast.src 4`] = `
-CustomString {
-  "value": "was",
-}
-`;
-
-exports[`interpreter default scripts cast.src 5`] = `
-CustomNumber {
-  "value": 61.23,
-}
-`;
-
-exports[`interpreter default scripts cast.src 6`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts cast.src 7`] = `
-CustomNil {
-  "value": null,
-}
-`;
-
-exports[`interpreter default scripts cast.src 8`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "bar",
-    },
-    CustomString {
-      "value": "foo",
-    },
-    CustomBoolean {
-      "value": false,
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts cast.src 9`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "foo",
-    } => CustomNumber {
-      "value": 2,
-    },
-    CustomString {
-      "value": "bar",
-    } => CustomNumber {
-      "value": 123,
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts cast.src 10`] = `
-CustomString {
-  "value": "was321",
-}
-`;
-
-exports[`interpreter default scripts cast.src 11`] = `
-CustomString {
-  "value": "wasfoo",
-}
-`;
-
-exports[`interpreter default scripts cast.src 12`] = `
-CustomNumber {
-  "value": 1,
-}
-`;
-
-exports[`interpreter default scripts cast.src 13`] = `
-CustomNil {
-  "value": null,
-}
-`;
-
-exports[`interpreter default scripts cast.src 14`] = `
-CustomNil {
-  "value": null,
-}
-`;
-
-exports[`interpreter default scripts cast.src 15`] = `
-CustomNil {
-  "value": null,
-}
-`;
-
-exports[`interpreter default scripts cast.src 16`] = `
-CustomNil {
-  "value": null,
-}
-`;
-
-exports[`interpreter default scripts cast.src 17`] = `
-CustomNumber {
-  "value": 1,
-}
-`;
-
-exports[`interpreter default scripts cast.src 18`] = `
-CustomNumber {
-  "value": 0,
-}
-`;
-
-exports[`interpreter default scripts cast.src 19`] = `
-CustomString {
-  "value": "abcabcabcabcabc",
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 1`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 2`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 3`] = `
-CustomString {
-  "value": "test",
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 4`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 5`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 6`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 7`] = `
-CustomString {
-  "value": "test",
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 8`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "was",
-    } => CustomNumber {
-      "value": 1,
-    },
-    CustomString {
-      "value": "second",
-    } => CustomNumber {
-      "value": 2,
-    },
-    [Circular] => [Circular],
-  },
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 9`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 10`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 11`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 12`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 13`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 14`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts deep-equal.src 15`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts default-args.src 1`] = `
-CustomNumber {
-  "value": 0,
-}
-`;
-
-exports[`interpreter default scripts default-args.src 2`] = `
-CustomString {
-  "value": "test",
-}
-`;
-
-exports[`interpreter default scripts default-args.src 3`] = `
-CustomString {
-  "value": "hello",
-}
-`;
-
-exports[`interpreter default scripts default-args.src 4`] = `
-CustomString {
-  "value": "foo",
-}
-`;
-
-exports[`interpreter default scripts default-args.src 5`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts default-args.src 6`] = `
-CustomString {
-  "value": "hello",
-}
-`;
-
-exports[`interpreter default scripts exit.src 1`] = `
-CustomNumber {
-  "value": 123,
-}
-`;
-
-exports[`interpreter default scripts exit-in-loop.src 1`] = `
-CustomString {
-  "value": "in loop",
-}
-`;
-
-exports[`interpreter default scripts extend-intrinsics.src 1`] = `
-CustomString {
-  "value": "was2",
-}
-`;
-
-exports[`interpreter default scripts extend-intrinsics.src 2`] = `
-CustomString {
-  "value": "test",
-}
-`;
-
-exports[`interpreter default scripts extend-intrinsics.src 3`] = `
-CustomNumber {
-  "value": 10,
-}
-`;
-
-exports[`interpreter default scripts extend-intrinsics.src 4`] = `
-CustomString {
-  "value": "something",
-}
-`;
-
-exports[`interpreter default scripts extend-intrinsics.src 5`] = `
-CustomString {
-  "value": "foo",
-}
-`;
-
-exports[`interpreter default scripts extend-intrinsics.src 6`] = `"[ bar, moo ]"`;
-
-exports[`interpreter default scripts extend-intrinsics.src 7`] = `"[ bar, moo, another ]"`;
-
-exports[`interpreter default scripts gs-bug-index.src 1`] = `
-CustomString {
-  "value": "string",
-}
-`;
-
-exports[`interpreter default scripts gs-bug-index.src 2`] = `
-CustomString {
-  "value": "function",
-}
-`;
-
-exports[`interpreter default scripts gs-bug-index.src 3`] = `
-CustomString {
-  "value": "testnull",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 1`] = `
-CustomString {
-  "value": "1234",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 2`] = `
-CustomString {
-  "value": "was",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 3`] = `
-CustomString {
-  "value": "moo",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 4`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts has-index.src 5`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts has-index.src 6`] = `
-CustomString {
-  "value": "bar",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 7`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts has-index.src 8`] = `
-CustomString {
-  "value": "987",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 9`] = `
-CustomString {
-  "value": "987",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 10`] = `
-CustomString {
-  "value": "987",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 11`] = `
-CustomString {
-  "value": "inner-bar",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 12`] = `
-CustomString {
-  "value": "inner-bar",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 13`] = `
-CustomString {
-  "value": "inner-bar",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 14`] = `
-CustomString {
-  "value": "was",
-}
-`;
-
-exports[`interpreter default scripts has-index.src 15`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts has-index.src 16`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts if-clause.src 1`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts if-clause.src 2`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts if-clause.src 3`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts if-clause.src 4`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 1`] = `
-CustomString {
-  "value": "true",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 2`] = `
-CustomString {
-  "value": "false",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 3`] = `
-CustomString {
-  "value": "was",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 4`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 5`] = `
-CustomString {
-  "value": "foo",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 6`] = `
-CustomString {
-  "value": "bar",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 7`] = `
-CustomString {
-  "value": "x1",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 8`] = `
-CustomString {
-  "value": "x2",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 9`] = `
-CustomString {
-  "value": "was",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 10`] = `
-CustomString {
-  "value": "foo",
-}
-`;
-
-exports[`interpreter default scripts if-shorthand.src 11`] = `
-CustomNil {
-  "value": null,
-}
-`;
-
-exports[`interpreter default scripts imports.src 1`] = `
-CustomString {
-  "value": "file imported",
-}
-`;
-
-exports[`interpreter default scripts imports.src 2`] = `
-CustomString {
-  "value": "foo imported code",
-}
-`;
-
-exports[`interpreter default scripts imports.src 3`] = `
-CustomString {
-  "value": "foo imported code native",
-}
-`;
-
-exports[`interpreter default scripts instances.src 1`] = `
-CustomString {
-  "value": "was",
-}
-`;
-
-exports[`interpreter default scripts instances.src 2`] = `
-CustomString {
-  "value": "woo",
-}
-`;
-
-exports[`interpreter default scripts intrinsics.src 1`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "s",
-    },
-    CustomString {
-      "value": "t",
-    },
-    CustomString {
-      "value": "r",
-    },
-    CustomString {
-      "value": "i",
-    },
-    CustomString {
-      "value": "n",
-    },
-    CustomString {
-      "value": "g",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts intrinsics.src 2`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "s",
-    },
-    CustomString {
-      "value": "t",
-    },
-    CustomString {
-      "value": "r",
-    },
-    CustomString {
-      "value": "i",
-    },
-    CustomString {
-      "value": "n",
-    },
-    CustomString {
-      "value": "g",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts intrinsics.src 3`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "s",
-    },
-    CustomString {
-      "value": "t",
-    },
-    CustomString {
-      "value": "r",
-    },
-    CustomString {
-      "value": "i",
-    },
-    CustomString {
-      "value": "n",
-    },
-    CustomString {
-      "value": "g",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts intrinsics.src 4`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 1`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts isa.src 2`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 3`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 4`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 5`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 6`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts isa.src 7`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 8`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 9`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 10`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 11`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts isa.src 12`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 13`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 14`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 15`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 16`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts isa.src 17`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 18`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 19`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 20`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts isa.src 21`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts isa.src 22`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts list.src 1`] = `
-CustomString {
-  "value": "bar",
-}
-`;
-
-exports[`interpreter default scripts list.src 2`] = `
-CustomString {
-  "value": "bar",
-}
-`;
-
-exports[`interpreter default scripts list.src 3`] = `
-CustomString {
-  "value": "foo",
-}
-`;
-
-exports[`interpreter default scripts list.src 4`] = `
-CustomString {
-  "value": "changed",
-}
-`;
-
-exports[`interpreter default scripts loops.src 1`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "test0",
-    },
-    CustomNumber {
-      "value": 0,
-    },
-    CustomNumber {
-      "value": 0,
-    },
-    CustomNumber {
-      "value": 0,
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts loops.src 2`] = `
-CustomString {
-  "value": "before accepted",
-}
-`;
-
-exports[`interpreter default scripts loops.src 3`] = `
-CustomString {
-  "value": "after accepted",
-}
-`;
-
-exports[`interpreter default scripts loops.src 4`] = `
-CustomString {
-  "value": "before break",
-}
-`;
-
-exports[`interpreter default scripts loops.src 5`] = `
-CustomNumber {
-  "value": 10,
-}
-`;
-
-exports[`interpreter default scripts loops.src 6`] = `
-CustomNumber {
-  "value": 0,
-}
-`;
-
-exports[`interpreter default scripts loops.src 7`] = `
-CustomString {
-  "value": "test",
-}
-`;
-
-exports[`interpreter default scripts loops.src 8`] = `
-CustomNumber {
-  "value": 123,
-}
-`;
-
-exports[`interpreter default scripts loops.src 9`] = `
-CustomNumber {
-  "value": 0,
-}
-`;
-
-exports[`interpreter default scripts loops.src 10`] = `
-CustomString {
-  "value": "abc",
-}
-`;
-
-exports[`interpreter default scripts loops.src 11`] = `
-CustomNumber {
-  "value": 456,
-}
-`;
-
-exports[`interpreter default scripts loops.src 12`] = `
-CustomNumber {
-  "value": 1,
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 1`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "see",
-    } => CustomString {
-      "value": "124578",
-    },
-    CustomString {
-      "value": "foo",
-    } => CustomNumber {
-      "value": 123,
-    },
-    CustomString {
-      "value": "bar",
-    } => CustomBoolean {
-      "value": true,
-    },
-    CustomString {
-      "value": "lore",
-    } => CustomString {
-      "value": "moo",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 2`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "123456",
-    },
-    CustomString {
-      "value": "xxx",
-    },
-    CustomNumber {
-      "value": 123,
-    },
-    CustomString {
-      "value": "foo",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 3`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "foo",
-    } => CustomNumber {
-      "value": 123,
-    },
-    CustomString {
-      "value": "bar",
-    } => CustomBoolean {
-      "value": true,
-    },
-    CustomString {
-      "value": "lore",
-    } => CustomString {
-      "value": "moo",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 4`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "xxx",
-    },
-    CustomNumber {
-      "value": 123,
-    },
-    CustomString {
-      "value": "foo",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 5`] = `
-CustomNumber {
-  "value": 123,
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 6`] = `
-CustomString {
-  "value": "foo",
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 7`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "bar",
-    } => CustomBoolean {
-      "value": true,
-    },
-    CustomString {
-      "value": "lore",
-    } => CustomString {
-      "value": "moo",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 8`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "xxx",
-    },
-    CustomNumber {
-      "value": 123,
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 9`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "foo",
-    } => CustomNumber {
-      "value": 123,
-    },
-    CustomString {
-      "value": "bar",
-    } => CustomBoolean {
-      "value": true,
-    },
-    CustomString {
-      "value": "lore",
-    } => CustomString {
-      "value": "moo",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts manipulation.src 10`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "xxx",
-    },
-    CustomNumber {
-      "value": 123,
-    },
-    CustomString {
-      "value": "foo",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts map.src 1`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomString {
-          "value": "myTest",
-        } => CustomNumber {
-          "value": 0,
-        },
-        CustomNumber {
-          "value": 1,
-        } => CustomNumber {
-          "value": 2,
-        },
-      },
-    } => CustomBoolean {
-      "value": true,
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts map.src 2`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomList {
-      "value": Array [
-        CustomNumber {
-          "value": 12,
-        },
-        CustomNumber {
-          "value": 14,
-        },
-      ],
-    } => CustomBoolean {
-      "value": true,
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts map.src 3`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomMap {
-          "isInstance": false,
-          "isa": null,
-          "value": Map {
-            CustomString {
-              "value": "myTest",
-            } => CustomNumber {
-              "value": 0,
-            },
-            CustomNumber {
-              "value": 1,
-            } => CustomNumber {
-              "value": 2,
-            },
-          },
-        } => CustomBoolean {
-          "value": true,
-        },
-      },
-    } => CustomNumber {
-      "value": 234,
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts map.src 4`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomBoolean {
-      "value": true,
-    } => CustomString {
-      "value": "foo",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts map.src 5`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomNumber {
-      "value": 123,
-    } => CustomString {
-      "value": "bar",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts map.src 6`] = `
-CustomNumber {
-  "value": 234,
-}
-`;
-
-exports[`interpreter default scripts map.src 7`] = `
-CustomString {
-  "value": "foo",
-}
-`;
-
-exports[`interpreter default scripts map.src 8`] = `
-CustomString {
-  "value": "bar",
-}
-`;
-
-exports[`interpreter default scripts negation.src 1`] = `
-CustomNumber {
-  "value": 2,
-}
-`;
-
-exports[`interpreter default scripts negation.src 2`] = `
-CustomList {
-  "value": Array [
-    CustomNumber {
-      "value": -1,
-    },
-    CustomNumber {
-      "value": 2,
-    },
-    CustomNumber {
-      "value": 0,
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts new-map.src 1`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomString {
-          "value": "myTest",
-        } => CustomNumber {
-          "value": 0,
-        },
-        CustomNumber {
-          "value": 1,
-        } => CustomNumber {
-          "value": 2,
-        },
-      },
-    } => CustomBoolean {
-      "value": true,
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts new-map.src 2`] = `
-CustomMap {
-  "isInstance": true,
-  "isa": CustomMap {
-    "isInstance": false,
-    "isa": null,
-    "value": Map {
-      CustomMap {
-        "isInstance": false,
-        "isa": null,
-        "value": Map {
-          CustomString {
-            "value": "myTest",
-          } => CustomNumber {
-            "value": 0,
-          },
-          CustomNumber {
-            "value": 1,
-          } => CustomNumber {
-            "value": 2,
-          },
-        },
-      } => CustomBoolean {
-        "value": true,
-      },
-    },
-  },
-  "value": Map {
-    CustomString {
-      "value": "foo",
-    } => CustomString {
-      "value": "bar",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts new-map.src 3`] = `
-CustomMap {
-  "isInstance": true,
-  "isa": CustomMap {
-    "isInstance": true,
-    "isa": CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomMap {
-          "isInstance": false,
-          "isa": null,
-          "value": Map {
-            CustomString {
-              "value": "myTest",
-            } => CustomNumber {
-              "value": 0,
-            },
-            CustomNumber {
-              "value": 1,
-            } => CustomNumber {
-              "value": 2,
-            },
-          },
-        } => CustomBoolean {
-          "value": true,
-        },
-      },
-    },
-    "value": Map {
-      CustomString {
-        "value": "foo",
-      } => CustomString {
-        "value": "bar",
-      },
-    },
-  },
-  "value": Map {
-    CustomString {
-      "value": "moo",
-    } => CustomString {
-      "value": "123",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts new-map.src 4`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts new-map.src 5`] = `
-CustomString {
-  "value": "123",
-}
-`;
-
-exports[`interpreter default scripts new-map.src 6`] = `
-CustomString {
-  "value": "bar",
-}
-`;
-
-exports[`interpreter default scripts new-map.src 7`] = `
-CustomMap {
-  "isInstance": true,
-  "isa": CustomMap {
-    "isInstance": true,
-    "isa": CustomMap {
-      "isInstance": true,
-      "isa": CustomMap {
-        "isInstance": false,
-        "isa": null,
-        "value": Map {
-          CustomMap {
-            "isInstance": false,
-            "isa": null,
-            "value": Map {
-              CustomString {
-                "value": "myTest",
-              } => CustomNumber {
-                "value": 0,
-              },
-              CustomNumber {
-                "value": 1,
-              } => CustomNumber {
-                "value": 2,
-              },
-            },
-          } => CustomBoolean {
-            "value": true,
-          },
-        },
-      },
-      "value": Map {
-        CustomString {
-          "value": "foo",
-        } => CustomString {
-          "value": "bar",
-        },
-      },
-    },
-    "value": Map {
-      CustomString {
-        "value": "moo",
-      } => CustomString {
-        "value": "123",
-      },
-    },
-  },
-  "value": Map {
-    CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomString {
-          "value": "myTest",
-        } => CustomNumber {
-          "value": 0,
-        },
-        CustomNumber {
-          "value": 1,
-        } => CustomNumber {
-          "value": 2,
-        },
-      },
-    } => CustomString {
-      "value": "change",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts new-map.src 8`] = `
-CustomMap {
-  "isInstance": true,
-  "isa": CustomMap {
-    "isInstance": true,
-    "isa": CustomMap {
-      "isInstance": true,
-      "isa": CustomMap {
-        "isInstance": true,
-        "isa": CustomMap {
-          "isInstance": false,
-          "isa": null,
-          "value": Map {
-            CustomMap {
-              "isInstance": false,
-              "isa": null,
-              "value": Map {
-                CustomString {
-                  "value": "myTest",
-                } => CustomNumber {
-                  "value": 0,
-                },
-                CustomNumber {
-                  "value": 1,
-                } => CustomNumber {
-                  "value": 2,
-                },
-              },
-            } => CustomBoolean {
-              "value": true,
-            },
-          },
-        },
-        "value": Map {
-          CustomString {
-            "value": "foo",
-          } => CustomString {
-            "value": "bar",
-          },
-        },
-      },
-      "value": Map {
-        CustomString {
-          "value": "moo",
-        } => CustomString {
-          "value": "123",
-        },
-      },
-    },
-    "value": Map {
-      CustomMap {
-        "isInstance": false,
-        "isa": null,
-        "value": Map {
-          CustomString {
-            "value": "myTest",
-          } => CustomNumber {
-            "value": 0,
-          },
-          CustomNumber {
-            "value": 1,
-          } => CustomNumber {
-            "value": 2,
-          },
-        },
-      } => CustomString {
-        "value": "change",
-      },
-    },
-  },
-  "value": Map {},
-}
-`;
-
-exports[`interpreter default scripts new-map.src 9`] = `"{\\"__isa\\":\\"{\\\\\\"{\\\\\\\\\\\\\\"1\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"2\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"myTest\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"0\\\\\\\\\\\\\\"}\\\\\\":\\\\\\"true\\\\\\"}\\",\\"foo\\":\\"bar\\"}"`;
-
-exports[`interpreter default scripts new-map.src 10`] = `"{\\"__isa\\":\\"{\\\\\\"__isa\\\\\\":\\\\\\"{\\\\\\\\\\\\\\"{\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"1\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"2\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"myTest\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"0\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"}\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"true\\\\\\\\\\\\\\"}\\\\\\",\\\\\\"foo\\\\\\":\\\\\\"bar\\\\\\"}\\",\\"moo\\":\\"123\\"}"`;
-
-exports[`interpreter default scripts new-map.src 11`] = `"{\\"__isa\\":\\"{\\\\\\"__isa\\\\\\":\\\\\\"{\\\\\\\\\\\\\\"__isa\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"{...}\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"foo\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"bar\\\\\\\\\\\\\\"}\\\\\\",\\\\\\"moo\\\\\\":\\\\\\"123\\\\\\"}\\",\\"{\\\\\\"1\\\\\\":\\\\\\"2\\\\\\",\\\\\\"myTest\\\\\\":\\\\\\"0\\\\\\"}\\":\\"change\\"}"`;
-
-exports[`interpreter default scripts new-map.src 12`] = `"{\\"__isa\\":\\"{\\\\\\"__isa\\\\\\":\\\\\\"{\\\\\\\\\\\\\\"__isa\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"{...}\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"moo\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"123\\\\\\\\\\\\\\"}\\\\\\",\\\\\\"{\\\\\\\\\\\\\\"1\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"2\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"myTest\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"0\\\\\\\\\\\\\\"}\\\\\\":\\\\\\"change\\\\\\"}\\"}"`;
-
-exports[`interpreter default scripts new-map.src 13`] = `
-CustomMap {
-  "isInstance": true,
-  "isa": CustomMap {
-    "isInstance": true,
-    "isa": CustomMap {
-      "isInstance": true,
-      "isa": CustomMap {
-        "isInstance": false,
-        "isa": null,
-        "value": Map {
-          CustomMap {
-            "isInstance": false,
-            "isa": null,
-            "value": Map {
-              CustomString {
-                "value": "myTest",
-              } => CustomNumber {
-                "value": 0,
-              },
-              CustomNumber {
-                "value": 1,
-              } => CustomNumber {
-                "value": 2,
-              },
-            },
-          } => CustomBoolean {
-            "value": true,
-          },
-        },
-      },
-      "value": Map {
-        CustomString {
-          "value": "foo",
-        } => CustomString {
-          "value": "bar",
-        },
-      },
-    },
-    "value": Map {
-      CustomString {
-        "value": "moo",
-      } => CustomString {
-        "value": "123",
-      },
-    },
-  },
-  "value": Map {
-    CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomString {
-          "value": "myTest",
-        } => CustomNumber {
-          "value": 0,
-        },
-        CustomNumber {
-          "value": 1,
-        } => CustomNumber {
-          "value": 2,
-        },
-      },
-    } => CustomString {
-      "value": "change",
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts new-map.src 14`] = `
-CustomString {
-  "value": "bar",
-}
-`;
-
-exports[`interpreter default scripts new-map.src 15`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "b",
-    },
-    CustomString {
-      "value": "a",
-    },
-    CustomString {
-      "value": "r",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts obj-init.src 1`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "123",
-    },
-    CustomString {
-      "value": "123",
-    },
-    CustomString {
-      "value": "foo",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts obj-init.src 2`] = `
-CustomList {
-  "value": Array [
-    CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomString {
-          "value": "another",
-        } => CustomString {
-          "value": "123",
-        },
-      },
-    },
-    CustomString {
-      "value": "123",
-    },
-    CustomString {
-      "value": "foo",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts print.src 1`] = `
-CustomNumber {
-  "value": 123,
-}
-`;
-
-exports[`interpreter default scripts return-in-loop.src 1`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts scopes.src 1`] = `
-CustomString {
-  "value": "main local",
-}
-`;
-
-exports[`interpreter default scripts scopes.src 2`] = `
-CustomString {
-  "value": "test fn local",
-}
-`;
-
-exports[`interpreter default scripts scopes.src 3`] = `
-CustomString {
-  "value": "main local",
-}
-`;
-
-exports[`interpreter default scripts scopes.src 4`] = `
-CustomString {
-  "value": "test bar local",
-}
-`;
-
-exports[`interpreter default scripts simple-object.src 1`] = `
-CustomString {
-  "value": "was",
-}
-`;
-
-exports[`interpreter default scripts simple-object.src 2`] = `
-CustomNil {
-  "value": null,
-}
-`;
-
-exports[`interpreter default scripts slice.src 1`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "blahh",
-    },
-    CustomString {
-      "value": "blahh",
-    },
-    CustomString {
-      "value": "blahh",
-    },
-    CustomString {
-      "value": "blahh",
-    },
-    CustomString {
-      "value": "blahh",
-    },
-    CustomString {
-      "value": "blahh",
-    },
-    CustomString {
-      "value": "gad",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts slice.src 2`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "b",
-    },
-    CustomString {
-      "value": "c",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts slice.src 3`] = `
-CustomList {
-  "value": Array [
-    CustomString {
-      "value": "a",
-    },
-  ],
-}
-`;
-
-exports[`interpreter default scripts slice.src 4`] = `
-CustomString {
-  "value": "bc",
-}
-`;
-
-exports[`interpreter default scripts slice.src 5`] = `
-CustomString {
-  "value": "a",
-}
-`;
-
-exports[`interpreter default scripts super.src 1`] = `
-CustomString {
-  "value": "test",
-}
-`;
-
-exports[`interpreter default scripts super.src 2`] = `
-CustomString {
-  "value": "doing math",
-}
-`;
-
-exports[`interpreter default scripts super.src 3`] = `
-CustomNumber {
-  "value": 3,
-}
-`;
-
-exports[`interpreter default scripts super.src 4`] = `
-CustomNumber {
-  "value": 3,
-}
-`;
-
-exports[`interpreter default scripts super.src 5`] = `
-CustomNumber {
-  "value": 1,
-}
-`;
-
-exports[`interpreter default scripts super.src 6`] = `
-CustomNumber {
-  "value": 10,
-}
-`;
-
-exports[`interpreter default scripts super.src 7`] = `
-CustomString {
-  "value": "test",
-}
-`;
-
-exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\":\\"{\\\\\\"__isa\\\\\\":\\\\\\"{\\\\\\\\\\\\\\"__isa\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"{...}\\\\\\\\\\\\\\",\\\\\\\\\\\\\\"test\\\\\\\\\\\\\\":\\\\\\\\\\\\\\"function anonymous()\\\\\\\\\\\\\\"}\\\\\\",\\\\\\"test\\\\\\":\\\\\\"function anonymous()\\\\\\"}\\",\\"lllbefore\\":\\"moo\\",\\"lll\\":\\"was\\"}"`;
-
-exports[`interpreter default scripts uglified.src 1`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "B",
-    } => CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomString {
-          "value": "exports",
-        } => CustomMap {
-          "isInstance": false,
-          "isa": null,
-          "value": Map {
-            CustomString {
-              "value": "bar",
-            } => CustomNumber {
-              "value": 123,
-            },
-          },
-        },
-      },
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts uglified.src 2`] = `
-CustomString {
-  "value": "B",
-}
-`;
-
-exports[`interpreter default scripts uglified.src 3`] = `
-CustomMap {
-  "isInstance": false,
-  "isa": null,
-  "value": Map {
-    CustomString {
-      "value": "exports",
-    } => CustomMap {
-      "isInstance": false,
-      "isa": null,
-      "value": Map {
-        CustomString {
-          "value": "bar",
-        } => CustomNumber {
-          "value": 123,
-        },
-      },
-    },
-  },
-}
-`;
-
-exports[`interpreter default scripts uglified.src 4`] = `
-CustomNumber {
-  "value": 123,
-}
-`;
-
-exports[`interpreter default scripts unary.src 1`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts unary.src 2`] = `
-CustomBoolean {
-  "value": false,
-}
-`;
-
-exports[`interpreter default scripts unary.src 3`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts unary.src 4`] = `
-CustomBoolean {
-  "value": true,
-}
-`;
-
-exports[`interpreter default scripts unary.src 5`] = `
-CustomNumber {
-  "value": 1,
-}
-`;
-
-exports[`interpreter default scripts unary.src 6`] = `
-CustomNumber {
-  "value": -3,
-}
-`;
-
-exports[`interpreter default scripts unary.src 7`] = `
-CustomString {
-  "value": "function",
-}
-`;
-
-exports[`interpreter default scripts unary.src 8`] = `
-CustomString {
-  "value": "inner-function",
-}
-`;
-
-exports[`interpreter default scripts unary.src 9`] = `
-CustomString {
-  "value": "function",
-}
-`;
-
-exports[`interpreter should exit 1`] = `
-CustomString {
-  "value": "123",
-}
-`;
-
-exports[`interpreter should exit 2`] = `
-CustomString {
-  "value": "456",
-}
-`;
-
-exports[`interpreter should exit 3`] = `
-CustomString {
-  "value": "789",
-}
-`;
-
-exports[`interpreter should exit 4`] = `
-CustomString {
-  "value": "foo",
-}
-`;
+exports[`interpreter default scripts binary-expressions.src 1`] = `"1.5"`;
+
+exports[`interpreter default scripts binary-expressions.src 2`] = `"600"`;
+
+exports[`interpreter default scripts binary-expressions.src 3`] = `"10"`;
+
+exports[`interpreter default scripts binary-expressions.src 4`] = `"50"`;
+
+exports[`interpreter default scripts binary-expressions.src 5`] = `"31457280"`;
+
+exports[`interpreter default scripts binary-expressions.src 6`] = `"0"`;
+
+exports[`interpreter default scripts binary-expressions.src 7`] = `"0"`;
+
+exports[`interpreter default scripts binary-expressions.src 8`] = `"30"`;
+
+exports[`interpreter default scripts binary-expressions.src 9`] = `"20"`;
+
+exports[`interpreter default scripts binary-expressions.src 10`] = `"10"`;
+
+exports[`interpreter default scripts binary-expressions.src 11`] = `"1"`;
+
+exports[`interpreter default scripts binary-expressions.src 12`] = `"1"`;
+
+exports[`interpreter default scripts cast.src 1`] = `"{\\"was\\":1,\\"foo\\":0,\\"bar\\":\\"xxx\\"}"`;
+
+exports[`interpreter default scripts cast.src 2`] = `"{\\"was\\":1,\\"foo\\":0,\\"bar\\":\\"xxx\\"}"`;
+
+exports[`interpreter default scripts cast.src 3`] = `"[\\"was\\", 0, 4]"`;
+
+exports[`interpreter default scripts cast.src 4`] = `"\\"was\\""`;
+
+exports[`interpreter default scripts cast.src 5`] = `"61.23"`;
+
+exports[`interpreter default scripts cast.src 6`] = `"1"`;
+
+exports[`interpreter default scripts cast.src 7`] = `"null"`;
+
+exports[`interpreter default scripts cast.src 8`] = `"[\\"bar\\", \\"foo\\", 0]"`;
+
+exports[`interpreter default scripts cast.src 9`] = `"{\\"foo\\":2,\\"bar\\":123}"`;
+
+exports[`interpreter default scripts cast.src 10`] = `"\\"was321\\""`;
+
+exports[`interpreter default scripts cast.src 11`] = `"\\"wasfoo\\""`;
+
+exports[`interpreter default scripts cast.src 12`] = `"1"`;
+
+exports[`interpreter default scripts cast.src 13`] = `"null"`;
+
+exports[`interpreter default scripts cast.src 14`] = `"null"`;
+
+exports[`interpreter default scripts cast.src 15`] = `"null"`;
+
+exports[`interpreter default scripts cast.src 16`] = `"null"`;
+
+exports[`interpreter default scripts cast.src 17`] = `"1"`;
+
+exports[`interpreter default scripts cast.src 18`] = `"0"`;
+
+exports[`interpreter default scripts cast.src 19`] = `"\\"abcabcabcabcabc\\""`;
+
+exports[`interpreter default scripts deep-equal.src 1`] = `"1"`;
+
+exports[`interpreter default scripts deep-equal.src 2`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 3`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts deep-equal.src 4`] = `"1"`;
+
+exports[`interpreter default scripts deep-equal.src 5`] = `"1"`;
+
+exports[`interpreter default scripts deep-equal.src 6`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 7`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts deep-equal.src 8`] = `"{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{...}:{...}}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}:{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{...}:{...}}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}}"`;
+
+exports[`interpreter default scripts deep-equal.src 9`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 10`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 11`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 12`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 13`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 14`] = `"0"`;
+
+exports[`interpreter default scripts deep-equal.src 15`] = `"1"`;
+
+exports[`interpreter default scripts default-args.src 1`] = `"0"`;
+
+exports[`interpreter default scripts default-args.src 2`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts default-args.src 3`] = `"\\"hello\\""`;
+
+exports[`interpreter default scripts default-args.src 4`] = `"\\"foo\\""`;
+
+exports[`interpreter default scripts default-args.src 5`] = `"0"`;
+
+exports[`interpreter default scripts default-args.src 6`] = `"\\"hello\\""`;
+
+exports[`interpreter default scripts exit.src 1`] = `"123"`;
+
+exports[`interpreter default scripts exit-in-loop.src 1`] = `"\\"in loop\\""`;
+
+exports[`interpreter default scripts extend-intrinsics.src 1`] = `"\\"was2\\""`;
+
+exports[`interpreter default scripts extend-intrinsics.src 2`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts extend-intrinsics.src 3`] = `"10"`;
+
+exports[`interpreter default scripts extend-intrinsics.src 4`] = `"\\"something\\""`;
+
+exports[`interpreter default scripts extend-intrinsics.src 5`] = `"\\"foo\\""`;
+
+exports[`interpreter default scripts extend-intrinsics.src 6`] = `"[\\"bar\\", \\"moo\\"]"`;
+
+exports[`interpreter default scripts extend-intrinsics.src 7`] = `"[\\"bar\\", \\"moo\\", \\"another\\"]"`;
+
+exports[`interpreter default scripts gs-bug-index.src 1`] = `"\\"string\\""`;
+
+exports[`interpreter default scripts gs-bug-index.src 2`] = `"\\"function\\""`;
+
+exports[`interpreter default scripts gs-bug-index.src 3`] = `"\\"testnull\\""`;
+
+exports[`interpreter default scripts has-index.src 1`] = `"\\"1234\\""`;
+
+exports[`interpreter default scripts has-index.src 2`] = `"\\"was\\""`;
+
+exports[`interpreter default scripts has-index.src 3`] = `"\\"moo\\""`;
+
+exports[`interpreter default scripts has-index.src 4`] = `"1"`;
+
+exports[`interpreter default scripts has-index.src 5`] = `"1"`;
+
+exports[`interpreter default scripts has-index.src 6`] = `"\\"bar\\""`;
+
+exports[`interpreter default scripts has-index.src 7`] = `"1"`;
+
+exports[`interpreter default scripts has-index.src 8`] = `"\\"987\\""`;
+
+exports[`interpreter default scripts has-index.src 9`] = `"\\"987\\""`;
+
+exports[`interpreter default scripts has-index.src 10`] = `"\\"987\\""`;
+
+exports[`interpreter default scripts has-index.src 11`] = `"\\"inner-bar\\""`;
+
+exports[`interpreter default scripts has-index.src 12`] = `"\\"inner-bar\\""`;
+
+exports[`interpreter default scripts has-index.src 13`] = `"\\"inner-bar\\""`;
+
+exports[`interpreter default scripts has-index.src 14`] = `"\\"was\\""`;
+
+exports[`interpreter default scripts has-index.src 15`] = `"1"`;
+
+exports[`interpreter default scripts has-index.src 16`] = `"0"`;
+
+exports[`interpreter default scripts if-clause.src 1`] = `"1"`;
+
+exports[`interpreter default scripts if-clause.src 2`] = `"0"`;
+
+exports[`interpreter default scripts if-clause.src 3`] = `"1"`;
+
+exports[`interpreter default scripts if-clause.src 4`] = `"0"`;
+
+exports[`interpreter default scripts if-shorthand.src 1`] = `"\\"true\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 2`] = `"\\"false\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 3`] = `"\\"was\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 4`] = `"1"`;
+
+exports[`interpreter default scripts if-shorthand.src 5`] = `"\\"foo\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 6`] = `"\\"bar\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 7`] = `"\\"x1\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 8`] = `"\\"x2\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 9`] = `"\\"was\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 10`] = `"\\"foo\\""`;
+
+exports[`interpreter default scripts if-shorthand.src 11`] = `"null"`;
+
+exports[`interpreter default scripts imports.src 1`] = `"\\"file imported and sub file imported\\""`;
+
+exports[`interpreter default scripts imports.src 2`] = `"\\"foo included code and sub foo included code\\""`;
+
+exports[`interpreter default scripts imports.src 3`] = `"\\"foo imported code native and sub foo imported code native\\""`;
+
+exports[`interpreter default scripts instances.src 1`] = `"\\"was\\""`;
+
+exports[`interpreter default scripts instances.src 2`] = `"\\"woo\\""`;
+
+exports[`interpreter default scripts intrinsics.src 1`] = `"[\\"s\\", \\"t\\", \\"r\\", \\"i\\", \\"n\\", \\"g\\"]"`;
+
+exports[`interpreter default scripts intrinsics.src 2`] = `"[\\"s\\", \\"t\\", \\"r\\", \\"i\\", \\"n\\", \\"g\\"]"`;
+
+exports[`interpreter default scripts intrinsics.src 3`] = `"[\\"s\\", \\"t\\", \\"r\\", \\"i\\", \\"n\\", \\"g\\"]"`;
+
+exports[`interpreter default scripts intrinsics.src 4`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 1`] = `"1"`;
+
+exports[`interpreter default scripts isa.src 2`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 3`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 4`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 5`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 6`] = `"1"`;
+
+exports[`interpreter default scripts isa.src 7`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 8`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 9`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 10`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 11`] = `"1"`;
+
+exports[`interpreter default scripts isa.src 12`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 13`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 14`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 15`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 16`] = `"1"`;
+
+exports[`interpreter default scripts isa.src 17`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 18`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 19`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 20`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 21`] = `"1"`;
+
+exports[`interpreter default scripts isa.src 22`] = `"1"`;
+
+exports[`interpreter default scripts list.src 1`] = `"\\"bar\\""`;
+
+exports[`interpreter default scripts list.src 2`] = `"\\"bar\\""`;
+
+exports[`interpreter default scripts list.src 3`] = `"\\"foo\\""`;
+
+exports[`interpreter default scripts list.src 4`] = `"\\"changed\\""`;
+
+exports[`interpreter default scripts loops.src 1`] = `"[\\"test0\\", 0, 0, 0]"`;
+
+exports[`interpreter default scripts loops.src 2`] = `"\\"before accepted\\""`;
+
+exports[`interpreter default scripts loops.src 3`] = `"\\"after accepted\\""`;
+
+exports[`interpreter default scripts loops.src 4`] = `"\\"before break\\""`;
+
+exports[`interpreter default scripts loops.src 5`] = `"10"`;
+
+exports[`interpreter default scripts loops.src 6`] = `"0"`;
+
+exports[`interpreter default scripts loops.src 7`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts loops.src 8`] = `"123"`;
+
+exports[`interpreter default scripts loops.src 9`] = `"0"`;
+
+exports[`interpreter default scripts loops.src 10`] = `"\\"abc\\""`;
+
+exports[`interpreter default scripts loops.src 11`] = `"456"`;
+
+exports[`interpreter default scripts loops.src 12`] = `"1"`;
+
+exports[`interpreter default scripts manipulation.src 1`] = `"{\\"see\\":\\"124578\\",\\"foo\\":123,\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+
+exports[`interpreter default scripts manipulation.src 2`] = `"[\\"123456\\", \\"xxx\\", 123, \\"foo\\"]"`;
+
+exports[`interpreter default scripts manipulation.src 3`] = `"{\\"foo\\":123,\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+
+exports[`interpreter default scripts manipulation.src 4`] = `"[\\"xxx\\", 123, \\"foo\\"]"`;
+
+exports[`interpreter default scripts manipulation.src 5`] = `"123"`;
+
+exports[`interpreter default scripts manipulation.src 6`] = `"\\"foo\\""`;
+
+exports[`interpreter default scripts manipulation.src 7`] = `"{\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+
+exports[`interpreter default scripts manipulation.src 8`] = `"[\\"xxx\\", 123]"`;
+
+exports[`interpreter default scripts manipulation.src 9`] = `"{\\"foo\\":123,\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+
+exports[`interpreter default scripts manipulation.src 10`] = `"[\\"xxx\\", 123, \\"foo\\"]"`;
+
+exports[`interpreter default scripts map.src 1`] = `"{{\\"myTest\\":0,1:2}:1}"`;
+
+exports[`interpreter default scripts map.src 2`] = `"{[12, 14]:1}"`;
+
+exports[`interpreter default scripts map.src 3`] = `"{{{\\"myTest\\":0,1:2}:1}:234}"`;
+
+exports[`interpreter default scripts map.src 4`] = `"{1:\\"foo\\"}"`;
+
+exports[`interpreter default scripts map.src 5`] = `"{123:\\"bar\\"}"`;
+
+exports[`interpreter default scripts map.src 6`] = `"234"`;
+
+exports[`interpreter default scripts map.src 7`] = `"\\"foo\\""`;
+
+exports[`interpreter default scripts map.src 8`] = `"\\"bar\\""`;
+
+exports[`interpreter default scripts negation.src 1`] = `"2"`;
+
+exports[`interpreter default scripts negation.src 2`] = `"[-1, 2, 0]"`;
+
+exports[`interpreter default scripts new-map.src 1`] = `"{{\\"myTest\\":0,1:2}:1}"`;
+
+exports[`interpreter default scripts new-map.src 2`] = `"{\\"__isa\\":{{\\"myTest\\":0,1:2}:1},\\"foo\\":\\"bar\\"}"`;
+
+exports[`interpreter default scripts new-map.src 3`] = `"{\\"__isa\\":{\\"__isa\\":{{...}:1},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"}"`;
+
+exports[`interpreter default scripts new-map.src 4`] = `"1"`;
+
+exports[`interpreter default scripts new-map.src 5`] = `"\\"123\\""`;
+
+exports[`interpreter default scripts new-map.src 6`] = `"\\"bar\\""`;
+
+exports[`interpreter default scripts new-map.src 7`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}"`;
+
+exports[`interpreter default scripts new-map.src 8`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}}"`;
+
+exports[`interpreter default scripts new-map.src 9`] = `"{\\"__isa\\":{{\\"myTest\\":0,1:2}:1},\\"foo\\":\\"bar\\"}"`;
+
+exports[`interpreter default scripts new-map.src 10`] = `"{\\"__isa\\":{\\"__isa\\":{{...}:1},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"}"`;
+
+exports[`interpreter default scripts new-map.src 11`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}"`;
+
+exports[`interpreter default scripts new-map.src 12`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}}"`;
+
+exports[`interpreter default scripts new-map.src 13`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}"`;
+
+exports[`interpreter default scripts new-map.src 14`] = `"\\"bar\\""`;
+
+exports[`interpreter default scripts new-map.src 15`] = `"[\\"b\\", \\"a\\", \\"r\\"]"`;
+
+exports[`interpreter default scripts obj-init.src 1`] = `"[\\"123\\", \\"123\\", \\"foo\\"]"`;
+
+exports[`interpreter default scripts obj-init.src 2`] = `"[{\\"another\\":\\"123\\"}, \\"123\\", \\"foo\\"]"`;
+
+exports[`interpreter default scripts print.src 1`] = `"123"`;
+
+exports[`interpreter default scripts return-in-loop.src 1`] = `"1"`;
+
+exports[`interpreter default scripts scopes.src 1`] = `"\\"main local\\""`;
+
+exports[`interpreter default scripts scopes.src 2`] = `"\\"test fn local\\""`;
+
+exports[`interpreter default scripts scopes.src 3`] = `"\\"main local\\""`;
+
+exports[`interpreter default scripts scopes.src 4`] = `"\\"test bar local\\""`;
+
+exports[`interpreter default scripts simple-object.src 1`] = `"\\"was\\""`;
+
+exports[`interpreter default scripts simple-object.src 2`] = `"null"`;
+
+exports[`interpreter default scripts slice.src 1`] = `"[\\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"gad\\"]"`;
+
+exports[`interpreter default scripts slice.src 2`] = `"[\\"b\\", \\"c\\"]"`;
+
+exports[`interpreter default scripts slice.src 3`] = `"[\\"a\\"]"`;
+
+exports[`interpreter default scripts slice.src 4`] = `"\\"bc\\""`;
+
+exports[`interpreter default scripts slice.src 5`] = `"\\"a\\""`;
+
+exports[`interpreter default scripts super.src 1`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts super.src 2`] = `"\\"doing math\\""`;
+
+exports[`interpreter default scripts super.src 3`] = `"3"`;
+
+exports[`interpreter default scripts super.src 4`] = `"3"`;
+
+exports[`interpreter default scripts super.src 5`] = `"1"`;
+
+exports[`interpreter default scripts super.src 6`] = `"10"`;
+
+exports[`interpreter default scripts super.src 7`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"test\\":\\"function anonymous()\\"},\\"test\\":\\"function anonymous()\\"},\\"lllbefore\\":\\"moo\\",\\"lll\\":\\"was\\"}"`;
+
+exports[`interpreter default scripts uglified.src 1`] = `"{\\"B\\":{\\"exports\\":{\\"bar\\":123}}}"`;
+
+exports[`interpreter default scripts uglified.src 2`] = `"\\"B\\""`;
+
+exports[`interpreter default scripts uglified.src 3`] = `"{\\"exports\\":{\\"bar\\":123}}"`;
+
+exports[`interpreter default scripts uglified.src 4`] = `"123"`;
+
+exports[`interpreter default scripts unary.src 1`] = `"1"`;
+
+exports[`interpreter default scripts unary.src 2`] = `"0"`;
+
+exports[`interpreter default scripts unary.src 3`] = `"1"`;
+
+exports[`interpreter default scripts unary.src 4`] = `"1"`;
+
+exports[`interpreter default scripts unary.src 5`] = `"1"`;
+
+exports[`interpreter default scripts unary.src 6`] = `"-3"`;
+
+exports[`interpreter default scripts unary.src 7`] = `"\\"function\\""`;
+
+exports[`interpreter default scripts unary.src 8`] = `"\\"inner-function\\""`;
+
+exports[`interpreter default scripts unary.src 9`] = `"\\"function\\""`;
+
+exports[`interpreter should exit 1`] = `"\\"123\\""`;
+
+exports[`interpreter should exit 2`] = `"\\"456\\""`;
+
+exports[`interpreter should exit 3`] = `"\\"789\\""`;
+
+exports[`interpreter should exit 4`] = `"\\"foo\\""`;
