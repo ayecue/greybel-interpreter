@@ -1,1 +1,3 @@
-module.exports = "file imported"
+#import subText from ./sub-import-file.src;
+
+module.exports = "file imported" + subText

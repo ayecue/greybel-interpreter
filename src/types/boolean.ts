@@ -12,6 +12,10 @@ export default class CustomBoolean extends CustomValue {
     return 'boolean';
   }
 
+  toJSON(): string {
+    return this.toNumber().toString();
+  }
+
   toString(): string {
     return this.value.toString();
   }

@@ -107,9 +107,13 @@ export default class CustomFunction extends CustomValue {
     return 0;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   toString(): string {
     const args = this.argumentDefs.map((item: Argument) => item.name);
-    return `function ${this.name}(${args.join(', ')})`;
+    return `"function ${this.name}(${args.join(', ')})"`;
   }
 
   toTruthy(): boolean {

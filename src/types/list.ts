@@ -52,8 +52,12 @@ export default class CustomList extends CustomObject {
     return 'list';
   }
 
-  toString(): string {
-    return `[ ${this.value.join(', ')} ]`;
+  toJSON(depth: number = 0): string {
+    return this.toString(depth);
+  }
+
+  toString(depth: number = 0): string {
+    return `[${this.value.map((item) => item.toJSON(depth)).join(', ')}]`;
   }
 
   fork(): CustomList {

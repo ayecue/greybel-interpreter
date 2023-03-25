@@ -7,6 +7,10 @@ export default class CustomNil extends CustomValue {
     return 'null';
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   toString(): string {
     return 'null';
   }
