@@ -113,7 +113,7 @@ export default class CustomFunction extends CustomValue {
 
   toString(): string {
     const args = this.argumentDefs.map((item: Argument) => item.name);
-    return `"function ${this.name}(${args.join(', ')})"`;
+    return `FUNCTION(${args.join(', ')})`;
   }
 
   toTruthy(): boolean {
