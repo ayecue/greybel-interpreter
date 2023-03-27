@@ -30,3 +30,19 @@ print([] == {})
 
 print("null" == null)
 print(1 == true)
+
+print({
+  "foo": 123,
+  "moo": true,
+  "bar": {
+    "a": "b"
+  },
+  "hon": [1,2,3]
+} == {
+  "foo": 123,
+  "moo": true,
+  "bar": {
+    "a": "b"
+  },
+  "hon": [1,2,3]
+})
