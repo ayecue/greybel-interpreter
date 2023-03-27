@@ -9,7 +9,7 @@ export default class CustomBoolean extends CustomValue {
   }
 
   getCustomType(): string {
-    return 'boolean';
+    return 'number';
   }
 
   toJSON(): string {
