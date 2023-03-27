@@ -37,6 +37,6 @@ function equalInner(
   return a.value === NaN && b.value === NaN;
 }
 
-export default function equal(a: any, b: any, maxDepth: number = 2) {
+export default function equal(a: any, b: any, maxDepth: number = 10) {
   return equalInner(a, b, maxDepth);
 }

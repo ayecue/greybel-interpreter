@@ -92,6 +92,8 @@ exports[`interpreter default scripts deep-equal.src 14`] = `"0"`;
 
 exports[`interpreter default scripts deep-equal.src 15`] = `"1"`;
 
+exports[`interpreter default scripts deep-equal.src 16`] = `"0"`;
+
 exports[`interpreter default scripts default-args.src 1`] = `"0"`;
 
 exports[`interpreter default scripts default-args.src 2`] = `"\\"test\\""`;
