@@ -32,7 +32,8 @@ export const NumberProcessorHandler: ProcessorHandler = {
   [Operator.Minus]: (a, b) => new CustomNumber(a.toNumber() - b.toNumber()),
   [Operator.Slash]: (a, b) => new CustomNumber(a.toNumber() / b.toNumber()),
   [Operator.Asterik]: (a, b) => new CustomNumber(a.toNumber() * b.toNumber()),
-  [Operator.Power]: (a, b) => new CustomNumber(Math.pow(a.toInt(), b.toInt())),
+  [Operator.Power]: (a, b) =>
+    new CustomNumber(Math.pow(a.toNumber(), b.toNumber())),
   [Operator.BitwiseOr]: (a, b) => new CustomNumber(a.toInt() | b.toInt()),
   [Operator.LessThan]: (a, b) => new CustomBoolean(a.toNumber() < b.toNumber()),
   [Operator.GreaterThan]: (a, b) =>
