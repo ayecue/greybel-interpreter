@@ -18,7 +18,7 @@ exports[`interpreter default scripts binary-expressions.src 8`] = `"30"`;
 
 exports[`interpreter default scripts binary-expressions.src 9`] = `"20"`;
 
-exports[`interpreter default scripts binary-expressions.src 10`] = `"10"`;
+exports[`interpreter default scripts binary-expressions.src 10`] = `"3.486784401e+29"`;
 
 exports[`interpreter default scripts binary-expressions.src 11`] = `"1"`;
 
