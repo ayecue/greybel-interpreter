@@ -31,7 +31,7 @@ export default class FunctionOperation extends Operation {
     const stack = await Promise.all(
       this.item.body.map((child) => visit(child))
     );
-    this.block = new Block(stack);
+    this.block = new Block(this.item, stack);
     this.args = new Map<string, Operation>();
     const defers = this.item.parameters.map(async (child) => {
       switch (child.type) {

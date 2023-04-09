@@ -122,7 +122,7 @@ export default class Interpreter extends EventEmitter {
       this.handler.errorHandler.raise(err);
     }
 
-    return Promise.resolve(new Noop());
+    return Promise.resolve(new Noop(null));
   }
 
   async inject(code: string, context?: OperationContext): Promise<Interpreter> {

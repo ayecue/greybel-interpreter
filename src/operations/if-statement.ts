@@ -35,14 +35,14 @@ export default class IfStatement extends Operation {
   async buildIfClause(node: ASTIfClause, visit: CPSVisit) {
     const condition = await visit(node.condition);
     const stack = await Promise.all(node.body.map((child) => visit(child)));
-    const block = new Block(stack);
+    const block = new Block(this.item, stack);
     this.clauses.push(new Clause(condition, block));
   }
 
   async buildElseClause(node: ASTElseClause, visit: CPSVisit) {
     const condition = new Reference(new CustomBoolean(true));
     const stack = await Promise.all(node.body.map((child) => visit(child)));
-    const block = new Block(stack);
+    const block = new Block(this.item, stack);
     this.clauses.push(new Clause(condition, block));
   }
 
