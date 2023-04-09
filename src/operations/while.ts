@@ -20,7 +20,7 @@ export default class While extends Operation {
     const stack = await Promise.all(
       this.item.body.map((child) => visit(child))
     );
-    this.block = new Block(stack);
+    this.block = new Block(this.item, stack);
     this.condition = await visit(this.item.condition);
     return this;
   }

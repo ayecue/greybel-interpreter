@@ -19,7 +19,7 @@ export default class Chunk extends Operation {
     const stack = await Promise.all(
       this.item.body.map((child) => visit(child))
     );
-    this.block = new Block(stack);
+    this.block = new Block(this.item, stack);
     return this;
   }
 

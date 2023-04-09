@@ -24,7 +24,7 @@ export default class For extends Operation {
     const stack = await Promise.all(
       this.item.body.map((child) => visit(child))
     );
-    this.block = new Block(stack);
+    this.block = new Block(this.item, stack);
     this.variable = this.item.variable as ASTIdentifier;
     this.iterator = await visit(this.item.iterator);
     return this;

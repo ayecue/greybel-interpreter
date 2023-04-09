@@ -1,3 +1,5 @@
+import { ASTBase } from 'greyscript-core';
+
 import OperationContext, { ContextType } from '../context';
 import CustomValue from '../types/base';
 import Defaults from '../types/default';
@@ -10,8 +12,8 @@ export interface IsEOL {
 export default class Block extends Operation {
   readonly stack: Array<Operation>;
 
-  constructor(stack: Array<Operation>) {
-    super(null, 'block');
+  constructor(item: ASTBase, stack: Array<Operation>) {
+    super(item, 'block');
     this.stack = stack;
   }
 
