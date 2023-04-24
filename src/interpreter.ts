@@ -26,12 +26,14 @@ export interface InterpreterOptions {
   params?: Array<string>;
   handler?: HandlerContainer;
   debugger?: Debugger;
+  environmentVariables?: Map<string, string>;
 }
 
 export default class Interpreter extends EventEmitter {
   target: string;
   api: ObjectValue;
   params: Array<string>;
+  environmentVariables: Map<string, string>;
   handler: HandlerContainer;
   debugger: Debugger;
   apiContext: OperationContext;
@@ -46,6 +48,7 @@ export default class Interpreter extends EventEmitter {
 
     this.api = options.api || new ObjectValue();
     this.params = options.params || [];
+    this.environmentVariables = options.environmentVariables || new Map();
 
     this.apiContext = null;
     this.globalContext = null;
