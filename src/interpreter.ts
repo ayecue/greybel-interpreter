@@ -71,7 +71,8 @@ export default class Interpreter extends EventEmitter {
       isProtected: true,
       debugger: this.debugger,
       handler: this.handler,
-      cps: this.cps
+      cps: this.cps,
+      environmentVariables: this.environmentVariables
     });
 
     this.globalContext = this.apiContext.fork({
