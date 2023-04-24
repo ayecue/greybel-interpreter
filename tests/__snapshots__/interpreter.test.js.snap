@@ -106,6 +106,8 @@ exports[`interpreter default scripts default-args.src 5`] = `"0"`;
 
 exports[`interpreter default scripts default-args.src 6`] = `"\\"hello\\""`;
 
+exports[`interpreter default scripts envar.src 1`] = `"\\"123\\""`;
+
 exports[`interpreter default scripts exit.src 1`] = `"123"`;
 
 exports[`interpreter default scripts exit-in-loop.src 1`] = `"\\"in loop\\""`;

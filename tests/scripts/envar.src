@@ -1,0 +1,3 @@
+test = #envar test;
+
+print(test)

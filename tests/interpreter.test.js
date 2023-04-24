@@ -33,7 +33,10 @@ describe('interpreter', function () {
           handler: new HandlerContainer({
             outputHandler: new TestOutputHandler()
           }),
-          debugger: new TestDebugger()
+          debugger: new TestDebugger(),
+          environmentVariables: new Map([
+            ["test", "123"]
+          ])
         });
         let success = false;
 

@@ -149,6 +149,7 @@ export interface ContextOptions {
   handler?: HandlerContainer;
   cps?: CPS;
   processState?: ProcessState;
+  environmentVariables?: Map<string, string>;
 }
 
 export interface ContextForkOptions {
@@ -162,6 +163,7 @@ export default class OperationContext {
   target: string;
   stackItem: ASTBase;
   debugger: Debugger;
+  environmentVariables: Map<string, string>;
   handler: HandlerContainer;
   /* eslint-disable no-use-before-define */
   previous: OperationContext;
@@ -208,6 +210,7 @@ export default class OperationContext {
     this.handler = options.handler || new HandlerContainer();
     this.cps = options.cps || null;
     this.processState = options.processState || new ProcessState();
+    this.environmentVariables = options.environmentVariables || new Map();
 
     this.api = this.lookupApi();
     this.globals = this.lookupGlobals();
@@ -383,7 +386,8 @@ export default class OperationContext {
       debugger: this.debugger,
       handler: this.handler,
       cps: this.cps,
-      processState: this.processState
+      processState: this.processState,
+      environmentVariables: this.environmentVariables
     });
 
     if (options.type !== ContextType.Function) {
