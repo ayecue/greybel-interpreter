@@ -1,0 +1,3 @@
+import_code("/":"./circular-import-1")
+
+print("circular 2")

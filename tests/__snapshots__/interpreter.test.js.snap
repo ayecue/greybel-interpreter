@@ -62,6 +62,12 @@ exports[`interpreter default scripts cast.src 18`] = `"0"`;
 
 exports[`interpreter default scripts cast.src 19`] = `"\\"abcabcabcabcabc\\""`;
 
+exports[`interpreter default scripts circular-import.src 1`] = `"\\"circular 2\\""`;
+
+exports[`interpreter default scripts circular-import.src 2`] = `"\\"circular 1\\""`;
+
+exports[`interpreter default scripts circular-import.src 3`] = `"\\"circular start\\""`;
+
 exports[`interpreter default scripts deep-equal.src 1`] = `"1"`;
 
 exports[`interpreter default scripts deep-equal.src 2`] = `"0"`;
@@ -263,6 +269,14 @@ exports[`interpreter default scripts list.src 2`] = `"\\"bar\\""`;
 exports[`interpreter default scripts list.src 3`] = `"\\"foo\\""`;
 
 exports[`interpreter default scripts list.src 4`] = `"\\"changed\\""`;
+
+exports[`interpreter default scripts long-circular-import.src 1`] = `"\\"long circular 3\\""`;
+
+exports[`interpreter default scripts long-circular-import.src 2`] = `"\\"long circular 2\\""`;
+
+exports[`interpreter default scripts long-circular-import.src 3`] = `"\\"long circular 1\\""`;
+
+exports[`interpreter default scripts long-circular-import.src 4`] = `"\\"start long circular\\""`;
 
 exports[`interpreter default scripts loops.src 1`] = `"[\\"test0\\", 0, 0, 0]"`;
 
