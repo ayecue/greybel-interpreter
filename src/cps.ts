@@ -135,20 +135,16 @@ const visit = async (
         return new Noop(item, target);
       }
 
-      stack.push(target);
-
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
         throw new Error(`Cannot find import ${currentTarget}.`);
       }
 
-      const subVisit = visit.bind(null, context, stack);
+      const subVisit = visit.bind(null, context, [...stack, target]);
       const importStatement = await new Import(importExpr, target, code).build(
         subVisit
       );
-
-      stack.pop();
 
       return importStatement;
     }
@@ -164,22 +160,18 @@ const visit = async (
         return new Noop(item, target);
       }
 
-      stack.push(target);
-
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
         throw new Error(`Cannot find include ${currentTarget}.`);
       }
 
-      const subVisit = visit.bind(null, context, stack);
+      const subVisit = visit.bind(null, context, [...stack, target]);
       const importStatement = await new Include(
         includeExpr,
         target,
         code
       ).build(subVisit);
-
-      stack.pop();
 
       return importStatement;
     }
@@ -195,20 +187,16 @@ const visit = async (
         return new Noop(item, target);
       }
 
-      stack.push(target);
-
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
         throw new Error(`Cannot find native import ${currentTarget}.`);
       }
 
-      const subVisit = visit.bind(null, context, stack);
+      const subVisit = visit.bind(null, context, [...stack, target]);
       const importStatement = await new Include(importExpr, target, code).build(
         subVisit
       );
-
-      stack.pop();
 
       return importStatement;
     }
