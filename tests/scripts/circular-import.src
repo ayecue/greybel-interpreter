@@ -1,0 +1,3 @@
+import_code("/":"../fixtures/circular-import-1")
+
+print("circular start")

@@ -1,0 +1,3 @@
+import_code("/":"./long-circular-import-1")
+
+print("long circular 3")

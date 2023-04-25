@@ -64,10 +64,11 @@ export class CPSContext {
 
 const visit = async (
   context: CPSContext,
-  currentTarget: string,
+  stack: string[],
   item: ASTBase
 ): Promise<Operation> => {
-  const defaultVisit = visit.bind(null, context, currentTarget);
+  const currentTarget = stack[stack.length - 1];
+  const defaultVisit = visit.bind(null, context, stack);
 
   switch (item.type) {
     case ASTType.MapConstructorExpression:
@@ -128,16 +129,26 @@ const visit = async (
         currentTarget,
         importExpr.path
       );
+
+      if (stack.includes(target)) {
+        console.warn('Found circluar dependency. Using noop operation.');
+        return new Noop(item, target);
+      }
+
+      stack.push(target);
+
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
         throw new Error(`Cannot find import ${currentTarget}.`);
       }
 
-      const subVisit = visit.bind(null, context, target);
+      const subVisit = visit.bind(null, context, stack);
       const importStatement = await new Import(importExpr, target, code).build(
         subVisit
       );
+
+      stack.pop();
 
       return importStatement;
     }
@@ -147,18 +158,28 @@ const visit = async (
         currentTarget,
         includeExpr.path
       );
+
+      if (stack.includes(target)) {
+        console.warn('Found circluar dependency. Using noop operation.');
+        return new Noop(item, target);
+      }
+
+      stack.push(target);
+
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
         throw new Error(`Cannot find include ${currentTarget}.`);
       }
 
-      const subVisit = visit.bind(null, context, target);
+      const subVisit = visit.bind(null, context, stack);
       const importStatement = await new Include(
         includeExpr,
         target,
         code
       ).build(subVisit);
+
+      stack.pop();
 
       return importStatement;
     }
@@ -168,16 +189,26 @@ const visit = async (
         currentTarget,
         importExpr.fileSystemDirectory
       );
+
+      if (stack.includes(target)) {
+        console.warn('Found circluar dependency. Using noop operation.');
+        return new Noop(item, target);
+      }
+
+      stack.push(target);
+
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
         throw new Error(`Cannot find native import ${currentTarget}.`);
       }
 
-      const subVisit = visit.bind(null, context, target);
+      const subVisit = visit.bind(null, context, stack);
       const importStatement = await new Include(importExpr, target, code).build(
         subVisit
       );
+
+      stack.pop();
 
       return importStatement;
     }
@@ -234,7 +265,7 @@ export default class CPS {
 
   constructor(context: CPSContext) {
     this.context = context;
-    this.__visit = visit.bind(null, context, context.target);
+    this.__visit = visit.bind(null, context, [context.target]);
   }
 
   visit(item: ASTBase): Promise<Operation> {
