@@ -6,7 +6,7 @@ export interface KeyEvent {
 }
 
 export abstract class OutputHandler {
-  abstract print(message: string, appendNewLine: boolean): void;
+  abstract print(message: string, appendNewLine?: boolean): void;
   abstract progress(timeout: number): CancelablePromise<void>;
   abstract waitForInput(isPassword: boolean): CancelablePromise<string>;
   abstract waitForKeyPress(): CancelablePromise<KeyEvent>;
