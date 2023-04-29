@@ -32,6 +32,7 @@ import Call from './operations/call';
 import Chunk from './operations/chunk';
 import Continue from './operations/continue';
 import DebuggerStatement from './operations/debugger-statement';
+import EnvarExpression from './operations/envar';
 import Evaluate from './operations/evaluate';
 import For from './operations/for';
 import FunctionOperation from './operations/function';
@@ -50,7 +51,6 @@ import Operation, { CPSVisit } from './operations/operation';
 import Resolve from './operations/resolve';
 import Return from './operations/return';
 import While from './operations/while';
-import EnvarExpression from './operations/envar';
 
 export class CPSContext {
   readonly target: string;
@@ -203,7 +203,10 @@ const visit = async (
     case ASTTypeExtended.FeatureDebuggerExpression:
       return new DebuggerStatement(item, currentTarget);
     case ASTTypeExtended.FeatureEnvarExpression:
-      return new EnvarExpression(item as ASTFeatureEnvarExpression, currentTarget);
+      return new EnvarExpression(
+        item as ASTFeatureEnvarExpression,
+        currentTarget
+      );
     case ASTType.BooleanLiteral:
     case ASTType.StringLiteral:
     case ASTType.NumericLiteral:

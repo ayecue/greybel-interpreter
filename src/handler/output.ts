@@ -1,33 +1,44 @@
+import { CancelablePromise } from 'cancelable-promise';
+
 export interface KeyEvent {
   keyCode: number;
   code: string;
 }
 
 export abstract class OutputHandler {
-  abstract print(message: string): void;
-  abstract progress(timeout: number): Promise<void>;
-  abstract waitForInput(isPassword: boolean): Promise<string>;
-  abstract waitForKeyPress(): Promise<KeyEvent>;
+  abstract print(message: string, appendNewLine: boolean): void;
+  abstract progress(timeout: number): CancelablePromise<void>;
+  abstract waitForInput(isPassword: boolean): CancelablePromise<string>;
+  abstract waitForKeyPress(): CancelablePromise<KeyEvent>;
   abstract clear(): void;
 }
 
 export class DefaultOutputHandler extends OutputHandler {
-  print(message: string) {
-    console.log(message);
+  print(message: string, appendNewLine: boolean = true) {
+    if (appendNewLine) {
+      process.stdout.write(message + '\n');
+    } else {
+      process.stdout.write(message);
+    }
   }
 
-  progress(timeout: number): Promise<void> {
-    return new Promise((resolve, _reject) => {
-      setTimeout(resolve, timeout);
+  progress(timeout: number): CancelablePromise<void> {
+    return new CancelablePromise((resolve, _reject, onCancel) => {
+      const timer = setTimeout(resolve, timeout);
+
+      onCancel(() => {
+        clearTimeout(timer);
+        resolve();
+      });
     });
   }
 
-  waitForInput(_isPassword: boolean): Promise<string> {
-    return Promise.resolve('test');
+  waitForInput(_isPassword: boolean): CancelablePromise<string> {
+    return CancelablePromise.resolve('test');
   }
 
-  waitForKeyPress(): Promise<KeyEvent> {
-    return Promise.resolve({
+  waitForKeyPress(): CancelablePromise<KeyEvent> {
+    return CancelablePromise.resolve({
       keyCode: 13,
       code: 'Enter'
     });
