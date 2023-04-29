@@ -69,7 +69,7 @@ export { default as Return } from './operations/return';
 export { default as While } from './operations/while';
 export { default as CustomValue } from './types/base';
 export { default as CustomBoolean } from './types/boolean';
-export { default as Defaults } from './types/default';
+export { default as DefaultType } from './types/default';
 export {
   Argument,
   Callback,

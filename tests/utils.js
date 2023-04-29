@@ -6,7 +6,7 @@ const {
   CustomFunction,
   CustomBoolean,
   CustomNumber,
-  Defaults,
+  DefaultType,
   OutputHandler,
   ObjectValue,
   CustomInterface
@@ -20,7 +20,7 @@ function setupAPI() {
     new CustomString('print'),
     CustomFunction.createExternal('print', (fnCtx, self, args) => {
       fnCtx.handler.outputHandler.print(args.get('value'));
-      return Promise.resolve(Defaults.Void);
+      return Promise.resolve(DefaultType.Void);
     }).addArgument('value')
   );
 
@@ -28,7 +28,7 @@ function setupAPI() {
     new CustomString('stringify'),
     CustomFunction.createExternal('print', (fnCtx, self, args) => {
       fnCtx.handler.outputHandler.print(args.get('value').toString());
-      return Promise.resolve(Defaults.Void);
+      return Promise.resolve(DefaultType.Void);
     }).addArgument('value')
   );
 
@@ -57,7 +57,7 @@ function setupAPI() {
   api.set(
     new CustomString('returnNil'),
     CustomFunction.createExternal('returnNil', (fnCtx, self, args) =>
-      Promise.resolve(Defaults.Void)
+      Promise.resolve(DefaultType.Void)
     )
   );
 
@@ -86,7 +86,7 @@ function setupAPI() {
         return Promise.resolve(value);
       }
 
-      return Promise.resolve(Defaults.Void);
+      return Promise.resolve(DefaultType.Void);
     }).addArgument('value')
   );
 
@@ -104,7 +104,7 @@ function setupAPI() {
         return Promise.resolve(origin.value.pop());
       }
 
-      return Promise.resolve(Defaults.Void);
+      return Promise.resolve(DefaultType.Void);
     }
   );
 

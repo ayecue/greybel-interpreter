@@ -3,7 +3,7 @@ const {
   CustomFunction,
   HandlerContainer,
   CustomString,
-  Defaults,
+  DefaultType,
   ObjectValue
 } = require('../dist');
 const fs = require('fs');
@@ -44,7 +44,7 @@ describe('interpreter', function () {
           new CustomString('exit'),
           CustomFunction.createExternal('exit', (fnCtx, self, args) => {
             interpreter.exit();
-            return Promise.resolve(Defaults.Void);
+            return Promise.resolve(DefaultType.Void);
           })
         );
 
