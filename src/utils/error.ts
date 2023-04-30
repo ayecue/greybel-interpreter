@@ -9,27 +9,32 @@ interface RuntimeContext {
 export class RuntimeError extends Error {
   relatedItem: ASTBase | null;
   relatedTarget: string;
-  stackTrace: Set<ASTBase>;
   source?: Error;
 
   constructor(message: string, context: RuntimeContext, source?: Error) {
     super(message);
     this.relatedItem = context.stackItem || null;
     this.relatedTarget = context.target;
-    this.stackTrace = this.createTrace(context);
+    this.stack = this.createTrace(context);
     this.source = source;
   }
 
-  private createTrace(context: RuntimeContext): Set<ASTBase> {
-    const result: Set<ASTBase> = new Set();
+  private createTrace(context: RuntimeContext): string {
+    const related: Map<ASTBase, string> = new Map();
     let item = context;
 
     while (item) {
-      result.add(item.stackItem);
+      related.set(item.stackItem, item.target);
       item = item.previous;
     }
 
-    return result;
+    const lines: string[] = [];
+
+    for (const [item, target] of related) {
+      lines.push(`${target} at ${item.start.line}:${item.start.character}`);
+    }
+
+    return lines.join('\n');
   }
 }
 
