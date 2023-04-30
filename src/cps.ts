@@ -177,13 +177,19 @@ const visit = async (
     }
     case ASTType.ImportCodeExpression: {
       const importExpr = item as ASTImportCodeExpression;
+
+      if (importExpr.fileSystemDirectory === null) {
+        console.warn(`Ignoring dependency in ${currentTarget}. Using noop operation.`);
+        return new Noop(item, currentTarget);
+      }
+
       const target = await context.handler.resourceHandler.getTargetRelativeTo(
         currentTarget,
         importExpr.fileSystemDirectory
       );
 
       if (stack.includes(target)) {
-        console.warn('Found circluar dependency. Using noop operation.');
+        console.warn(`Found circluar dependency in ${currentTarget}. Using noop operation.`);
         return new Noop(item, target);
       }
 
