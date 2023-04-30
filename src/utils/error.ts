@@ -31,7 +31,7 @@ export class RuntimeError extends Error {
     const lines: string[] = [];
 
     for (const [item, target] of related) {
-      lines.push(`${target} at ${item.start.line}:${item.start.character}`);
+      lines.push(`${target} at ${item?.start.line ?? 0}:${item?.start.character ?? 0}`);
     }
 
     return lines.join('\n');
