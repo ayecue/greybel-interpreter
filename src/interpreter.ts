@@ -17,6 +17,7 @@ import { CustomList } from './types/list';
 import { CustomMap } from './types/map';
 import { CustomNumber } from './types/number';
 import { CustomString } from './types/string';
+import { PrepareError, RuntimeError } from './utils/error';
 import { ObjectValue } from './utils/object-value';
 
 export const PARAMS_PROPERTY = new CustomString('params');
@@ -124,7 +125,16 @@ export class Interpreter extends EventEmitter {
       const chunk = parser.parseChunk();
       return this.cps.visit(chunk);
     } catch (err: any) {
-      this.handler.errorHandler.raise(err);
+      if (err instanceof PrepareError) {
+        this.handler.errorHandler.raise(err);
+      } else {
+        this.handler.errorHandler.raise(
+          new PrepareError(err.message, {
+            item: null,
+            target: this.target
+          })
+        );
+      }
     }
 
     return Promise.resolve(new Noop(null));
@@ -140,8 +150,14 @@ export class Interpreter extends EventEmitter {
       });
 
       await top.handle(injectionCtx);
-    } catch (err) {
-      this.handler.errorHandler.raise(err);
+    } catch (err: any) {
+      if (err instanceof PrepareError) {
+        this.handler.errorHandler.raise(err);
+      } else {
+        this.handler.errorHandler.raise(
+          new RuntimeError(err.message, this.apiContext.getLastActive())
+        );
+      }
     }
 
     return this;
@@ -207,7 +223,13 @@ export class Interpreter extends EventEmitter {
       this.emit('start', this);
       await process;
     } catch (err: any) {
-      this.handler.errorHandler.raise(err);
+      if (err instanceof PrepareError) {
+        this.handler.errorHandler.raise(err);
+      } else {
+        this.handler.errorHandler.raise(
+          new RuntimeError(err.message, this.apiContext.getLastActive())
+        );
+      }
     } finally {
       this.apiContext.setPending(false);
       this.emit('exit', this);

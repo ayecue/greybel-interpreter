@@ -51,6 +51,7 @@ import { CPSVisit, Operation } from './operations/operation';
 import { Resolve } from './operations/resolve';
 import { Return } from './operations/return';
 import { While } from './operations/while';
+import { PrepareError, RuntimeError } from './utils/error';
 
 export class CPSContext {
   readonly target: string;
@@ -138,15 +139,27 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new Error(`Cannot find import ${currentTarget}.`);
+        throw new PrepareError(`Cannot find import ${currentTarget}.`, {
+          target: currentTarget,
+          item
+        });
       }
 
-      const subVisit = visit.bind(null, context, [...stack, target]);
-      const importStatement = await new Import(importExpr, target, code).build(
-        subVisit
-      );
+      try {
+        const subVisit = visit.bind(null, context, [...stack, target]);
+        const importStatement = await new Import(
+          importExpr,
+          target,
+          code
+        ).build(subVisit);
 
-      return importStatement;
+        return importStatement;
+      } catch (err: any) {
+        throw new PrepareError(err.message, {
+          target: currentTarget,
+          item
+        });
+      }
     }
     case ASTTypeExtended.FeatureIncludeExpression: {
       const includeExpr = item as ASTFeatureIncludeExpression;
@@ -163,42 +176,74 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new Error(`Cannot find include ${currentTarget}.`);
+        throw new PrepareError(`Cannot find include ${currentTarget}.`, {
+          target: currentTarget,
+          item
+        });
       }
 
-      const subVisit = visit.bind(null, context, [...stack, target]);
-      const importStatement = await new Include(
-        includeExpr,
-        target,
-        code
-      ).build(subVisit);
+      try {
+        const subVisit = visit.bind(null, context, [...stack, target]);
+        const importStatement = await new Include(
+          includeExpr,
+          target,
+          code
+        ).build(subVisit);
 
-      return importStatement;
+        return importStatement;
+      } catch (err: any) {
+        throw new PrepareError(err.message, {
+          target: currentTarget,
+          item
+        });
+      }
     }
     case ASTType.ImportCodeExpression: {
       const importExpr = item as ASTImportCodeExpression;
+
+      if (importExpr.fileSystemDirectory === null) {
+        console.warn(
+          `Ignoring dependency in ${currentTarget}. Using noop operation.`
+        );
+        return new Noop(item, currentTarget);
+      }
+
       const target = await context.handler.resourceHandler.getTargetRelativeTo(
         currentTarget,
         importExpr.fileSystemDirectory
       );
 
       if (stack.includes(target)) {
-        console.warn('Found circluar dependency. Using noop operation.');
+        console.warn(
+          `Found circluar dependency in ${currentTarget}. Using noop operation.`
+        );
         return new Noop(item, target);
       }
 
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new Error(`Cannot find native import ${currentTarget}.`);
+        throw new PrepareError(`Cannot find native import ${currentTarget}.`, {
+          target: currentTarget,
+          item
+        });
       }
 
-      const subVisit = visit.bind(null, context, [...stack, target]);
-      const importStatement = await new Include(importExpr, target, code).build(
-        subVisit
-      );
+      try {
+        const subVisit = visit.bind(null, context, [...stack, target]);
+        const importStatement = await new Include(
+          importExpr,
+          target,
+          code
+        ).build(subVisit);
 
-      return importStatement;
+        return importStatement;
+      } catch (err: any) {
+        throw new PrepareError(err.message, {
+          target: currentTarget,
+          item
+        });
+      }
     }
     case ASTTypeExtended.FeatureDebuggerExpression:
       return new DebuggerStatement(item, currentTarget);
@@ -237,7 +282,9 @@ const visit = async (
         return new FunctionReference(unaryExpr).build(defaultVisit);
       }
 
-      throw new Error('Unknown unary expression.');
+      throw new RuntimeError('Unknown unary expression.', {
+        target: currentTarget
+      });
     }
     case ASTType.Chunk:
       return new Chunk(item as ASTChunk, currentTarget).build(defaultVisit);
@@ -246,7 +293,9 @@ const visit = async (
     case ASTType.ParenthesisExpression:
       return defaultVisit((item as ASTParenthesisExpression).expression);
     default:
-      throw new Error(`Unexpected AST type ${item.type}.`);
+      throw new RuntimeError(`Unexpected AST type ${item.type}.`, {
+        target: currentTarget
+      });
   }
 };
 
