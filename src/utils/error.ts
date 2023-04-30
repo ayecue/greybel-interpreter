@@ -10,12 +10,14 @@ export class RuntimeError extends Error {
   relatedItem: ASTBase | null;
   relatedTarget: string;
   stackTrace: Set<ASTBase>;
+  source?: Error;
 
-  constructor(message: string, context: RuntimeContext) {
+  constructor(message: string, context: RuntimeContext, source?: Error) {
     super(message);
     this.relatedItem = context.stackItem || null;
     this.relatedTarget = context.target;
     this.stackTrace = this.createTrace(context);
+    this.source = source;
   }
 
   private createTrace(context: RuntimeContext): Set<ASTBase> {
@@ -39,10 +41,12 @@ interface PrepareContext {
 export class PrepareError extends Error {
   relatedItem: ASTBase | null;
   relatedTarget: string;
+  source?: Error;
 
-  constructor(message: string, context: PrepareContext) {
+  constructor(message: string, context: PrepareContext, source?: Error) {
     super(message);
     this.relatedItem = context.item;
     this.relatedTarget = context.target;
+    this.source = source;
   }
 }

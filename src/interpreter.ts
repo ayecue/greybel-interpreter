@@ -151,11 +151,11 @@ export class Interpreter extends EventEmitter {
 
       await top.handle(injectionCtx);
     } catch (err: any) {
-      if (err instanceof PrepareError) {
+      if (err instanceof PrepareError || err instanceof RuntimeError) {
         this.handler.errorHandler.raise(err);
       } else {
         this.handler.errorHandler.raise(
-          new RuntimeError(err.message, this.apiContext.getLastActive())
+          new RuntimeError(err.message, this.apiContext.getLastActive(), err)
         );
       }
     }
@@ -223,11 +223,11 @@ export class Interpreter extends EventEmitter {
       this.emit('start', this);
       await process;
     } catch (err: any) {
-      if (err instanceof PrepareError) {
+      if (err instanceof PrepareError || err instanceof RuntimeError) {
         this.handler.errorHandler.raise(err);
       } else {
         this.handler.errorHandler.raise(
-          new RuntimeError(err.message, this.apiContext.getLastActive())
+          new RuntimeError(err.message, this.apiContext.getLastActive(), err)
         );
       }
     } finally {
@@ -256,7 +256,13 @@ export class Interpreter extends EventEmitter {
     try {
       return this.apiContext.exit();
     } catch (err: any) {
-      this.handler.errorHandler.raise(err);
+      if (err instanceof PrepareError || err instanceof RuntimeError) {
+        this.handler.errorHandler.raise(err);
+      } else {
+        this.handler.errorHandler.raise(
+          new RuntimeError(err.message, this.apiContext.getLastActive(), err)
+        );
+      }
     }
   }
 

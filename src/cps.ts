@@ -155,10 +155,18 @@ const visit = async (
 
         return importStatement;
       } catch (err: any) {
-        throw new PrepareError(err.message, {
-          target: currentTarget,
-          item
-        });
+        if (err instanceof PrepareError) {
+          throw err;
+        }
+
+        throw new PrepareError(
+          err.message,
+          {
+            target,
+            item
+          },
+          err
+        );
       }
     }
     case ASTTypeExtended.FeatureIncludeExpression: {
@@ -192,10 +200,18 @@ const visit = async (
 
         return importStatement;
       } catch (err: any) {
-        throw new PrepareError(err.message, {
-          target: currentTarget,
-          item
-        });
+        if (err instanceof PrepareError) {
+          throw err;
+        }
+
+        throw new PrepareError(
+          err.message,
+          {
+            target,
+            item
+          },
+          err
+        );
       }
     }
     case ASTType.ImportCodeExpression: {
@@ -239,10 +255,18 @@ const visit = async (
 
         return importStatement;
       } catch (err: any) {
-        throw new PrepareError(err.message, {
-          target: currentTarget,
-          item
-        });
+        if (err instanceof PrepareError) {
+          throw err;
+        }
+
+        throw new PrepareError(
+          err.message,
+          {
+            target,
+            item
+          },
+          err
+        );
       }
     }
     case ASTTypeExtended.FeatureDebuggerExpression:
