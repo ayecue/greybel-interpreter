@@ -1,14 +1,14 @@
 import { ASTBase } from 'greyscript-core';
 
-import CPS from './cps';
-import HandlerContainer from './handler-container';
-import Operation from './operations/operation';
-import CustomValue from './types/base';
-import Defaults from './types/default';
-import CustomMap from './types/map';
-import CustomNil from './types/nil';
-import ObjectValue from './utils/object-value';
-import Path from './utils/path';
+import { CPS } from './cps';
+import { HandlerContainer } from './handler-container';
+import { Operation } from './operations/operation';
+import { CustomValue } from './types/base';
+import { DefaultType } from './types/default';
+import { CustomMap } from './types/map';
+import { CustomNil } from './types/nil';
+import { ObjectValue } from './utils/object-value';
+import { Path } from './utils/path';
 
 export enum ContextType {
   Api,
@@ -72,7 +72,7 @@ export class Debugger {
 
   debug(...segments: any[]): CustomNil {
     console.debug(...segments);
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 
   setBreakpoint(breakpoint: boolean): Debugger {
@@ -131,7 +131,7 @@ export class LoopState {
 }
 
 export class FunctionState {
-  value: CustomValue = Defaults.Void;
+  value: CustomValue = DefaultType.Void;
   isReturn: boolean = false;
   context: CustomValue = null;
   super: CustomValue = null;
@@ -159,7 +159,7 @@ export interface ContextForkOptions {
   injected?: boolean;
 }
 
-export default class OperationContext {
+export class OperationContext {
   target: string;
   stackItem: ASTBase;
   debugger: Debugger;

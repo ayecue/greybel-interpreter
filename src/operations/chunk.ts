@@ -1,12 +1,12 @@
 import { ASTChunk } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomString from '../types/string';
-import Block from './block';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomString } from '../types/string';
+import { Block } from './block';
+import { CPSVisit, Operation } from './operation';
 
-export default class Chunk extends Operation {
+export class Chunk extends Operation {
   readonly item: ASTChunk;
   block: Block;
 
@@ -23,7 +23,7 @@ export default class Chunk extends Operation {
     return this;
   }
 
-  handle(ctx: context): Promise<CustomValue> {
+  handle(ctx: OperationContext): Promise<CustomValue> {
     ctx.set(new CustomString('locals'), ctx.locals.scope);
 
     return this.block.handle(ctx);

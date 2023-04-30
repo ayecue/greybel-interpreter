@@ -1,12 +1,12 @@
 import { ASTUnaryExpression } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import CustomMap from '../types/map';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CustomMap } from '../types/map';
+import { CPSVisit, Operation } from './operation';
 
-export default class NewInstance extends Operation {
+export class NewInstance extends Operation {
   readonly item: ASTUnaryExpression;
   arg: Operation;
 
@@ -20,13 +20,13 @@ export default class NewInstance extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     const resolvedArg = await this.arg.handle(ctx);
 
     if (resolvedArg instanceof CustomMap) {
       return (resolvedArg as CustomMap).createInstance();
     }
 
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 }

@@ -1,14 +1,14 @@
 import { ASTBase } from 'greyscript-core';
 
-import OperationContext from '../context';
-import CustomValue from '../types/base';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
 
 export interface CPSVisit {
   /* eslint-disable no-use-before-define */
   (item: ASTBase): Promise<Operation>;
 }
 
-export default abstract class Operation {
+export abstract class Operation {
   readonly item: ASTBase;
   readonly target: string;
 

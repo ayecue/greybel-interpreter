@@ -5,19 +5,19 @@ import {
   ASTType
 } from 'greyscript-core';
 
-import OperationContext, { FunctionState } from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import CustomFunction from '../types/function';
-import CustomString from '../types/string';
-import Block from './block';
-import Operation, { CPSVisit } from './operation';
-import Reference from './reference';
+import { FunctionState, OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CustomFunction } from '../types/function';
+import { CustomString } from '../types/string';
+import { Block } from './block';
+import { CPSVisit, Operation } from './operation';
+import { Reference } from './reference';
 
 export const SELF_PROPERTY = new CustomString('self');
 export const SUPER_PROPERTY = new CustomString('super');
 
-export default class FunctionOperation extends Operation {
+export class FunctionOperation extends Operation {
   readonly item: ASTFunctionStatement;
   block: Operation;
   args: Map<string, Operation>;
@@ -43,7 +43,7 @@ export default class FunctionOperation extends Operation {
         }
         case ASTType.Identifier: {
           const identifierKey = child as ASTIdentifier;
-          this.args.set(identifierKey.name, new Reference(Defaults.Void));
+          this.args.set(identifierKey.name, new Reference(DefaultType.Void));
           break;
         }
         default:

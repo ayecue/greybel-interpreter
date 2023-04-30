@@ -1,11 +1,11 @@
 import { ASTBase } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CPSVisit, Operation } from './operation';
 
-export default class DebuggerStatement extends Operation {
+export class DebuggerStatement extends Operation {
   readonly item: ASTBase;
 
   constructor(item: ASTBase, target?: string) {
@@ -17,8 +17,8 @@ export default class DebuggerStatement extends Operation {
     return Promise.resolve(this);
   }
 
-  handle(ctx: context): Promise<CustomValue> {
+  handle(ctx: OperationContext): Promise<CustomValue> {
     ctx.debugger.setBreakpoint(true);
-    return Promise.resolve(Defaults.Void);
+    return Promise.resolve(DefaultType.Void);
   }
 }

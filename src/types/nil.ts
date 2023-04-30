@@ -1,6 +1,6 @@
-import CustomValue from './base';
+import { CustomValue } from './base';
 
-export default class CustomNil extends CustomValue {
+export class CustomNil extends CustomValue {
   value: null = null;
 
   getCustomType(): string {

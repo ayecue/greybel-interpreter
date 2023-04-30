@@ -1,6 +1,6 @@
-import CustomValue from './base';
+import { CustomValue } from './base';
 
-export default class CustomBoolean extends CustomValue {
+export class CustomBoolean extends CustomValue {
   readonly value: boolean;
 
   constructor(value: boolean) {

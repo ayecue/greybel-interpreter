@@ -2,7 +2,7 @@ import { DefaultFalse, DefaultTrue } from './boolean';
 import { Void } from './nil';
 import { NegativeOne, PositiveOne, Zero } from './number';
 
-export default class Defaults {
+export class DefaultType {
   static readonly Void = Void;
   static readonly True = DefaultTrue;
   static readonly False = DefaultFalse;

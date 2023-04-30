@@ -1,19 +1,19 @@
-import Path from '../utils/path';
-import CustomValue from './base';
-import Defaults from './default';
-import CustomFunction from './function';
+import { Path } from '../utils/path';
+import { CustomValue } from './base';
+import { DefaultType } from './default';
+import { CustomFunction } from './function';
 import { CustomObject } from './with-intrinsics';
 
 export class CustomInterfaceIterator implements Iterator<CustomValue> {
   next(): IteratorResult<CustomValue> {
     return {
-      value: Defaults.Void,
+      value: DefaultType.Void,
       done: true
     };
   }
 }
 
-export default class CustomInterface extends CustomObject {
+export class CustomInterface extends CustomObject {
   private readonly interfaceFns: Map<string, CustomFunction>;
   private readonly type: string;
   readonly value: Object = {};

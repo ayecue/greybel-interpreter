@@ -1,14 +1,14 @@
 import { ASTLiteral, ASTType } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomBoolean from '../types/boolean';
-import Defaults from '../types/default';
-import CustomNumber from '../types/number';
-import CustomString from '../types/string';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomBoolean } from '../types/boolean';
+import { DefaultType } from '../types/default';
+import { CustomNumber } from '../types/number';
+import { CustomString } from '../types/string';
+import { CPSVisit, Operation } from './operation';
 
-export default class Literal extends Operation {
+export class Literal extends Operation {
   readonly item: ASTLiteral;
   value: CustomValue;
 
@@ -29,7 +29,7 @@ export default class Literal extends Operation {
         this.value = new CustomNumber(this.item.value as number);
         break;
       case ASTType.NilLiteral:
-        this.value = Defaults.Void;
+        this.value = DefaultType.Void;
         break;
       default:
         throw new Error('Unexpected literal type.');
@@ -38,7 +38,7 @@ export default class Literal extends Operation {
     return Promise.resolve(this);
   }
 
-  handle(_ctx: context): Promise<CustomValue> {
+  handle(_ctx: OperationContext): Promise<CustomValue> {
     return Promise.resolve(this.value);
   }
 }

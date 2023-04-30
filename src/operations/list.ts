@@ -1,11 +1,11 @@
 import { ASTListConstructorExpression, ASTListValue } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomList from '../types/list';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomList } from '../types/list';
+import { CPSVisit, Operation } from './operation';
 
-export default class List extends Operation {
+export class List extends Operation {
   readonly item: ASTListConstructorExpression;
   fields: Array<Operation>;
 
@@ -24,7 +24,7 @@ export default class List extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     const fields: Array<CustomValue> = [];
 
     for (let index = 0; index < this.fields.length; index++) {

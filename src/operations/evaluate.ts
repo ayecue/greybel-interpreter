@@ -1,18 +1,18 @@
 import { ASTEvaluationExpression, ASTType, Operator } from 'greyscript-core';
 
-import OperationContext from '../context';
-import CustomValue from '../types/base';
-import CustomBoolean from '../types/boolean';
-import Defaults from '../types/default';
-import CustomFunction from '../types/function';
-import CustomInterface from '../types/interface';
-import CustomList from '../types/list';
-import CustomMap from '../types/map';
-import CustomNil from '../types/nil';
-import CustomNumber from '../types/number';
-import CustomString from '../types/string';
-import deepEqual from '../utils/deep-equal';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomBoolean } from '../types/boolean';
+import { DefaultType } from '../types/default';
+import { CustomFunction } from '../types/function';
+import { CustomInterface } from '../types/interface';
+import { CustomList } from '../types/list';
+import { CustomMap } from '../types/map';
+import { CustomNil } from '../types/nil';
+import { CustomNumber } from '../types/number';
+import { CustomString } from '../types/string';
+import { deepEqual } from '../utils/deep-equal';
+import { CPSVisit, Operation } from './operation';
 
 export interface ProcessorHandlerFunction {
   (op: string, a: CustomValue, b: CustomValue): CustomValue;
@@ -87,37 +87,37 @@ export const ListProcessorHandler: ProcessorHandler = {
     if (right instanceof CustomList) {
       return new CustomBoolean(left.value.length < right.value.length);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.GreaterThan]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
       return new CustomBoolean(left.value.length > right.value.length);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.GreaterThanOrEqual]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
       return new CustomBoolean(left.value.length >= right.value.length);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.Equal]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
       return new CustomBoolean(deepEqual(left, right));
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.LessThanOrEqual]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
       return new CustomBoolean(left.value.length <= right.value.length);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.NotEqual]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
       return new CustomBoolean(!deepEqual(left, right));
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 };
 
@@ -132,37 +132,37 @@ export const MapProcessorHandler: ProcessorHandler = {
     if (right instanceof CustomMap) {
       return new CustomBoolean(left.value.size < right.value.size);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.GreaterThan]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
       return new CustomBoolean(left.value.size > right.value.size);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.GreaterThanOrEqual]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
       return new CustomBoolean(left.value.size >= right.value.size);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.Equal]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
       return new CustomBoolean(deepEqual(left, right));
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.LessThanOrEqual]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
       return new CustomBoolean(left.value.size <= right.value.size);
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   },
   [Operator.NotEqual]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
       return new CustomBoolean(!deepEqual(left, right));
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 };
 
@@ -190,7 +190,7 @@ export const handleNumber: ProcessorHandlerFunction = (op, a, b) => {
     return GenericProcessorHandler[op](a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
 export const handleString: ProcessorHandlerFunction = (op, a, b) => {
@@ -200,7 +200,7 @@ export const handleString: ProcessorHandlerFunction = (op, a, b) => {
     return GenericProcessorHandler[op](a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
 export const handleList: ProcessorHandlerFunction = (op, a, b) => {
@@ -213,7 +213,7 @@ export const handleList: ProcessorHandlerFunction = (op, a, b) => {
     return GenericProcessorHandler[op](a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
 export const handleMap: ProcessorHandlerFunction = (op, a, b) => {
@@ -226,7 +226,7 @@ export const handleMap: ProcessorHandlerFunction = (op, a, b) => {
     return GenericProcessorHandler[op](a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
 export const handleInterface: ProcessorHandlerFunction = (op, a, b) => {
@@ -239,7 +239,7 @@ export const handleInterface: ProcessorHandlerFunction = (op, a, b) => {
     return GenericProcessorHandler[op](a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
 export const handleNil: ProcessorHandlerFunction = (op, a, b) => {
@@ -249,7 +249,7 @@ export const handleNil: ProcessorHandlerFunction = (op, a, b) => {
     return GenericProcessorHandler[op](a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
 export const handleFunction: ProcessorHandlerFunction = (op, a, b) => {
@@ -259,7 +259,7 @@ export const handleFunction: ProcessorHandlerFunction = (op, a, b) => {
     return GenericProcessorHandler[op](a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
 export const handle = (
@@ -276,12 +276,12 @@ export const handle = (
   }
 
   if (op === Operator.Equal && a.getCustomType() !== b.getCustomType()) {
-    return Defaults.False;
+    return DefaultType.False;
   } else if (
     op === Operator.NotEqual &&
     a.getCustomType() !== b.getCustomType()
   ) {
-    return Defaults.True;
+    return DefaultType.True;
   }
 
   if (a instanceof CustomString || b instanceof CustomString) {
@@ -300,10 +300,10 @@ export const handle = (
     return handleNil(op, a, b);
   }
 
-  return Defaults.Void;
+  return DefaultType.Void;
 };
 
-export default class Evaluate extends Operation {
+export class Evaluate extends Operation {
   readonly item: ASTEvaluationExpression;
   type: string;
   op: string;

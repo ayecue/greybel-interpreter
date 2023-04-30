@@ -8,7 +8,7 @@ export interface HandlerContainerOptions {
   errorHandler?: ErrorHandler;
 }
 
-export default class HandlerContainer {
+export class HandlerContainer {
   readonly resourceHandler: ResourceHandler;
   readonly outputHandler: OutputHandler;
   readonly errorHandler: ErrorHandler;

@@ -6,8 +6,12 @@ export interface KeyEvent {
 export abstract class OutputHandler {
   abstract print(message: string, appendNewLine?: boolean): void;
   abstract progress(timeout: number): PromiseLike<void>;
-  abstract waitForInput(isPassword: boolean): PromiseLike<string>;
-  abstract waitForKeyPress(): PromiseLike<KeyEvent>;
+  abstract waitForInput(
+    isPassword: boolean,
+    message?: string
+  ): PromiseLike<string>;
+
+  abstract waitForKeyPress(message?: string): PromiseLike<KeyEvent>;
   abstract clear(): void;
 }
 
@@ -26,11 +30,11 @@ export class DefaultOutputHandler extends OutputHandler {
     });
   }
 
-  waitForInput(_isPassword: boolean): PromiseLike<string> {
+  waitForInput(_isPassword: boolean, _message?: string): PromiseLike<string> {
     return Promise.resolve('test');
   }
 
-  waitForKeyPress(): PromiseLike<KeyEvent> {
+  waitForKeyPress(_message?: string): PromiseLike<KeyEvent> {
     return Promise.resolve({
       keyCode: 13,
       code: 'Enter'

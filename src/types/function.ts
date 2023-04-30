@@ -1,10 +1,10 @@
-import OperationContext, { ContextState, ContextType } from '../context';
-import Operation from '../operations/operation';
-import Reference from '../operations/reference';
-import CustomValue from './base';
-import Defaults from './default';
-import CustomMap from './map';
-import CustomNil from './nil';
+import { ContextState, ContextType, OperationContext } from '../context';
+import { Operation } from '../operations/operation';
+import { Reference } from '../operations/reference';
+import { CustomValue } from './base';
+import { DefaultType } from './default';
+import { CustomMap } from './map';
+import { CustomNil } from './nil';
 
 export interface Callback {
   (
@@ -28,7 +28,7 @@ export class Argument {
 
   constructor(
     name: string,
-    defaultValue: Operation | CustomValue = Defaults.Void
+    defaultValue: Operation | CustomValue = DefaultType.Void
   ) {
     this.name = name;
 
@@ -42,7 +42,7 @@ export class Argument {
   }
 }
 
-export default class CustomFunction extends CustomValue {
+export class CustomFunction extends CustomValue {
   readonly scope?: OperationContext;
   readonly name: string;
   readonly value: Callback;
@@ -85,7 +85,7 @@ export default class CustomFunction extends CustomValue {
 
   addArgument(
     name: string,
-    defaultValue: Operation | CustomValue = Defaults.Void
+    defaultValue: Operation | CustomValue = DefaultType.Void
   ): CustomFunction {
     this.argumentDefs.push(new Argument(name, defaultValue));
     return this;

@@ -5,13 +5,13 @@ import {
   ASTType
 } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomBoolean from '../types/boolean';
-import Defaults from '../types/default';
-import Block from './block';
-import Operation, { CPSVisit } from './operation';
-import Reference from './reference';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomBoolean } from '../types/boolean';
+import { DefaultType } from '../types/default';
+import { Block } from './block';
+import { CPSVisit, Operation } from './operation';
+import { Reference } from './reference';
 
 export class Clause {
   readonly condition: Operation;
@@ -23,7 +23,7 @@ export class Clause {
   }
 }
 
-export default class IfStatement extends Operation {
+export class IfStatement extends Operation {
   readonly item: ASTIfStatement;
   clauses: Array<Clause>;
 
@@ -69,7 +69,7 @@ export default class IfStatement extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     for (let index = 0; index < this.clauses.length; index++) {
       const clause = this.clauses[index];
       const clauseResult = await clause.condition.handle(ctx);
@@ -80,6 +80,6 @@ export default class IfStatement extends Operation {
       }
     }
 
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 }

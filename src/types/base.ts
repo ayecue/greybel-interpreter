@@ -1,4 +1,4 @@
-export default abstract class CustomValue {
+export abstract class CustomValue {
   abstract value: any;
   abstract getCustomType(): string;
   abstract toNumber(): number;

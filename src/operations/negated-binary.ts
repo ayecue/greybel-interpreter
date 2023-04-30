@@ -1,11 +1,11 @@
 import { ASTUnaryExpression, Operator } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomNumber from '../types/number';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomNumber } from '../types/number';
+import { CPSVisit, Operation } from './operation';
 
-export default class NegatedBinary extends Operation {
+export class NegatedBinary extends Operation {
   readonly item: ASTUnaryExpression;
   arg: Operation;
 
@@ -19,7 +19,7 @@ export default class NegatedBinary extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     switch (this.item.operator) {
       case Operator.Minus:
         return new CustomNumber(-(await this.arg.handle(ctx)).toNumber());

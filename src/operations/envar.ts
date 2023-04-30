@@ -1,11 +1,11 @@
 import { ASTFeatureEnvarExpression } from 'greybel-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomString from '../types/string';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomString } from '../types/string';
+import { CPSVisit, Operation } from './operation';
 
-export default class EnvarExpression extends Operation {
+export class EnvarExpression extends Operation {
   readonly item: ASTFeatureEnvarExpression;
 
   constructor(item: ASTFeatureEnvarExpression, target?: string) {
@@ -17,7 +17,7 @@ export default class EnvarExpression extends Operation {
     return Promise.resolve(this);
   }
 
-  handle(ctx: context): Promise<CustomValue> {
+  handle(ctx: OperationContext): Promise<CustomValue> {
     if (ctx.environmentVariables.has(this.item.name)) {
       return Promise.resolve(
         new CustomString(ctx.environmentVariables.get(this.item.name)!)

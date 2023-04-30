@@ -1,12 +1,17 @@
 import { ASTWhileStatement } from 'greyscript-core';
 
-import context, { ContextState, ContextType, LoopState } from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import Block from './block';
-import Operation, { CPSVisit } from './operation';
+import {
+  ContextState,
+  ContextType,
+  LoopState,
+  OperationContext
+} from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { Block } from './block';
+import { CPSVisit, Operation } from './operation';
 
-export default class While extends Operation {
+export class While extends Operation {
   readonly item: ASTWhileStatement;
   block: Block;
   condition: Operation;
@@ -25,7 +30,7 @@ export default class While extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     const whileCtx = ctx.fork({
       type: ContextType.Loop,
       state: ContextState.Temporary
@@ -40,7 +45,7 @@ export default class While extends Operation {
           const conditionResult = await this.condition.handle(whileCtx);
 
           if (!conditionResult.toTruthy()) {
-            resolve(Defaults.Void);
+            resolve(DefaultType.Void);
             return;
           }
 
@@ -48,7 +53,7 @@ export default class While extends Operation {
           await this.block.handle(whileCtx);
 
           if (loopState.isBreak || ctx.isExit()) {
-            resolve(Defaults.Void);
+            resolve(DefaultType.Void);
             return;
           }
 

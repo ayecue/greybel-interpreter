@@ -1,8 +1,8 @@
-import ObjectValue from '../utils/object-value';
-import Path from '../utils/path';
-import CustomValue from './base';
-import Defaults from './default';
-import CustomNumber from './number';
+import { ObjectValue } from '../utils/object-value';
+import { Path } from '../utils/path';
+import { CustomValue } from './base';
+import { DefaultType } from './default';
+import { CustomNumber } from './number';
 import { CustomValueWithIntrinsics } from './with-intrinsics';
 
 export class CustomStringIterator implements Iterator<CustomValue> {
@@ -32,7 +32,7 @@ export class CustomStringIterator implements Iterator<CustomValue> {
   }
 }
 
-export default class CustomString extends CustomValueWithIntrinsics {
+export class CustomString extends CustomValueWithIntrinsics {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
   static getCharIndex(item: CustomString, index: number): number {
@@ -152,6 +152,6 @@ export default class CustomString extends CustomValueWithIntrinsics {
       return CustomString.intrinsics.get(current);
     }
 
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 }

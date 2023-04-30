@@ -1,11 +1,11 @@
 import { ASTBase } from 'greyscript-core';
 
-import OperationContext from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CPSVisit, Operation } from './operation';
 
-export default class Break extends Operation {
+export class Break extends Operation {
   readonly item: ASTBase;
 
   constructor(item: ASTBase, target?: string) {
@@ -21,6 +21,6 @@ export default class Break extends Operation {
     if (ctx.loopState !== null) {
       ctx.loopState.isBreak = true;
     }
-    return Promise.resolve(Defaults.Void);
+    return Promise.resolve(DefaultType.Void);
   }
 }

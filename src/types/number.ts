@@ -1,6 +1,6 @@
-import ObjectValue from '../utils/object-value';
-import Path from '../utils/path';
-import CustomValue from './base';
+import { ObjectValue } from '../utils/object-value';
+import { Path } from '../utils/path';
+import { CustomValue } from './base';
 import { Void } from './nil';
 import { CustomValueWithIntrinsics } from './with-intrinsics';
 
@@ -13,7 +13,7 @@ export class CustomNumberIterator implements Iterator<CustomValue> {
   }
 }
 
-export default class CustomNumber extends CustomValueWithIntrinsics {
+export class CustomNumber extends CustomValueWithIntrinsics {
   static readonly intrinsics: ObjectValue = new ObjectValue();
   readonly value: number;
 

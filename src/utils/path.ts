@@ -1,4 +1,4 @@
-export default class Path<T> {
+export class Path<T> {
   readonly path: Array<T>;
 
   constructor(path: Array<T> = []) {
