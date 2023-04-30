@@ -25,32 +25,32 @@ import {
   ASTWhileStatement
 } from 'greyscript-core';
 
-import HandlerContainer from './handler-container';
-import Assign from './operations/assign';
-import Break from './operations/break';
-import Call from './operations/call';
-import Chunk from './operations/chunk';
-import Continue from './operations/continue';
-import DebuggerStatement from './operations/debugger-statement';
-import EnvarExpression from './operations/envar';
-import Evaluate from './operations/evaluate';
-import For from './operations/for';
-import FunctionOperation from './operations/function';
-import FunctionReference from './operations/function-reference';
-import IfStatement from './operations/if-statement';
-import Import from './operations/import';
-import Include from './operations/include';
-import List from './operations/list';
-import Literal from './operations/literal';
-import MapOperation from './operations/map';
-import NegatedBinary from './operations/negated-binary';
-import NewInstance from './operations/new-instance';
-import Noop from './operations/noop';
-import Not from './operations/not';
-import Operation, { CPSVisit } from './operations/operation';
-import Resolve from './operations/resolve';
-import Return from './operations/return';
-import While from './operations/while';
+import { HandlerContainer } from './handler-container';
+import { Assign } from './operations/assign';
+import { Break } from './operations/break';
+import { Call } from './operations/call';
+import { Chunk } from './operations/chunk';
+import { Continue } from './operations/continue';
+import { DebuggerStatement } from './operations/debugger-statement';
+import { EnvarExpression } from './operations/envar';
+import { Evaluate } from './operations/evaluate';
+import { For } from './operations/for';
+import { FunctionOperation } from './operations/function';
+import { FunctionReference } from './operations/function-reference';
+import { IfStatement } from './operations/if-statement';
+import { Import } from './operations/import';
+import { Include } from './operations/include';
+import { List } from './operations/list';
+import { Literal } from './operations/literal';
+import { MapOperation } from './operations/map';
+import { NegatedBinary } from './operations/negated-binary';
+import { NewInstance } from './operations/new-instance';
+import { Noop } from './operations/noop';
+import { Not } from './operations/not';
+import { CPSVisit, Operation } from './operations/operation';
+import { Resolve } from './operations/resolve';
+import { Return } from './operations/return';
+import { While } from './operations/while';
 
 export class CPSContext {
   readonly target: string;
@@ -250,7 +250,7 @@ const visit = async (
   }
 };
 
-export default class CPS {
+export class CPS {
   private readonly context: CPSContext;
   private __visit: CPSVisit;
 

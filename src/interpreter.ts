@@ -1,22 +1,23 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import { Parser } from 'greybel-core';
 
-import OperationContext, {
+import {
   ContextState,
   ContextType,
-  Debugger
+  Debugger,
+  OperationContext
 } from './context';
-import CPS, { CPSContext } from './cps';
-import HandlerContainer from './handler-container';
-import Noop from './operations/noop';
-import Operation from './operations/operation';
-import CustomValue from './types/base';
-import Defaults from './types/default';
-import CustomList from './types/list';
-import CustomMap from './types/map';
-import CustomNumber from './types/number';
-import CustomString from './types/string';
-import ObjectValue from './utils/object-value';
+import { CPS, CPSContext } from './cps';
+import { HandlerContainer } from './handler-container';
+import { Noop } from './operations/noop';
+import { Operation } from './operations/operation';
+import { CustomValue } from './types/base';
+import { DefaultType } from './types/default';
+import { CustomList } from './types/list';
+import { CustomMap } from './types/map';
+import { CustomNumber } from './types/number';
+import { CustomString } from './types/string';
+import { ObjectValue } from './utils/object-value';
 
 export const PARAMS_PROPERTY = new CustomString('params');
 
@@ -29,7 +30,7 @@ export interface InterpreterOptions {
   environmentVariables?: Map<string, string>;
 }
 
-export default class Interpreter extends EventEmitter {
+export class Interpreter extends EventEmitter {
   target: string;
   api: ObjectValue;
   params: Array<string>;
@@ -248,6 +249,6 @@ export default class Interpreter extends EventEmitter {
     if (this.globalContext != null) {
       this.globalContext.get(new CustomString(path));
     }
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 }

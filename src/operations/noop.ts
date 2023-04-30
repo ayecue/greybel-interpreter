@@ -1,14 +1,14 @@
-import context from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CPSVisit, Operation } from './operation';
 
-export default class Noop extends Operation {
+export class Noop extends Operation {
   build(_visit: CPSVisit): Promise<Operation> {
     return Promise.resolve(this);
   }
 
-  handle(_ctx: context): Promise<CustomValue> {
-    return Promise.resolve(Defaults.Void);
+  handle(_ctx: OperationContext): Promise<CustomValue> {
+    return Promise.resolve(DefaultType.Void);
   }
 }

@@ -1,15 +1,20 @@
 import { ASTForGenericStatement, ASTIdentifier } from 'greyscript-core';
 
-import context, { ContextState, ContextType, LoopState } from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import CustomNumber from '../types/number';
-import CustomString from '../types/string';
+import {
+  ContextState,
+  ContextType,
+  LoopState,
+  OperationContext
+} from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CustomNumber } from '../types/number';
+import { CustomString } from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
-import Block from './block';
-import Operation, { CPSVisit } from './operation';
+import { Block } from './block';
+import { CPSVisit, Operation } from './operation';
 
-export default class For extends Operation {
+export class For extends Operation {
   readonly item: ASTForGenericStatement;
   block: Block;
   variable: ASTIdentifier;
@@ -30,7 +35,7 @@ export default class For extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     const forCtx = ctx.fork({
       type: ContextType.Loop,
       state: ContextState.Temporary
@@ -41,7 +46,7 @@ export default class For extends Operation {
     )) as CustomValueWithIntrinsics;
 
     if (typeof iteratorValue[Symbol.iterator] !== 'function') {
-      return Promise.resolve(Defaults.Void);
+      return Promise.resolve(DefaultType.Void);
     }
 
     const loopState = new LoopState();
@@ -58,7 +63,7 @@ export default class For extends Operation {
       const iteration = async (): Promise<void> => {
         try {
           if (iteratorResult.done) {
-            resolve(Defaults.Void);
+            resolve(DefaultType.Void);
             return;
           }
 
@@ -71,7 +76,7 @@ export default class For extends Operation {
           await this.block.handle(forCtx);
 
           if (loopState.isBreak || ctx.isExit()) {
-            resolve(Defaults.Void);
+            resolve(DefaultType.Void);
             return;
           }
 

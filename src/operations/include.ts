@@ -1,11 +1,11 @@
 import { Parser } from 'greybel-core';
 import { ASTBase } from 'greyscript-core';
 
-import context, { ContextState, ContextType } from '../context';
-import CustomValue from '../types/base';
-import Operation, { CPSVisit } from './operation';
+import { ContextState, ContextType, OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CPSVisit, Operation } from './operation';
 
-export default class Include extends Operation {
+export class Include extends Operation {
   readonly item: ASTBase;
   code: string;
   chunk: ASTBase;
@@ -24,7 +24,7 @@ export default class Include extends Operation {
     return this;
   }
 
-  handle(ctx: context): Promise<CustomValue> {
+  handle(ctx: OperationContext): Promise<CustomValue> {
     const importCtx = ctx.fork({
       type: ContextType.External,
       state: ContextState.Temporary,

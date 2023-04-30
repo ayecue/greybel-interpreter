@@ -1,7 +1,7 @@
-import ObjectValue from '../utils/object-value';
-import Path from '../utils/path';
-import CustomValue from './base';
-import CustomNumber from './number';
+import { ObjectValue } from '../utils/object-value';
+import { Path } from '../utils/path';
+import { CustomValue } from './base';
+import { CustomNumber } from './number';
 import { CustomObject, CustomValueWithIntrinsics } from './with-intrinsics';
 
 export class CustomListIterator implements Iterator<CustomValue> {
@@ -31,7 +31,7 @@ export class CustomListIterator implements Iterator<CustomValue> {
   }
 }
 
-export default class CustomList extends CustomObject {
+export class CustomList extends CustomObject {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
   static getItemIndex(item: CustomList, index: number): number {

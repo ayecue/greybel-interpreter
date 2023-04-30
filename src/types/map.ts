@@ -1,8 +1,8 @@
-import ObjectValue from '../utils/object-value';
-import Path from '../utils/path';
-import CustomValue from './base';
+import { ObjectValue } from '../utils/object-value';
+import { Path } from '../utils/path';
+import { CustomValue } from './base';
 import { Void } from './nil';
-import CustomString from './string';
+import { CustomString } from './string';
 import { CustomObject, CustomValueWithIntrinsics } from './with-intrinsics';
 
 export const CLASS_ID_PROPERTY = new CustomString('classID');
@@ -45,7 +45,7 @@ export class CustomMapIterator implements Iterator<CustomValue> {
   }
 }
 
-export default class CustomMap extends CustomObject {
+export class CustomMap extends CustomObject {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
   value: ObjectValue;

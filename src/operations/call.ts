@@ -1,14 +1,14 @@
 import { ASTCallExpression } from 'greyscript-core';
 
-import OperationContext from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import CustomFunction from '../types/function';
-import CustomMap from '../types/map';
-import Operation, { CPSVisit } from './operation';
-import Resolve from './resolve';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CustomFunction } from '../types/function';
+import { CustomMap } from '../types/map';
+import { CPSVisit, Operation } from './operation';
+import { Resolve } from './resolve';
 
-export default class Call extends Operation {
+export class Call extends Operation {
   readonly item: ASTCallExpression;
   fnRef: Resolve;
   args: Array<Operation>;
@@ -54,6 +54,6 @@ export default class Call extends Operation {
       return func.run(resolveResult.handle, fnArgs, ctx);
     }
 
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 }

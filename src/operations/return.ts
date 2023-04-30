@@ -1,12 +1,12 @@
 import { ASTReturnStatement } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import Operation, { CPSVisit } from './operation';
-import Reference from './reference';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CPSVisit, Operation } from './operation';
+import { Reference } from './reference';
 
-export default class Return extends Operation {
+export class Return extends Operation {
   readonly item: ASTReturnStatement;
   arg: Operation;
 
@@ -19,18 +19,18 @@ export default class Return extends Operation {
     if (this.item.argument) {
       this.arg = await visit(this.item.argument);
     } else {
-      this.arg = new Reference(Defaults.Void);
+      this.arg = new Reference(DefaultType.Void);
     }
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     // no typesafe equal
     if (ctx.functionState != null) {
       ctx.functionState.value = await this.arg.handle(ctx);
       ctx.functionState.isReturn = true;
     }
 
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 }

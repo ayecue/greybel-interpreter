@@ -1,11 +1,11 @@
 import { ASTUnaryExpression } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomBoolean from '../types/boolean';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomBoolean } from '../types/boolean';
+import { CPSVisit, Operation } from './operation';
 
-export default class Not extends Operation {
+export class Not extends Operation {
   readonly item: ASTUnaryExpression;
   arg: Operation;
 
@@ -19,7 +19,7 @@ export default class Not extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     const result = await this.arg.handle(ctx);
     return new CustomBoolean(!result.toTruthy());
   }

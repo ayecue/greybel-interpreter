@@ -1,13 +1,13 @@
 import { ASTUnaryExpression } from 'greyscript-core';
 
-import OperationContext from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
-import Operation, { CPSVisit } from './operation';
-import Resolve from './resolve';
+import { CPSVisit, Operation } from './operation';
+import { Resolve } from './resolve';
 
-export default class FunctionReference extends Operation {
+export class FunctionReference extends Operation {
   readonly item: ASTUnaryExpression;
   ref: Resolve;
 
@@ -25,7 +25,7 @@ export default class FunctionReference extends Operation {
   async handle(ctx: OperationContext): Promise<CustomValue> {
     const refResult = await this.ref.getResult(ctx);
 
-    if (refResult.handle !== Defaults.Void) {
+    if (refResult.handle !== DefaultType.Void) {
       if (refResult.path.count() === 0) {
         return refResult.handle;
       }

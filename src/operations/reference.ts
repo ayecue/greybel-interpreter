@@ -1,8 +1,8 @@
-import OperationContext from '../context';
-import CustomValue from '../types/base';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CPSVisit, Operation } from './operation';
 
-export default class Reference extends Operation {
+export class Reference extends Operation {
   readonly value: CustomValue;
 
   constructor(value: CustomValue) {

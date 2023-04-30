@@ -1,12 +1,12 @@
 import { ASTMapConstructorExpression, ASTMapKeyString } from 'greyscript-core';
 
-import context from '../context';
-import CustomValue from '../types/base';
-import CustomMap from '../types/map';
-import ObjectValue from '../utils/object-value';
-import Operation, { CPSVisit } from './operation';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { CustomMap } from '../types/map';
+import { ObjectValue } from '../utils/object-value';
+import { CPSVisit, Operation } from './operation';
 
-export default class MapOperation extends Operation {
+export class MapOperation extends Operation {
   readonly item: ASTMapConstructorExpression;
   fields: Map<Operation, Operation>;
 
@@ -28,7 +28,7 @@ export default class MapOperation extends Operation {
     return this;
   }
 
-  async handle(ctx: context): Promise<CustomValue> {
+  async handle(ctx: OperationContext): Promise<CustomValue> {
     const newMap = new ObjectValue();
 
     for (const [key, value] of this.fields) {

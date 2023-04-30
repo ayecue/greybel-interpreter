@@ -1,8 +1,8 @@
-import CustomValue from '../types/base';
+import { CustomValue } from '../types/base';
 import { Void } from '../types/nil';
-import deepEqual from './deep-equal';
+import { deepEqual } from './deep-equal';
 
-export default class ObjectValue extends Map<CustomValue, CustomValue> {
+export class ObjectValue extends Map<CustomValue, CustomValue> {
   get(mapKey: CustomValue): CustomValue {
     for (const [key, value] of this.entries()) {
       if (deepEqual(key, mapKey)) {

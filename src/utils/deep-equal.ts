@@ -1,4 +1,4 @@
-import CustomValue from '../types/base';
+import { CustomValue } from '../types/base';
 import { CustomObject } from '../types/with-intrinsics';
 
 function equalInner(
@@ -34,9 +34,9 @@ function equalInner(
   }
 
   // true if both NaN, false otherwise
-  return a.value === NaN && b.value === NaN;
+  return Number.isNaN(a.value) && Number.isNaN(b.value);
 }
 
-export default function equal(a: any, b: any, maxDepth: number = 10) {
+export function deepEqual(a: any, b: any, maxDepth: number = 10) {
   return equalInner(a, b, maxDepth);
 }

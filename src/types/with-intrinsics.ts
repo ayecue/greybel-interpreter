@@ -1,7 +1,7 @@
-import ObjectValue from '../utils/object-value';
-import Path from '../utils/path';
-import CustomValue from './base';
-import CustomFunction from './function';
+import { ObjectValue } from '../utils/object-value';
+import { Path } from '../utils/path';
+import { CustomValue } from './base';
+import { CustomFunction } from './function';
 
 export abstract class CustomValueWithIntrinsics extends CustomValue {
   abstract has(path: Path<CustomValue> | CustomValue): boolean;

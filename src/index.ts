@@ -6,11 +6,11 @@ export {
   Debugger,
   FunctionState,
   LoopState,
-  default as OperationContext,
+  OperationContext,
   ProcessState,
   Scope
 } from './context';
-export { default as CPS, CPSContext } from './cps';
+export { CPS, CPSContext } from './cps';
 export { DefaultErrorHandler, ErrorHandler } from './handler/error';
 export {
   DefaultOutputHandler,
@@ -18,17 +18,17 @@ export {
   OutputHandler
 } from './handler/output';
 export { DefaultResourceHandler, ResourceHandler } from './handler/resource';
-export { default as HandlerContainer } from './handler-container';
-export { default as Interpreter, InterpreterOptions } from './interpreter';
-export { default as Assign } from './operations/assign';
-export { default as Block, IsEOL } from './operations/block';
-export { default as Break } from './operations/break';
-export { default as Call } from './operations/call';
-export { default as Chunk } from './operations/chunk';
-export { default as Continue } from './operations/continue';
-export { default as DebuggerStatement } from './operations/debugger-statement';
+export { HandlerContainer } from './handler-container';
+export { Interpreter, InterpreterOptions } from './interpreter';
+export { Assign } from './operations/assign';
+export { Block, IsEOL } from './operations/block';
+export { Break } from './operations/break';
+export { Call } from './operations/call';
+export { Chunk } from './operations/chunk';
+export { Continue } from './operations/continue';
+export { DebuggerStatement } from './operations/debugger-statement';
 export {
-  default as Evaluate,
+  Evaluate,
   GenericProcessorHandler,
   handle,
   handleInterface,
@@ -43,51 +43,44 @@ export {
   ProcessorHandlerFunction,
   StringProcessorHandler
 } from './operations/evaluate';
-export { default as For } from './operations/for';
-export { default as FunctionOpertion } from './operations/function';
-export { Clause, default as IfStatement } from './operations/if-statement';
-export { default as Import } from './operations/import';
-export { default as Include } from './operations/include';
-export { default as List } from './operations/list';
-export { default as Literal } from './operations/literal';
-export { default as MapOperation } from './operations/map';
-export { default as NegatedBinary } from './operations/negated-binary';
-export { default as NewInstance } from './operations/new-instance';
-export { default as Noop } from './operations/noop';
-export { default as Not } from './operations/not';
-export { CPSVisit, default as Operation } from './operations/operation';
-export { default as Reference } from './operations/reference';
+export { For } from './operations/for';
+export { FunctionOperation } from './operations/function';
+export { Clause, IfStatement } from './operations/if-statement';
+export { Import } from './operations/import';
+export { Include } from './operations/include';
+export { List } from './operations/list';
+export { Literal } from './operations/literal';
+export { MapOperation } from './operations/map';
+export { NegatedBinary } from './operations/negated-binary';
+export { NewInstance } from './operations/new-instance';
+export { Noop } from './operations/noop';
+export { Not } from './operations/not';
+export { CPSVisit, Operation } from './operations/operation';
+export { Reference } from './operations/reference';
 export {
   IdentifierSegment,
   IndexSegment,
   OperationSegment,
-  default as Resolve,
+  Resolve,
   ResolveResult,
   Segment
 } from './operations/resolve';
-export { default as Return } from './operations/return';
-export { default as While } from './operations/while';
-export { default as CustomValue } from './types/base';
-export { default as CustomBoolean } from './types/boolean';
-export { default as DefaultType } from './types/default';
-export {
-  Argument,
-  Callback,
-  default as CustomFunction
-} from './types/function';
-export {
-  default as CustomInterface,
-  CustomInterfaceIterator
-} from './types/interface';
-export { default as CustomList, CustomListIterator } from './types/list';
-export { default as CustomMap, CustomMapIterator } from './types/map';
-export { default as CustomNil } from './types/nil';
-export { default as CustomNumber } from './types/number';
-export { default as CustomString, CustomStringIterator } from './types/string';
+export { Return } from './operations/return';
+export { While } from './operations/while';
+export { CustomValue } from './types/base';
+export { CustomBoolean } from './types/boolean';
+export { DefaultType } from './types/default';
+export { Argument, Callback, CustomFunction } from './types/function';
+export { CustomInterface, CustomInterfaceIterator } from './types/interface';
+export { CustomList, CustomListIterator } from './types/list';
+export { CustomMap, CustomMapIterator } from './types/map';
+export { CustomNil } from './types/nil';
+export { CustomNumber } from './types/number';
+export { CustomString, CustomStringIterator } from './types/string';
 export {
   CustomObject,
   CustomValueWithIntrinsics
 } from './types/with-intrinsics';
-export { default as deepEqual } from './utils/deep-equal';
-export { default as ObjectValue } from './utils/object-value';
-export { default as Path } from './utils/path';
+export { deepEqual } from './utils/deep-equal';
+export { ObjectValue } from './utils/object-value';
+export { Path } from './utils/path';

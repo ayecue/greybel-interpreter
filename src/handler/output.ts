@@ -6,7 +6,11 @@ export interface KeyEvent {
 export abstract class OutputHandler {
   abstract print(message: string, appendNewLine?: boolean): void;
   abstract progress(timeout: number): PromiseLike<void>;
-  abstract waitForInput(isPassword: boolean, message?: string): PromiseLike<string>;
+  abstract waitForInput(
+    isPassword: boolean,
+    message?: string
+  ): PromiseLike<string>;
+
   abstract waitForKeyPress(message?: string): PromiseLike<KeyEvent>;
   abstract clear(): void;
 }

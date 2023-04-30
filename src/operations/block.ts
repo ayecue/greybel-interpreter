@@ -1,15 +1,15 @@
 import { ASTBase } from 'greyscript-core';
 
-import OperationContext, { ContextType } from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import Operation, { CPSVisit } from './operation';
+import { ContextType, OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CPSVisit, Operation } from './operation';
 
 export interface IsEOL {
   (): boolean;
 }
 
-export default class Block extends Operation {
+export class Block extends Operation {
   readonly stack: Array<Operation>;
 
   constructor(item: ASTBase, stack: Array<Operation>) {
@@ -41,6 +41,6 @@ export default class Block extends Operation {
       await op.handle(ctx);
     }
 
-    return Defaults.Void;
+    return DefaultType.Void;
   }
 }

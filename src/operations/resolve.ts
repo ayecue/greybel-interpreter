@@ -7,16 +7,16 @@ import {
   ASTType
 } from 'greyscript-core';
 
-import OperationContext from '../context';
-import CustomValue from '../types/base';
-import Defaults from '../types/default';
-import CustomFunction from '../types/function';
-import CustomList from '../types/list';
-import CustomMap from '../types/map';
-import CustomString from '../types/string';
+import { OperationContext } from '../context';
+import { CustomValue } from '../types/base';
+import { DefaultType } from '../types/default';
+import { CustomFunction } from '../types/function';
+import { CustomList } from '../types/list';
+import { CustomMap } from '../types/map';
+import { CustomString } from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
-import Path from '../utils/path';
-import Operation, { CPSVisit } from './operation';
+import { Path } from '../utils/path';
+import { CPSVisit, Operation } from './operation';
 
 export class SliceSegment {
   readonly left: Operation;
@@ -30,7 +30,7 @@ export class SliceSegment {
 
 export class PathSegment {
   async toPath(_ctx: OperationContext): Promise<CustomValue> {
-    return Promise.resolve(Defaults.Void);
+    return Promise.resolve(DefaultType.Void);
   }
 }
 
@@ -117,7 +117,7 @@ export class ResolveResult {
   }
 }
 
-export default class Resolve extends Operation {
+export class Resolve extends Operation {
   readonly item: ASTBase;
   path: SegmentContainer;
   last: Segment;
@@ -174,7 +174,7 @@ export default class Resolve extends Operation {
 
   async getResult(ctx: OperationContext): Promise<ResolveResult> {
     let traversedPath = new Path<CustomValue>();
-    let handle: CustomValue = Defaults.Void;
+    let handle: CustomValue = DefaultType.Void;
     const maxIndex = this.path.count();
     const lastIndex = maxIndex - 1;
 
@@ -193,7 +193,7 @@ export default class Resolve extends Operation {
 
         const previous = handle;
 
-        if (handle !== Defaults.Void) {
+        if (handle !== DefaultType.Void) {
           if (handle instanceof CustomValueWithIntrinsics) {
             const customValueCtx = handle as CustomValueWithIntrinsics;
             handle = customValueCtx.get(traversedPath);
@@ -218,7 +218,7 @@ export default class Resolve extends Operation {
               previous.isa
             );
           } else {
-            handle = await handle.run(previous || Defaults.Void, [], ctx);
+            handle = await handle.run(previous || DefaultType.Void, [], ctx);
           }
         }
 
@@ -250,10 +250,10 @@ export default class Resolve extends Operation {
       result = await this.getResult(ctx);
     }
 
-    if (result.handle !== Defaults.Void) {
+    if (result.handle !== DefaultType.Void) {
       if (result.path.count() === 0) {
         if (autoCall && result.handle instanceof CustomFunction) {
-          return result.handle.run(Defaults.Void, [], ctx);
+          return result.handle.run(DefaultType.Void, [], ctx);
         }
 
         return result.handle;
@@ -285,7 +285,7 @@ export default class Resolve extends Operation {
     const handle = ctx.get(result.path);
 
     if (autoCall && handle instanceof CustomFunction) {
-      return handle.run(Defaults.Void, [], ctx);
+      return handle.run(DefaultType.Void, [], ctx);
     }
 
     return handle;
