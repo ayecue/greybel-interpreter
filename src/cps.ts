@@ -132,14 +132,16 @@ const visit = async (
       );
 
       if (stack.includes(target)) {
-        console.warn('Found circluar dependency. Using noop operation.');
+        console.warn(
+          `Found circluar dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
+        );
         return new Noop(item, target);
       }
 
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new PrepareError(`Cannot find import ${currentTarget}.`, {
+        throw new PrepareError(`Cannot find import "${currentTarget}" at line ${item.start.line}.`, {
           target: currentTarget,
           item
         });
@@ -177,14 +179,16 @@ const visit = async (
       );
 
       if (stack.includes(target)) {
-        console.warn('Found circluar dependency. Using noop operation.');
+        console.warn(
+          `Found circluar dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
+        );
         return new Noop(item, target);
       }
 
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new PrepareError(`Cannot find include ${currentTarget}.`, {
+        throw new PrepareError(`Cannot find include "${currentTarget}" at line ${item.start.line}.`, {
           target: currentTarget,
           item
         });
@@ -219,7 +223,7 @@ const visit = async (
 
       if (importExpr.fileSystemDirectory === null) {
         console.warn(
-          `Ignoring dependency in ${currentTarget}. Using noop operation.`
+          `Ignoring dependency "${importExpr.gameDirectory}" in "${currentTarget}" at line "${item.start.line}" due to missing file system path. Using noop operation.`
         );
         return new Noop(item, currentTarget);
       }
@@ -231,7 +235,7 @@ const visit = async (
 
       if (stack.includes(target)) {
         console.warn(
-          `Found circluar dependency in ${currentTarget}. Using noop operation.`
+          `Found circluar dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
         );
         return new Noop(item, target);
       }
@@ -239,7 +243,7 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new PrepareError(`Cannot find native import ${currentTarget}.`, {
+        throw new PrepareError(`Cannot find native import "${currentTarget}" at line ${item.start.line}.`, {
           target: currentTarget,
           item
         });
