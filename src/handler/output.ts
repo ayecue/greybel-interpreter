@@ -1,5 +1,3 @@
-import { CancelablePromise } from 'cancelable-promise';
-
 export interface KeyEvent {
   keyCode: number;
   code: string;
@@ -7,9 +5,9 @@ export interface KeyEvent {
 
 export abstract class OutputHandler {
   abstract print(message: string, appendNewLine?: boolean): void;
-  abstract progress(timeout: number): CancelablePromise<void>;
-  abstract waitForInput(isPassword: boolean): CancelablePromise<string>;
-  abstract waitForKeyPress(): CancelablePromise<KeyEvent>;
+  abstract progress(timeout: number): PromiseLike<void>;
+  abstract waitForInput(isPassword: boolean): PromiseLike<string>;
+  abstract waitForKeyPress(): PromiseLike<KeyEvent>;
   abstract clear(): void;
 }
 
@@ -22,23 +20,18 @@ export class DefaultOutputHandler extends OutputHandler {
     }
   }
 
-  progress(timeout: number): CancelablePromise<void> {
-    return new CancelablePromise((resolve, _reject, onCancel) => {
-      const timer = setTimeout(resolve, timeout);
-
-      onCancel(() => {
-        clearTimeout(timer);
-        resolve();
-      });
+  progress(timeout: number): PromiseLike<void> {
+    return new Promise((resolve, _reject) => {
+      setTimeout(resolve, timeout);
     });
   }
 
-  waitForInput(_isPassword: boolean): CancelablePromise<string> {
-    return CancelablePromise.resolve('test');
+  waitForInput(_isPassword: boolean): PromiseLike<string> {
+    return Promise.resolve('test');
   }
 
-  waitForKeyPress(): CancelablePromise<KeyEvent> {
-    return CancelablePromise.resolve({
+  waitForKeyPress(): PromiseLike<KeyEvent> {
+    return Promise.resolve({
       keyCode: 13,
       code: 'Enter'
     });
