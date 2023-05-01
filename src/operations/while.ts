@@ -9,9 +9,9 @@ import {
 import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { Block } from './block';
-import { CPSVisit, Operation } from './operation';
+import { CPSVisit, Operation, OperationBlock } from './operation';
 
-export class While extends Operation {
+export class While extends OperationBlock {
   readonly item: ASTWhileStatement;
   block: Block;
   condition: Operation;

@@ -20,3 +20,5 @@ export abstract class Operation {
   abstract build(visit: CPSVisit): Promise<Operation>;
   abstract handle(ctx: OperationContext): Promise<CustomValue>;
 }
+
+export abstract class OperationBlock extends Operation {}

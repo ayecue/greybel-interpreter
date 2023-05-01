@@ -2,7 +2,7 @@ import { ASTBase } from 'greyscript-core';
 
 import { CPS } from './cps';
 import { HandlerContainer } from './handler-container';
-import { Operation } from './operations/operation';
+import { Operation, OperationBlock } from './operations/operation';
 import { CustomValue } from './types/base';
 import { DefaultType } from './types/default';
 import { CustomMap } from './types/map';
@@ -230,9 +230,15 @@ export class OperationContext {
       }
     }
 
-    this.stackTrace.unshift(op);
-    const result = await op.handle(this);
-    this.stackTrace.shift();
+    let result: CustomValue;
+
+    if (op instanceof OperationBlock) {
+      result = await op.handle(this);
+    } else {
+      this.stackTrace.unshift(op);
+      result = await op.handle(this);
+      this.stackTrace.shift();
+    }
 
     return result;
   }

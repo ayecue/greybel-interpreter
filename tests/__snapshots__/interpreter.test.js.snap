@@ -447,8 +447,7 @@ exports[`interpreter default scripts unary.src 9`] = `"\\"function\\""`;
 exports[`interpreter should contain correct stack 1`] = `
 "unknown at 3:11
 unknown at 9:11
-unknown at 12:16
-unknown at 12:9"
+unknown at 12:16"
 `;
 
 exports[`interpreter should exit 1`] = `"\\"123\\""`;

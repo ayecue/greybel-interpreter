@@ -4,9 +4,9 @@ import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { CustomString } from '../types/string';
 import { Block } from './block';
-import { CPSVisit, Operation } from './operation';
+import { CPSVisit, Operation, OperationBlock } from './operation';
 
-export class Chunk extends Operation {
+export class Chunk extends OperationBlock {
   readonly item: ASTChunk;
   block: Block;
 

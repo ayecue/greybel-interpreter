@@ -10,7 +10,7 @@ import { CustomValue } from '../types/base';
 import { CustomBoolean } from '../types/boolean';
 import { DefaultType } from '../types/default';
 import { Block } from './block';
-import { CPSVisit, Operation } from './operation';
+import { CPSVisit, Operation, OperationBlock } from './operation';
 import { Reference } from './reference';
 
 export class Clause {
@@ -23,7 +23,7 @@ export class Clause {
   }
 }
 
-export class IfStatement extends Operation {
+export class IfStatement extends OperationBlock {
   readonly item: ASTIfStatement;
   clauses: Array<Clause>;
 

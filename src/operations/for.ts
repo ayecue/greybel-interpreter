@@ -12,9 +12,9 @@ import { CustomNumber } from '../types/number';
 import { CustomString } from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import { Block } from './block';
-import { CPSVisit, Operation } from './operation';
+import { CPSVisit, Operation, OperationBlock } from './operation';
 
-export class For extends Operation {
+export class For extends OperationBlock {
   readonly item: ASTForGenericStatement;
   block: Block;
   variable: ASTIdentifier;
