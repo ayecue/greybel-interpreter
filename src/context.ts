@@ -9,6 +9,7 @@ import { CustomMap } from './types/map';
 import { CustomNil } from './types/nil';
 import { ObjectValue } from './utils/object-value';
 import { Path } from './utils/path';
+import { Noop } from './operations/noop';
 
 export enum ContextType {
   Api,
@@ -218,8 +219,12 @@ export class OperationContext {
     this.locals = this.lookupLocals() || this;
   }
 
+  isAllowedInStack(op: Operation): boolean {
+    return !(op instanceof OperationBlock) && !(op instanceof Noop);
+  }
+
   async step(op: Operation): Promise<CustomValue> {
-    if (!(op instanceof OperationBlock)) {
+    if (this.isAllowedInStack(op)) {
       this.stackTrace.unshift(op);
     }
 
@@ -236,7 +241,7 @@ export class OperationContext {
 
     const result = await op.handle(this);
 
-    if (!(op instanceof OperationBlock)) {
+    if (this.isAllowedInStack(op)) {
       this.stackTrace.shift();
     }
 
