@@ -72,7 +72,7 @@ export class IfStatement extends Operation {
   async handle(ctx: OperationContext): Promise<CustomValue> {
     for (let index = 0; index < this.clauses.length; index++) {
       const clause = this.clauses[index];
-      const clauseResult = await clause.condition.handle(ctx);
+      const clauseResult = await ctx.step(clause.condition);
 
       if (clauseResult.toTruthy()) {
         await clause.block.handle(ctx);

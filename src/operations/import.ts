@@ -15,12 +15,19 @@ export const EXPORTS_PATH = new Path([MODULE_PROPERTY, EXPORTS_PROPERTY]);
 
 export class Import extends Operation {
   readonly item: ASTFeatureImportExpression;
+  newTarget: string;
   code: string;
   chunk: ASTBase;
   top: Operation;
 
-  constructor(item: ASTFeatureImportExpression, target: string, code: string) {
+  constructor(
+    item: ASTFeatureImportExpression,
+    target: string,
+    newTarget: string,
+    code: string
+  ) {
     super(null, target);
+    this.newTarget = newTarget;
     this.item = item;
     this.code = code;
   }
@@ -36,7 +43,7 @@ export class Import extends Operation {
     const importCtx = ctx.fork({
       type: ContextType.External,
       state: ContextState.Default,
-      target: this.target
+      target: this.newTarget
     });
     importCtx.locals.scope.set(MODULE_PROPERTY, new CustomMap());
 

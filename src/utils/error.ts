@@ -1,40 +1,33 @@
 import { ASTBase } from 'greyscript-core';
 
+import { Operation } from '../operations/operation';
+
 interface RuntimeContext {
-  previous?: RuntimeContext;
-  stackItem?: ASTBase;
+  stackTrace?: Operation[];
   target: string;
 }
 
 export class RuntimeError extends Error {
-  relatedItem: ASTBase | null;
   relatedTarget: string;
+  stackTrace: Operation[];
   source?: Error;
 
   constructor(message: string, context: RuntimeContext, source?: Error) {
     super(message);
-    this.relatedItem = context.stackItem || null;
     this.relatedTarget = context.target;
-    this.stack = this.createTrace(context);
+    this.stackTrace = context.stackTrace || [];
+    this.stack = this.createTrace();
     this.source = source;
   }
 
-  private createTrace(context: RuntimeContext): string {
-    const related: Map<ASTBase, string> = new Map();
-    let item = context;
-
-    while (item) {
-      related.set(item.stackItem, item.target);
-      item = item.previous;
-    }
-
-    const lines: string[] = [];
-
-    for (const [item, target] of related) {
-      lines.push(`${target} at ${item?.start.line ?? 0}:${item?.start.character ?? 0}`);
-    }
-
-    return lines.join('\n');
+  private createTrace(): string {
+    return this.stackTrace
+      .map((op: Operation) => {
+        return `${op.target} at ${op.item?.start.line ?? 0}:${
+          op.item?.start.character ?? 0
+        }`;
+      })
+      .join('\n');
   }
 }
 

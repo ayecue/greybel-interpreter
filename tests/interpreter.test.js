@@ -106,4 +106,38 @@ describe('interpreter', function () {
 			print("789")
 		`);
   });
+
+  test('should contain correct stack', async function () {
+    const interpreter = new Interpreter({
+      api: pseudoAPI,
+      handler: new HandlerContainer({
+        outputHandler: new TestOutputHandler()
+      }),
+      debugger: new TestDebugger()
+    });
+
+    let stack = [];
+
+    try {
+      await interpreter.run(`
+        foo = function
+          unknown.test = "wrong"
+        end function
+
+        bar = function
+          a = 1
+          b = 2
+          foo
+        end function
+
+        while (bar)
+
+        end while
+      `);
+    } catch (err) {
+      stack = err.stack;
+    }
+
+    expect(stack).toMatchSnapshot();
+  });
 });

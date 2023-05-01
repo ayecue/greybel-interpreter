@@ -139,6 +139,7 @@ export class FunctionState {
 
 export interface ContextOptions {
   target?: string;
+  stackTrace?: Operation[];
   /* eslint-disable no-use-before-define */
   previous?: OperationContext;
   type?: ContextType;
@@ -161,7 +162,7 @@ export interface ContextForkOptions {
 
 export class OperationContext {
   target: string;
-  stackItem: ASTBase;
+  stackTrace: Operation[];
   debugger: Debugger;
   environmentVariables: Map<string, string>;
   handler: HandlerContainer;
@@ -199,7 +200,7 @@ export class OperationContext {
 
   constructor(options: ContextOptions = {}) {
     this.target = options.target || 'unknown';
-    this.stackItem = null;
+    this.stackTrace = options.stackTrace || [];
     this.previous = options.previous || null;
     this.type = options.type || ContextType.Api;
     this.state = options.state || ContextState.Default;
@@ -217,20 +218,23 @@ export class OperationContext {
     this.locals = this.lookupLocals() || this;
   }
 
-  step(op: Operation): Promise<void> {
+  async step(op: Operation): Promise<CustomValue> {
     if (!this.injected) {
-      this.stackItem = op.item;
       this.target = op.target || this.target;
 
       this.setLastActive(this);
 
       if (this.debugger.getBreakpoint(this)) {
         this.debugger.interact(this, op.item, op);
-        return this.debugger.resume();
+        await this.debugger.resume();
       }
     }
 
-    return Promise.resolve();
+    this.stackTrace.unshift(op);
+    const result = await op.handle(this);
+    this.stackTrace.shift();
+
+    return result;
   }
 
   setLastActive(ctx: OperationContext): OperationContext {
@@ -378,6 +382,7 @@ export class OperationContext {
   fork(options: ContextForkOptions): OperationContext {
     const newContext = new OperationContext({
       target: options.target || this.target,
+      stackTrace: this.stackTrace,
       previous: this,
       type: options.type,
       state: options.state,

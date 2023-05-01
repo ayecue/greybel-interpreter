@@ -38,7 +38,6 @@ export class Block extends Operation {
       const op = this.stack[index];
 
       await ctx.step(op);
-      await op.handle(ctx);
     }
 
     return DefaultType.Void;

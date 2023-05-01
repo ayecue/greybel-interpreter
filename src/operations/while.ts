@@ -42,7 +42,7 @@ export class While extends Operation {
     return new Promise((resolve, reject) => {
       const iteration = async (): Promise<void> => {
         try {
-          const conditionResult = await this.condition.handle(whileCtx);
+          const conditionResult = await whileCtx.step(this.condition);
 
           if (!conditionResult.toTruthy()) {
             resolve(DefaultType.Void);

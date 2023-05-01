@@ -7,12 +7,14 @@ import { CPSVisit, Operation } from './operation';
 
 export class Include extends Operation {
   readonly item: ASTBase;
+  newTarget: string;
   code: string;
   chunk: ASTBase;
   top: Operation;
 
-  constructor(item: ASTBase, target: string, code: string) {
+  constructor(item: ASTBase, target: string, newTarget: string, code: string) {
     super(null, target);
+    this.newTarget = newTarget;
     this.item = item;
     this.code = code;
   }
@@ -28,7 +30,7 @@ export class Include extends Operation {
     const importCtx = ctx.fork({
       type: ContextType.External,
       state: ContextState.Temporary,
-      target: this.target
+      target: this.newTarget
     });
 
     return this.top.handle(importCtx);

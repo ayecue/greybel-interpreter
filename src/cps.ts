@@ -141,16 +141,20 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new PrepareError(`Cannot find import "${currentTarget}" at line ${item.start.line}.`, {
-          target: currentTarget,
-          item
-        });
+        throw new PrepareError(
+          `Cannot find import "${currentTarget}" at line ${item.start.line}.`,
+          {
+            target: currentTarget,
+            item
+          }
+        );
       }
 
       try {
         const subVisit = visit.bind(null, context, [...stack, target]);
         const importStatement = await new Import(
           importExpr,
+          currentTarget,
           target,
           code
         ).build(subVisit);
@@ -188,16 +192,20 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new PrepareError(`Cannot find include "${currentTarget}" at line ${item.start.line}.`, {
-          target: currentTarget,
-          item
-        });
+        throw new PrepareError(
+          `Cannot find include "${currentTarget}" at line ${item.start.line}.`,
+          {
+            target: currentTarget,
+            item
+          }
+        );
       }
 
       try {
         const subVisit = visit.bind(null, context, [...stack, target]);
         const importStatement = await new Include(
           includeExpr,
+          currentTarget,
           target,
           code
         ).build(subVisit);
@@ -243,16 +251,20 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
-        throw new PrepareError(`Cannot find native import "${currentTarget}" at line ${item.start.line}.`, {
-          target: currentTarget,
-          item
-        });
+        throw new PrepareError(
+          `Cannot find native import "${currentTarget}" at line ${item.start.line}.`,
+          {
+            target: currentTarget,
+            item
+          }
+        );
       }
 
       try {
         const subVisit = visit.bind(null, context, [...stack, target]);
         const importStatement = await new Include(
           importExpr,
+          currentTarget,
           target,
           code
         ).build(subVisit);
