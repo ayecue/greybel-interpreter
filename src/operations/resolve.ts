@@ -10,7 +10,7 @@ import {
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
-import { CustomFunction } from '../types/function';
+import { CustomFunction, SUPER_NAMESPACE } from '../types/function';
 import { CustomList } from '../types/list';
 import { CustomMap } from '../types/map';
 import { CustomString } from '../types/string';
@@ -98,7 +98,7 @@ export class SegmentContainer {
     return (
       this.path.length === 2 &&
       this.path[0] instanceof IdentifierSegment &&
-      this.path[0].value === 'super'
+      this.path[0].value === SUPER_NAMESPACE
     );
   }
 
@@ -207,7 +207,7 @@ export class Resolve extends Operation {
         if (handle instanceof CustomFunction) {
           if (
             index === 1 &&
-            traversedPath.toString() === 'super' &&
+            traversedPath.toString() === SUPER_NAMESPACE &&
             ctx.functionState.context &&
             previous instanceof CustomMap
           ) {

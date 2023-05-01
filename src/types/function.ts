@@ -15,6 +15,10 @@ export interface Callback {
   ): Promise<NonNullable<CustomValue>>;
 }
 
+export const DEFAULT_FUNCTION_NAME = 'anonymous';
+export const SELF_NAMESPACE = 'self';
+export const SUPER_NAMESPACE = 'super';
+
 export class Argument {
   readonly name: string;
   readonly defaultValue: Operation;
@@ -46,11 +50,10 @@ export class CustomFunction extends CustomValue {
   readonly scope?: OperationContext;
   readonly name: string;
   readonly value: Callback;
-  private injectSelf: boolean;
   readonly argumentDefs: Array<Argument>;
 
   static createExternalAnonymous(callback: Callback): CustomFunction {
-    return new CustomFunction(null, 'anonymous', callback);
+    return new CustomFunction(null, DEFAULT_FUNCTION_NAME, callback);
   }
 
   static createExternal(name: string, callback: Callback): CustomFunction {
@@ -61,26 +64,15 @@ export class CustomFunction extends CustomValue {
     name: string,
     callback: Callback
   ): CustomFunction {
-    return new CustomFunction(null, name, callback, true).addArgument('self');
+    return new CustomFunction(null, name, callback).addArgument(SELF_NAMESPACE);
   }
 
-  constructor(
-    scope: OperationContext,
-    name: string,
-    callback: Callback,
-    injectSelf: boolean = false
-  ) {
+  constructor(scope: OperationContext, name: string, callback: Callback) {
     super();
     this.scope = scope;
     this.name = name;
     this.value = callback;
-    this.injectSelf = injectSelf;
     this.argumentDefs = [];
-  }
-
-  setInjectSelf(injectSelf: boolean): CustomFunction {
-    this.injectSelf = injectSelf;
-    return this;
   }
 
   addArgument(
@@ -135,18 +127,22 @@ export class CustomFunction extends CustomValue {
       state: ContextState.Default
     });
     const argMap: Map<string, CustomValue> = new Map();
-
-    if (this.injectSelf && !(self instanceof CustomNil)) {
-      args.unshift(self);
-    }
+    const isSelfNull = self instanceof CustomNil;
+    let argIndex = 0;
 
     for (let index = 0; index < this.argumentDefs.length; index++) {
       const item = this.argumentDefs[index];
 
+      if (!isSelfNull && item.name === SELF_NAMESPACE) continue;
+
       argMap.set(
         item.name,
-        args[index] || (await item.defaultValue.handle(fnCtx))
+        args[argIndex++] || (await item.defaultValue.handle(fnCtx))
       );
+    }
+
+    if (!isSelfNull) {
+      argMap.set(SELF_NAMESPACE, self);
     }
 
     const isa = next || (self instanceof CustomMap ? self.isa : null);

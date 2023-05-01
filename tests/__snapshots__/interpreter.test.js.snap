@@ -406,6 +406,14 @@ exports[`interpreter default scripts scopes.src 3`] = `"\\"main local\\""`;
 
 exports[`interpreter default scripts scopes.src 4`] = `"\\"test bar local\\""`;
 
+exports[`interpreter default scripts self-ms-behaviour.src 1`] = `"{\\"bar\\":FUNCTION(actualValue, self, self)}"`;
+
+exports[`interpreter default scripts self-ms-behaviour.src 2`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts self-ms-behaviour.src 3`] = `"\\"do not ignore\\""`;
+
+exports[`interpreter default scripts self-ms-behaviour.src 4`] = `"\\"bar\\""`;
+
 exports[`interpreter default scripts simple-object.src 1`] = `"\\"was\\""`;
 
 exports[`interpreter default scripts simple-object.src 2`] = `"null"`;

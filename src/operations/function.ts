@@ -8,19 +8,28 @@ import {
 import { FunctionState, OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
-import { CustomFunction } from '../types/function';
+import {
+  CustomFunction,
+  SELF_NAMESPACE,
+  SUPER_NAMESPACE
+} from '../types/function';
 import { CustomString } from '../types/string';
 import { Block } from './block';
 import { CPSVisit, Operation } from './operation';
 import { Reference } from './reference';
 
-export const SELF_PROPERTY = new CustomString('self');
-export const SUPER_PROPERTY = new CustomString('super');
+export const SELF_PROPERTY = new CustomString(SELF_NAMESPACE);
+export const SUPER_PROPERTY = new CustomString(SUPER_NAMESPACE);
+
+export interface FunctionOperationArgument {
+  name: string;
+  op: Operation;
+}
 
 export class FunctionOperation extends Operation {
   readonly item: ASTFunctionStatement;
   block: Operation;
-  args: Map<string, Operation>;
+  args: FunctionOperationArgument[];
 
   constructor(item: ASTFunctionStatement, target?: string) {
     super(null, target);
@@ -32,18 +41,24 @@ export class FunctionOperation extends Operation {
       this.item.body.map((child) => visit(child))
     );
     this.block = new Block(this.item, stack);
-    this.args = new Map<string, Operation>();
+    this.args = [];
     const defers = this.item.parameters.map(async (child) => {
       switch (child.type) {
         case ASTType.AssignmentStatement: {
           const assignStatement = child as ASTAssignmentStatement;
           const assignKey = assignStatement.variable as ASTIdentifier;
-          this.args.set(assignKey.name, await visit(assignStatement.init));
+          this.args.push({
+            name: assignKey.name,
+            op: await visit(assignStatement.init)
+          });
           break;
         }
         case ASTType.Identifier: {
           const identifierKey = child as ASTIdentifier;
-          this.args.set(identifierKey.name, new Reference(DefaultType.Void));
+          this.args.push({
+            name: identifierKey.name,
+            op: new Reference(DefaultType.Void)
+          });
           break;
         }
         default:
@@ -89,8 +104,8 @@ export class FunctionOperation extends Operation {
       }
     );
 
-    for (const [key, value] of this.args) {
-      func.addArgument(key, value);
+    for (const item of this.args) {
+      func.addArgument(item.name, item.op);
     }
 
     return Promise.resolve(func);
