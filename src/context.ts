@@ -219,6 +219,10 @@ export class OperationContext {
   }
 
   async step(op: Operation): Promise<CustomValue> {
+    if (!(op instanceof OperationBlock)) {
+      this.stackTrace.unshift(op);
+    }
+
     if (!this.injected) {
       this.target = op.target || this.target;
 
@@ -230,13 +234,9 @@ export class OperationContext {
       }
     }
 
-    let result: CustomValue;
+    const result = await op.handle(this);
 
-    if (op instanceof OperationBlock) {
-      result = await op.handle(this);
-    } else {
-      this.stackTrace.unshift(op);
-      result = await op.handle(this);
+    if (!(op instanceof OperationBlock)) {
       this.stackTrace.shift();
     }
 
