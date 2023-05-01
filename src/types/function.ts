@@ -128,12 +128,29 @@ export class CustomFunction extends CustomValue {
     });
     const argMap: Map<string, CustomValue> = new Map();
     const isSelfNull = self instanceof CustomNil;
+    let index = 0;
+
+    if (!isSelfNull) {
+      for (; index < this.argumentDefs.length; index++) {
+        const item = this.argumentDefs[index];
+        if (item.name !== SELF_NAMESPACE) break;
+      }
+    }
+
     let argIndex = 0;
 
-    for (let index = 0; index < this.argumentDefs.length; index++) {
+    for (; index < this.argumentDefs.length; index++) {
       const item = this.argumentDefs[index];
 
-      if (!isSelfNull && item.name === SELF_NAMESPACE) continue;
+      if (!isSelfNull && item.name === SELF_NAMESPACE) {
+        argIndex++;
+        continue;
+      }
+
+      if (argMap.has(item.name)) {
+        argIndex++;
+        continue;
+      }
 
       argMap.set(
         item.name,

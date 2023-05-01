@@ -113,7 +113,7 @@ function setupAPI() {
   CustomString.addIntrinsic(
     new CustomString('len'),
     CustomFunction.createExternalWithSelf('len', (fnCtx, self, args) =>
-      Promise.resolve(new CustomNumber(self.value.length))
+      Promise.resolve(new CustomNumber(args.get('self').value.length))
     )
   );
 
@@ -121,7 +121,7 @@ function setupAPI() {
     new CustomString('split'),
     CustomFunction.createExternalWithSelf('split', (fnCtx, self, args) => {
       const delimiter = args.get('delimiter');
-      const values = self.value
+      const values = args.get('self').value
         .split(delimiter.toString())
         .map((segment) => new CustomString(segment));
 
@@ -132,7 +132,7 @@ function setupAPI() {
   CustomList.addIntrinsic(
     new CustomString('len'),
     CustomFunction.createExternalWithSelf('len', (fnCtx, self, args) =>
-      Promise.resolve(new CustomNumber(self.value.length))
+      Promise.resolve(new CustomNumber(args.get('self').value.length))
     )
   );
 
@@ -140,7 +140,7 @@ function setupAPI() {
     new CustomString('push'),
     CustomFunction.createExternalWithSelf('push', (fnCtx, self, args) => {
       const value = args.get('value');
-      const nextIndex = self.value.push(value);
+      const nextIndex = args.get('self').value.push(value);
 
       return Promise.resolve(new CustomNumber(nextIndex));
     }).addArgument('value', new CustomString(','))
@@ -152,7 +152,7 @@ function setupAPI() {
     new CustomString('hasIndex'),
     CustomFunction.createExternalWithSelf('hasIndex', (fnCtx, self, args) => {
       const value = args.get('value');
-      const result = self.has(value);
+      const result = args.get('self').has(value);
       return Promise.resolve(new CustomBoolean(result));
     }).addArgument('value')
   );
