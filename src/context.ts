@@ -2,6 +2,7 @@ import { ASTBase } from 'greyscript-core';
 
 import { CPS } from './cps';
 import { HandlerContainer } from './handler-container';
+import { Noop } from './operations/noop';
 import { Operation, OperationBlock } from './operations/operation';
 import { CustomValue } from './types/base';
 import { DefaultType } from './types/default';
@@ -9,7 +10,6 @@ import { CustomMap } from './types/map';
 import { CustomNil } from './types/nil';
 import { ObjectValue } from './utils/object-value';
 import { Path } from './utils/path';
-import { Noop } from './operations/noop';
 
 export enum ContextType {
   Api,
@@ -219,14 +219,16 @@ export class OperationContext {
     this.locals = this.lookupLocals() || this;
   }
 
-  isAllowedInStack(op: Operation): boolean {
-    return !(op instanceof OperationBlock) && !(op instanceof Noop);
+  isIgnoredInDebugging(op: Operation): boolean {
+    return op instanceof OperationBlock || op instanceof Noop;
   }
 
   async step(op: Operation): Promise<CustomValue> {
-    if (this.isAllowedInStack(op)) {
-      this.stackTrace.unshift(op);
+    if (this.isIgnoredInDebugging(op)) {
+      return op.handle(this);
     }
+
+    this.stackTrace.unshift(op);
 
     if (!this.injected) {
       this.target = op.target || this.target;
@@ -241,9 +243,7 @@ export class OperationContext {
 
     const result = await op.handle(this);
 
-    if (this.isAllowedInStack(op)) {
-      this.stackTrace.shift();
-    }
+    this.stackTrace.shift();
 
     return result;
   }
