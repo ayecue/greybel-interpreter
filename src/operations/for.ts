@@ -75,7 +75,11 @@ export class For extends OperationBlock {
           forCtx.set(varIdentifier, current);
           await this.block.handle(forCtx);
 
-          if (loopState.isBreak || ctx.isExit()) {
+          if (
+            loopState.isBreak ||
+            forCtx.functionState.isReturn ||
+            ctx.isExit()
+          ) {
             resolve(DefaultType.Void);
             return;
           }

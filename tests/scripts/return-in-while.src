@@ -1,0 +1,31 @@
+testWhile = function
+  while true
+    print("iteration")
+
+    if (true) then return true
+  end while
+end function
+
+testFor = function
+  for x in [1,2,3,4]
+    print("iteration")
+    if (true) then return true
+  end for
+end function
+
+test = function
+  while true
+    print("iteration")
+
+    if (true) then
+      for x in [1,2,3,4]
+        print("iteration")
+        if (true) then return true
+      end for
+    end if
+  end while
+end function
+
+print(testWhile)
+print(testFor)
+print(test)

@@ -52,7 +52,11 @@ export class While extends OperationBlock {
           loopState.isContinue = false;
           await this.block.handle(whileCtx);
 
-          if (loopState.isBreak || ctx.isExit()) {
+          if (
+            loopState.isBreak ||
+            whileCtx.functionState.isReturn ||
+            ctx.isExit()
+          ) {
             resolve(DefaultType.Void);
             return;
           }

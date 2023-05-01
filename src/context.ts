@@ -213,6 +213,8 @@ export class OperationContext {
     this.cps = options.cps || null;
     this.processState = options.processState || new ProcessState();
     this.environmentVariables = options.environmentVariables || new Map();
+    this.functionState = new FunctionState();
+    this.loopState = new LoopState();
 
     this.api = this.lookupApi();
     this.globals = this.lookupGlobals();

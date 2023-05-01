@@ -380,6 +380,20 @@ exports[`interpreter default scripts print.src 1`] = `"123"`;
 
 exports[`interpreter default scripts return-in-loop.src 1`] = `"1"`;
 
+exports[`interpreter default scripts return-in-while.src 1`] = `"\\"iteration\\""`;
+
+exports[`interpreter default scripts return-in-while.src 2`] = `"1"`;
+
+exports[`interpreter default scripts return-in-while.src 3`] = `"\\"iteration\\""`;
+
+exports[`interpreter default scripts return-in-while.src 4`] = `"1"`;
+
+exports[`interpreter default scripts return-in-while.src 5`] = `"\\"iteration\\""`;
+
+exports[`interpreter default scripts return-in-while.src 6`] = `"\\"iteration\\""`;
+
+exports[`interpreter default scripts return-in-while.src 7`] = `"1"`;
+
 exports[`interpreter default scripts scopes.src 1`] = `"\\"main local\\""`;
 
 exports[`interpreter default scripts scopes.src 2`] = `"\\"test fn local\\""`;
