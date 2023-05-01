@@ -25,7 +25,10 @@ export class Block extends Operation {
     let isEOL: IsEOL = () => false;
 
     if (ctx.type === ContextType.Loop) {
-      isEOL = () => ctx.loopState.isBreak || ctx.loopState.isContinue;
+      isEOL = () =>
+        ctx.functionState.isReturn ||
+        ctx.loopState.isBreak ||
+        ctx.loopState.isContinue;
     } else if (ctx.type === ContextType.Function) {
       isEOL = () => ctx.functionState.isReturn;
     }

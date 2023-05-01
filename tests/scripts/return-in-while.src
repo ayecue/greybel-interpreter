@@ -13,7 +13,7 @@ testFor = function
   end for
 end function
 
-test = function
+testAll = function
   while true
     print("iteration")
 
@@ -26,6 +26,17 @@ test = function
   end while
 end function
 
+testForWithDouble = function
+  for x in [1,2,3,4]
+    for y in [1,2,3,4]
+      print("iteration")
+      if (true) then return true
+    end for
+    return false
+  end for
+end function
+
 print(testWhile)
 print(testFor)
-print(test)
+print(testAll)
+print(testForWithDouble)

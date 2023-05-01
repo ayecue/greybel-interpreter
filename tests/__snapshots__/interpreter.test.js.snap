@@ -394,6 +394,10 @@ exports[`interpreter default scripts return-in-while.src 6`] = `"\\"iteration\\"
 
 exports[`interpreter default scripts return-in-while.src 7`] = `"1"`;
 
+exports[`interpreter default scripts return-in-while.src 8`] = `"\\"iteration\\""`;
+
+exports[`interpreter default scripts return-in-while.src 9`] = `"1"`;
+
 exports[`interpreter default scripts scopes.src 1`] = `"\\"main local\\""`;
 
 exports[`interpreter default scripts scopes.src 2`] = `"\\"test fn local\\""`;
