@@ -7,8 +7,8 @@ else
 	print(true)
 end if
 
-for (i in ["foo"]) print(i)
-for (b in ["bar"])
+for i in ["foo"] print(i)
+for b in ["bar"]
 	print(b)
 end for
 

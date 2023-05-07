@@ -12,7 +12,7 @@ exports[`interpreter default scripts binary-expressions.src 5`] = `"31457280"`;
 
 exports[`interpreter default scripts binary-expressions.src 6`] = `"0"`;
 
-exports[`interpreter default scripts binary-expressions.src 7`] = `"0"`;
+exports[`interpreter default scripts binary-expressions.src 7`] = `"30"`;
 
 exports[`interpreter default scripts binary-expressions.src 8`] = `"30"`;
 
@@ -104,13 +104,13 @@ exports[`interpreter default scripts default-args.src 1`] = `"0"`;
 
 exports[`interpreter default scripts default-args.src 2`] = `"\\"test\\""`;
 
-exports[`interpreter default scripts default-args.src 3`] = `"\\"hello\\""`;
+exports[`interpreter default scripts default-args.src 3`] = `"0"`;
 
 exports[`interpreter default scripts default-args.src 4`] = `"\\"foo\\""`;
 
 exports[`interpreter default scripts default-args.src 5`] = `"0"`;
 
-exports[`interpreter default scripts default-args.src 6`] = `"\\"hello\\""`;
+exports[`interpreter default scripts default-args.src 6`] = `"0"`;
 
 exports[`interpreter default scripts envar.src 1`] = `"\\"123\\""`;
 
@@ -341,6 +341,8 @@ exports[`interpreter default scripts map.src 8`] = `"\\"bar\\""`;
 exports[`interpreter default scripts negation.src 1`] = `"2"`;
 
 exports[`interpreter default scripts negation.src 2`] = `"[-1, 2, 0]"`;
+
+exports[`interpreter default scripts negation.src 3`] = `"1"`;
 
 exports[`interpreter default scripts new-map.src 1`] = `"{{\\"myTest\\":0,1:2}:1}"`;
 

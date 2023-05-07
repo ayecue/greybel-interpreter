@@ -53,7 +53,7 @@ describe('interpreter', function () {
           success = true;
         } catch (e) {
           const opc = interpreter.apiContext.getLastActive() || interpreter.globalContext;
-          console.log(`Line: ${opc.stackItem?.start.line}`, `${filepath} failed with: `, e);
+          console.log(`${filepath} failed with: `, e);
         }
 
         expect(success).toEqual(true);
