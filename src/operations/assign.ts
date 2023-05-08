@@ -28,7 +28,7 @@ export class Assign extends Operation {
     const resolveResult = await this.left.getResult(ctx);
     const rightValue = await this.right.handle(ctx);
 
-    if (resolveResult.handle !== DefaultType.Void) {
+    if (resolveResult.handle !== null) {
       const resultValueCtx = resolveResult.handle as CustomValueWithIntrinsics;
       resultValueCtx.set(resolveResult.path, rightValue);
     } else {

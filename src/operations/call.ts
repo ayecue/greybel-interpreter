@@ -51,7 +51,7 @@ export class Call extends Operation {
         );
       }
 
-      return func.run(resolveResult.handle, fnArgs, ctx);
+      return func.run(resolveResult.handle || DefaultType.Void, fnArgs, ctx);
     }
 
     return DefaultType.Void;

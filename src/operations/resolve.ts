@@ -109,7 +109,7 @@ export class SegmentContainer {
 
 export class ResolveResult {
   readonly path: Path<CustomValue>;
-  readonly handle: CustomValue;
+  readonly handle: CustomValue | null;
 
   constructor(path: Path<CustomValue>, handle: CustomValue) {
     this.path = path;
@@ -174,7 +174,7 @@ export class Resolve extends Operation {
 
   async getResult(ctx: OperationContext): Promise<ResolveResult> {
     let traversedPath = new Path<CustomValue>();
-    let handle: CustomValue = DefaultType.Void;
+    let handle: CustomValue | null = null;
     const maxIndex = this.path.count();
     const lastIndex = maxIndex - 1;
 
@@ -193,7 +193,7 @@ export class Resolve extends Operation {
 
         const previous = handle;
 
-        if (handle !== DefaultType.Void) {
+        if (handle !== null) {
           if (handle instanceof CustomValueWithIntrinsics) {
             const customValueCtx = handle as CustomValueWithIntrinsics;
             handle = customValueCtx.get(traversedPath);
@@ -250,7 +250,7 @@ export class Resolve extends Operation {
       result = await this.getResult(ctx);
     }
 
-    if (result.handle !== DefaultType.Void) {
+    if (result.handle !== null) {
       if (result.path.count() === 0) {
         if (autoCall && result.handle instanceof CustomFunction) {
           return result.handle.run(DefaultType.Void, [], ctx);
@@ -259,27 +259,29 @@ export class Resolve extends Operation {
         return result.handle;
       }
 
-      const customValueCtx = result.handle as CustomValueWithIntrinsics;
-      const child = customValueCtx.get(result.path);
+      if (result.handle instanceof CustomValueWithIntrinsics) {
+        const customValueCtx = result.handle;
+        const child = customValueCtx.get(result.path);
 
-      if (autoCall && child instanceof CustomFunction) {
-        if (
-          this.path.isSuper() &&
-          ctx.functionState.context &&
-          customValueCtx instanceof CustomMap
-        ) {
-          return child.run(
-            ctx.functionState.context,
-            [],
-            ctx,
-            customValueCtx.isa
-          );
+        if (autoCall && child instanceof CustomFunction) {
+          if (
+            this.path.isSuper() &&
+            ctx.functionState.context &&
+            customValueCtx instanceof CustomMap
+          ) {
+            return child.run(
+              ctx.functionState.context,
+              [],
+              ctx,
+              customValueCtx.isa
+            );
+          }
+
+          return child.run(customValueCtx, [], ctx);
         }
 
-        return child.run(customValueCtx, [], ctx);
+        return child;
       }
-
-      return child;
     }
 
     const handle = ctx.get(result.path);

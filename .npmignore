@@ -4,3 +4,4 @@ tsconfig.json
 .circleci
 tests
 test.js
+testing.src
