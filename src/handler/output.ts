@@ -3,8 +3,13 @@ export interface KeyEvent {
   code: string;
 }
 
+export interface PrintOptions {
+  appendNewLine: boolean;
+  replace: boolean;
+}
+
 export abstract class OutputHandler {
-  abstract print(message: string, appendNewLine?: boolean): void;
+  abstract print(message: string, options: Partial<PrintOptions>): void;
   abstract progress(timeout: number): PromiseLike<void>;
   abstract waitForInput(
     isPassword: boolean,
@@ -16,7 +21,9 @@ export abstract class OutputHandler {
 }
 
 export class DefaultOutputHandler extends OutputHandler {
-  print(message: string, appendNewLine: boolean = true) {
+  print(message: string, {
+    appendNewLine = true
+  }: Partial<PrintOptions> = {}) {
     if (appendNewLine) {
       process.stdout.write(message + '\n');
     } else {
