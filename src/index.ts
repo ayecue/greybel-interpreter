@@ -15,6 +15,7 @@ export { DefaultErrorHandler, ErrorHandler } from './handler/error';
 export {
   DefaultOutputHandler,
   KeyEvent,
+  PrintOptions,
   OutputHandler
 } from './handler/output';
 export { DefaultResourceHandler, ResourceHandler } from './handler/resource';
