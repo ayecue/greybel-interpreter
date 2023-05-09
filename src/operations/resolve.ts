@@ -13,11 +13,11 @@ import { DefaultType } from '../types/default';
 import { CustomFunction, SUPER_NAMESPACE } from '../types/function';
 import { CustomList } from '../types/list';
 import { CustomMap } from '../types/map';
+import { CustomNil } from '../types/nil';
 import { CustomString } from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import { Path } from '../utils/path';
 import { CPSVisit, Operation } from './operation';
-import { CustomNil } from '../types/nil';
 
 export class SliceSegment {
   readonly left: Operation;
@@ -108,8 +108,7 @@ export class SegmentContainer {
   }
 }
 
-export class ResolveNil extends CustomNil {
-}
+export class ResolveNil extends CustomNil {}
 
 export class ResolveResult {
   readonly path: Path<CustomValue>;
@@ -286,6 +285,8 @@ export class Resolve extends Operation {
 
         return child;
       }
+
+      throw new Error(`Unknown path ${result.path.toString()}.`);
     }
 
     const handle = ctx.get(result.path);
