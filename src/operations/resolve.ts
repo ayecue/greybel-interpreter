@@ -17,6 +17,7 @@ import { CustomString } from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import { Path } from '../utils/path';
 import { CPSVisit, Operation } from './operation';
+import { CustomNil } from '../types/nil';
 
 export class SliceSegment {
   readonly left: Operation;
@@ -107,9 +108,12 @@ export class SegmentContainer {
   }
 }
 
+export class ResolveNil extends CustomNil {
+}
+
 export class ResolveResult {
   readonly path: Path<CustomValue>;
-  readonly handle: CustomValue | null;
+  readonly handle: CustomValue;
 
   constructor(path: Path<CustomValue>, handle: CustomValue) {
     this.path = path;
@@ -174,7 +178,7 @@ export class Resolve extends Operation {
 
   async getResult(ctx: OperationContext): Promise<ResolveResult> {
     let traversedPath = new Path<CustomValue>();
-    let handle: CustomValue | null = null;
+    let handle: CustomValue = new ResolveNil();
     const maxIndex = this.path.count();
     const lastIndex = maxIndex - 1;
 
@@ -193,12 +197,12 @@ export class Resolve extends Operation {
 
         const previous = handle;
 
-        if (handle !== null) {
+        if (!(handle instanceof ResolveNil)) {
           if (handle instanceof CustomValueWithIntrinsics) {
             const customValueCtx = handle as CustomValueWithIntrinsics;
             handle = customValueCtx.get(traversedPath);
           } else {
-            throw new Error('Handle has no properties.');
+            throw new Error(`Unknown path ${traversedPath.toString()}.`);
           }
         } else {
           handle = ctx.get(traversedPath);
@@ -250,7 +254,7 @@ export class Resolve extends Operation {
       result = await this.getResult(ctx);
     }
 
-    if (result.handle !== null) {
+    if (!(result.handle instanceof ResolveNil)) {
       if (result.path.count() === 0) {
         if (autoCall && result.handle instanceof CustomFunction) {
           return result.handle.run(DefaultType.Void, [], ctx);

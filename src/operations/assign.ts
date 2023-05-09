@@ -5,7 +5,7 @@ import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import { CPSVisit, Operation } from './operation';
-import { Resolve } from './resolve';
+import { Resolve, ResolveNil } from './resolve';
 
 export class Assign extends Operation {
   readonly item: ASTAssignmentStatement;
@@ -28,7 +28,7 @@ export class Assign extends Operation {
     const resolveResult = await this.left.getResult(ctx);
     const rightValue = await this.right.handle(ctx);
 
-    if (resolveResult.handle !== null) {
+    if (!(resolveResult.handle instanceof ResolveNil)) {
       const resultValueCtx = resolveResult.handle as CustomValueWithIntrinsics;
       resultValueCtx.set(resolveResult.path, rightValue);
     } else {

@@ -1,6 +1,6 @@
 {
     "name": "greybel-interpreter",
-    "version": "1.9.3",
+    "version": "1.9.4",
     "description": "Interpreter",
     "main": "dist/index",
     "typings": "dist/index",

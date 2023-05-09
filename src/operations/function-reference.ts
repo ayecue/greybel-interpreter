@@ -4,7 +4,7 @@ import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import { CPSVisit, Operation } from './operation';
-import { Resolve } from './resolve';
+import { Resolve, ResolveNil } from './resolve';
 
 export class FunctionReference extends Operation {
   readonly item: ASTUnaryExpression;
@@ -24,7 +24,7 @@ export class FunctionReference extends Operation {
   async handle(ctx: OperationContext): Promise<CustomValue> {
     const refResult = await this.ref.getResult(ctx);
 
-    if (refResult.handle !== null) {
+    if (!(refResult.handle instanceof ResolveNil)) {
       if (refResult.path.count() === 0) {
         return refResult.handle;
       }
