@@ -9,7 +9,7 @@ export interface PrintOptions {
 }
 
 export abstract class OutputHandler {
-  abstract print(message: string, options: Partial<PrintOptions>): void;
+  abstract print(message: string, options?: Partial<PrintOptions>): void;
   abstract progress(timeout: number): PromiseLike<void>;
   abstract waitForInput(
     isPassword: boolean,
