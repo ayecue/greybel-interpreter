@@ -1,11 +1,8 @@
-import { CustomValue } from './base';
+import { CustomNumber } from './number';
 
-export class CustomBoolean extends CustomValue {
-  readonly value: boolean;
-
+export class CustomBoolean extends CustomNumber {
   constructor(value: boolean) {
-    super();
-    this.value = !!value;
+    super(+value);
   }
 
   getCustomType(): string {
@@ -21,7 +18,7 @@ export class CustomBoolean extends CustomValue {
   }
 
   fork(): CustomBoolean {
-    return new CustomBoolean(this.value);
+    return new CustomBoolean(!!this.value);
   }
 
   toNumber(): number {
@@ -33,11 +30,7 @@ export class CustomBoolean extends CustomValue {
   }
 
   toTruthy(): boolean {
-    return this.value;
-  }
-
-  instanceOf(v: CustomValue): boolean {
-    return v instanceof CustomBoolean;
+    return !!this.value;
   }
 }
 

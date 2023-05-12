@@ -262,6 +262,10 @@ exports[`interpreter default scripts isa.src 21`] = `"1"`;
 
 exports[`interpreter default scripts isa.src 22`] = `"1"`;
 
+exports[`interpreter default scripts isa.src 23`] = `"1"`;
+
+exports[`interpreter default scripts isa.src 24`] = `"1"`;
+
 exports[`interpreter default scripts list.src 1`] = `"\\"bar\\""`;
 
 exports[`interpreter default scripts list.src 2`] = `"\\"bar\\""`;

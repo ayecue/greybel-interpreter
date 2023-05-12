@@ -21,9 +21,7 @@ export abstract class OutputHandler {
 }
 
 export class DefaultOutputHandler extends OutputHandler {
-  print(message: string, {
-    appendNewLine = true
-  }: Partial<PrintOptions> = {}) {
+  print(message: string, { appendNewLine = true }: Partial<PrintOptions> = {}) {
     if (appendNewLine) {
       process.stdout.write(message + '\n');
     } else {
