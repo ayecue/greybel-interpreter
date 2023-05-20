@@ -229,16 +229,9 @@ const visit = async (
     case ASTType.ImportCodeExpression: {
       const importExpr = item as ASTImportCodeExpression;
 
-      if (importExpr.fileSystemDirectory === null) {
-        console.warn(
-          `Ignoring dependency "${importExpr.gameDirectory}" in "${currentTarget}" at line "${item.start.line}" due to missing file system path. Using noop operation.`
-        );
-        return new Noop(item, currentTarget);
-      }
-
       const target = await context.handler.resourceHandler.getTargetRelativeTo(
         currentTarget,
-        importExpr.fileSystemDirectory
+        importExpr.directory
       );
 
       if (stack.includes(target)) {
