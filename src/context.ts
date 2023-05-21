@@ -1,5 +1,5 @@
 import { ASTBase } from 'greyscript-core';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 
 import { CPS } from './cps';
 import { HandlerContainer } from './handler-container';
