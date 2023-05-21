@@ -1,4 +1,5 @@
 import { ASTBase } from 'greyscript-core';
+import { EventEmitter } from 'stream';
 
 import { CPS } from './cps';
 import { HandlerContainer } from './handler-container';
@@ -119,7 +120,7 @@ export class Debugger {
   }
 }
 
-export class ProcessState {
+export class ProcessState extends EventEmitter {
   isExit: boolean = false;
   isPending: boolean = false;
   /* eslint-disable no-use-before-define */
@@ -238,6 +239,7 @@ export class OperationContext {
       this.setLastActive(this);
 
       if (this.debugger.getBreakpoint(this)) {
+        this.processState.emit('breakpoint');
         this.debugger.interact(this, op.item, op);
         await this.debugger.resume();
       }
@@ -300,6 +302,7 @@ export class OperationContext {
   exit(): Promise<OperationContext> {
     if (this.processState.isPending) {
       this.processState.isExit = true;
+      this.processState.emit('exit');
 
       return new Promise((resolve) => {
         const check = () => {
@@ -307,7 +310,7 @@ export class OperationContext {
             this.processState.isExit = false;
             resolve(this);
           } else {
-            setTimeout(check);
+            setTimeout(check, 0);
           }
         };
 
