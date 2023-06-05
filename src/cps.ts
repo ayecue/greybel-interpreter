@@ -144,13 +144,10 @@ const visit = async (
       if (code == null) {
         const range = new ASTRange(item.start, item.end);
 
-        throw new PrepareError(
-          `Cannot find import "${currentTarget}" at ${range}.`,
-          {
-            target: currentTarget,
-            range
-          }
-        );
+        throw new PrepareError(`Cannot find import "${currentTarget}"`, {
+          target: currentTarget,
+          range
+        });
       }
 
       try {
@@ -197,13 +194,10 @@ const visit = async (
       if (code == null) {
         const range = new ASTRange(item.start, item.end);
 
-        throw new PrepareError(
-          `Cannot find include "${currentTarget}" at ${range}.`,
-          {
-            target: currentTarget,
-            range
-          }
-        );
+        throw new PrepareError(`Cannot find include "${currentTarget}"`, {
+          target: currentTarget,
+          range
+        });
       }
 
       try {
@@ -251,13 +245,10 @@ const visit = async (
       if (code == null) {
         const range = new ASTRange(item.start, item.end);
 
-        throw new PrepareError(
-          `Cannot find native import "${currentTarget}" at ${range}.`,
-          {
-            target: currentTarget,
-            range
-          }
-        );
+        throw new PrepareError(`Cannot find native import "${currentTarget}"`, {
+          target: currentTarget,
+          range
+        });
       }
 
       try {
@@ -324,7 +315,7 @@ const visit = async (
 
       const range = new ASTRange(item.start, item.end);
 
-      throw new PrepareError(`Unknown unary expression at ${range}.`, {
+      throw new PrepareError(`Unknown unary expression`, {
         target: currentTarget,
         range
       });
@@ -338,7 +329,7 @@ const visit = async (
     default:
       const range = new ASTRange(item.start, item.end);
 
-      throw new PrepareError(`Unexpected AST type ${item.type} at ${range}.`, {
+      throw new PrepareError(`Unexpected AST type ${item.type}`, {
         target: currentTarget,
         range
       });
