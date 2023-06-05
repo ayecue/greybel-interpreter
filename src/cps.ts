@@ -19,6 +19,7 @@ import {
   ASTLiteral,
   ASTMapConstructorExpression,
   ASTParenthesisExpression,
+  ASTRange,
   ASTReturnStatement,
   ASTType,
   ASTUnaryExpression,
@@ -51,7 +52,7 @@ import { CPSVisit, Operation } from './operations/operation';
 import { Resolve } from './operations/resolve';
 import { Return } from './operations/return';
 import { While } from './operations/while';
-import { PrepareError, RuntimeError } from './utils/error';
+import { PrepareError } from './utils/error';
 
 export class CPSContext {
   readonly target: string;
@@ -133,7 +134,7 @@ const visit = async (
 
       if (stack.includes(target)) {
         console.warn(
-          `Found circluar dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
+          `Found circular dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
         );
         return new Noop(item, target);
       }
@@ -141,11 +142,13 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
+        const range = new ASTRange(item.start, item.end);
+
         throw new PrepareError(
-          `Cannot find import "${currentTarget}" at line ${item.start.line}.`,
+          `Cannot find import "${currentTarget}" at ${range}.`,
           {
             target: currentTarget,
-            item
+            range
           }
         );
       }
@@ -169,7 +172,7 @@ const visit = async (
           err.message,
           {
             target,
-            item
+            range: new ASTRange(item.start, item.end)
           },
           err
         );
@@ -184,7 +187,7 @@ const visit = async (
 
       if (stack.includes(target)) {
         console.warn(
-          `Found circluar dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
+          `Found circular dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
         );
         return new Noop(item, target);
       }
@@ -192,11 +195,13 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
+        const range = new ASTRange(item.start, item.end);
+
         throw new PrepareError(
-          `Cannot find include "${currentTarget}" at line ${item.start.line}.`,
+          `Cannot find include "${currentTarget}" at ${range}.`,
           {
             target: currentTarget,
-            item
+            range
           }
         );
       }
@@ -220,7 +225,7 @@ const visit = async (
           err.message,
           {
             target,
-            item
+            range: new ASTRange(item.start, item.end)
           },
           err
         );
@@ -236,7 +241,7 @@ const visit = async (
 
       if (stack.includes(target)) {
         console.warn(
-          `Found circluar dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
+          `Found circular dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
         );
         return new Noop(item, target);
       }
@@ -244,11 +249,13 @@ const visit = async (
       const code = await context.handler.resourceHandler.get(target);
 
       if (code == null) {
+        const range = new ASTRange(item.start, item.end);
+
         throw new PrepareError(
-          `Cannot find native import "${currentTarget}" at line ${item.start.line}.`,
+          `Cannot find native import "${currentTarget}" at ${range}.`,
           {
             target: currentTarget,
-            item
+            range
           }
         );
       }
@@ -272,7 +279,7 @@ const visit = async (
           err.message,
           {
             target,
-            item
+            range: new ASTRange(item.start, item.end)
           },
           err
         );
@@ -315,8 +322,11 @@ const visit = async (
         return new FunctionReference(unaryExpr).build(defaultVisit);
       }
 
-      throw new RuntimeError('Unknown unary expression.', {
-        target: currentTarget
+      const range = new ASTRange(item.start, item.end);
+
+      throw new PrepareError(`Unknown unary expression at ${range}.`, {
+        target: currentTarget,
+        range
       });
     }
     case ASTType.Chunk:
@@ -326,8 +336,11 @@ const visit = async (
     case ASTType.ParenthesisExpression:
       return defaultVisit((item as ASTParenthesisExpression).expression);
     default:
-      throw new RuntimeError(`Unexpected AST type ${item.type}.`, {
-        target: currentTarget
+      const range = new ASTRange(item.start, item.end);
+
+      throw new PrepareError(`Unexpected AST type ${item.type} at ${range}.`, {
+        target: currentTarget,
+        range
       });
   }
 };

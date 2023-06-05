@@ -1,4 +1,4 @@
-import { ASTBase } from 'greyscript-core';
+import { ASTRange } from 'greyscript-core';
 
 import { Operation } from '../operations/operation';
 
@@ -32,19 +32,19 @@ export class RuntimeError extends Error {
 }
 
 interface PrepareContext {
-  item: ASTBase;
+  range: ASTRange;
   target: string;
 }
 
 export class PrepareError extends Error {
-  relatedItem: ASTBase | null;
-  relatedTarget: string;
+  range: ASTRange;
+  target: string;
   source?: Error;
 
   constructor(message: string, context: PrepareContext, source?: Error) {
     super(message);
-    this.relatedItem = context.item;
-    this.relatedTarget = context.target;
+    this.range = context.range;
+    this.target = context.target;
     this.source = source;
   }
 }

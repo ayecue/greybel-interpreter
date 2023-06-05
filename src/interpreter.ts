@@ -130,7 +130,7 @@ export class Interpreter extends EventEmitter {
       } else {
         this.handler.errorHandler.raise(
           new PrepareError(err.message, {
-            item: null,
+            range: err.range,
             target: this.target
           })
         );
