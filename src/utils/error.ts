@@ -8,13 +8,13 @@ interface RuntimeContext {
 }
 
 export class RuntimeError extends Error {
-  relatedTarget: string;
+  target: string;
   stackTrace: Operation[];
   source?: Error;
 
   constructor(message: string, context: RuntimeContext, source?: Error) {
     super(message);
-    this.relatedTarget = context.target;
+    this.target = context.target;
     this.stackTrace = context.stackTrace || [];
     this.stack = this.createTrace();
     this.source = source;
