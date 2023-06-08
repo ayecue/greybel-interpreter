@@ -56,7 +56,6 @@ export const NumberProcessorHandler: ProcessorHandler = {
 
 export const multiplyString = (a: CustomValue, b: CustomValue): CustomValue => {
   const multiStr = new Array(b.toNumber()).fill(a.toString()).join('');
-
   return new CustomString(multiStr);
 };
 
@@ -74,6 +73,40 @@ export const StringProcessorHandler: ProcessorHandler = {
     new CustomBoolean(a.toString().length <= b.toString().length),
   [Operator.NotEqual]: (a, b) =>
     new CustomBoolean(a.toString() !== b.toString())
+};
+
+export const multiplyList = (a: CustomList, b: CustomValue): CustomValue => {
+  const factor = b.toNumber();
+
+  if (factor <= 0) {
+    return new CustomList();
+  }
+
+  const newListValue: CustomValue[] = [];
+  const max = Math.floor(a.value.length * factor);
+
+  for (let index = 0; index < max; index++) {
+    newListValue.push(a.value[index % a.value.length]);
+  }
+
+  return new CustomList(newListValue);
+};
+
+export const divideList = (a: CustomList, b: CustomValue): CustomValue => {
+  const factor = 1 / b.toNumber();
+
+  if (factor <= 0) {
+    return new CustomList();
+  }
+
+  const newListValue: CustomValue[] = [];
+  const max = Math.floor(a.value.length * factor);
+
+  for (let index = 0; index < max; index++) {
+    newListValue.push(a.value[index % a.value.length]);
+  }
+
+  return new CustomList(newListValue);
 };
 
 export const ListProcessorHandler: ProcessorHandler = {
@@ -118,7 +151,9 @@ export const ListProcessorHandler: ProcessorHandler = {
       return new CustomBoolean(!deepEqual(left, right));
     }
     return DefaultType.Void;
-  }
+  },
+  [Operator.Asterik]: (left: CustomList, right) => multiplyList(left, right),
+  [Operator.Slash]: (left: CustomList, right) => divideList(left, right)
 };
 
 export const MapProcessorHandler: ProcessorHandler = {
@@ -284,10 +319,15 @@ export const handle = (
     return DefaultType.True;
   }
 
-  if (a instanceof CustomString || b instanceof CustomString) {
-    return handleString(op, a, b);
-  } else if (a instanceof CustomNumber || b instanceof CustomNumber) {
+  if (
+    (a instanceof CustomString || b instanceof CustomString) &&
+    op === Operator.Plus
+  ) {
+    return StringProcessorHandler[op](a, b);
+  } else if (a instanceof CustomNumber) {
     return handleNumber(op, a, b);
+  } else if (a instanceof CustomString) {
+    return handleString(op, a, b);
   } else if (a instanceof CustomList) {
     return handleList(op, a, b);
   } else if (a instanceof CustomMap) {

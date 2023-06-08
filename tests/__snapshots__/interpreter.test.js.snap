@@ -58,9 +58,15 @@ exports[`interpreter default scripts cast.src 16`] = `"null"`;
 
 exports[`interpreter default scripts cast.src 17`] = `"1"`;
 
-exports[`interpreter default scripts cast.src 18`] = `"0"`;
+exports[`interpreter default scripts cast.src 18`] = `"[\\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\"]"`;
 
 exports[`interpreter default scripts cast.src 19`] = `"\\"abcabcabcabcabc\\""`;
+
+exports[`interpreter default scripts cast.src 20`] = `"[1, 2, 3, 1]"`;
+
+exports[`interpreter default scripts cast.src 21`] = `"[\\"was\\", \\"foo\\", 123]"`;
+
+exports[`interpreter default scripts cast.src 22`] = `"[1, 2, 3, 4]"`;
 
 exports[`interpreter default scripts circular-import.src 1`] = `"\\"circular 2\\""`;
 

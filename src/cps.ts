@@ -326,13 +326,14 @@ const visit = async (
       return new Noop(item, currentTarget);
     case ASTType.ParenthesisExpression:
       return defaultVisit((item as ASTParenthesisExpression).expression);
-    default:
+    default: {
       const range = new ASTRange(item.start, item.end);
 
       throw new PrepareError(`Unexpected AST type ${item.type}`, {
         target: currentTarget,
         range
       });
+    }
   }
 };
 

@@ -49,3 +49,8 @@ print(true - false)
 //multiply
 print(["was", "foo"] * 5)
 print("abc" * 5)
+print([1,2,3] * 1.5)
+
+//divide
+print(["was", "foo", 123, 345, 567, 789] / 2)
+print([1,2,3,4,5,6] / 1.5)
