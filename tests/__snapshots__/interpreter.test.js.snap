@@ -36,7 +36,7 @@ exports[`interpreter default scripts cast.src 5`] = `"61.23"`;
 
 exports[`interpreter default scripts cast.src 6`] = `"1"`;
 
-exports[`interpreter default scripts cast.src 7`] = `"null"`;
+exports[`interpreter default scripts cast.src 7`] = `""`;
 
 exports[`interpreter default scripts cast.src 8`] = `"[\\"bar\\", \\"foo\\", 0]"`;
 
@@ -48,13 +48,13 @@ exports[`interpreter default scripts cast.src 11`] = `"\\"wasfoo\\""`;
 
 exports[`interpreter default scripts cast.src 12`] = `"1"`;
 
-exports[`interpreter default scripts cast.src 13`] = `"null"`;
+exports[`interpreter default scripts cast.src 13`] = `""`;
 
-exports[`interpreter default scripts cast.src 14`] = `"null"`;
+exports[`interpreter default scripts cast.src 14`] = `""`;
 
-exports[`interpreter default scripts cast.src 15`] = `"null"`;
+exports[`interpreter default scripts cast.src 15`] = `""`;
 
-exports[`interpreter default scripts cast.src 16`] = `"null"`;
+exports[`interpreter default scripts cast.src 16`] = `""`;
 
 exports[`interpreter default scripts cast.src 17`] = `"1"`;
 
@@ -142,7 +142,7 @@ exports[`interpreter default scripts gs-bug-index.src 1`] = `"\\"string\\""`;
 
 exports[`interpreter default scripts gs-bug-index.src 2`] = `"\\"function\\""`;
 
-exports[`interpreter default scripts gs-bug-index.src 3`] = `"\\"testnull\\""`;
+exports[`interpreter default scripts gs-bug-index.src 3`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts has-index.src 1`] = `"\\"1234\\""`;
 
@@ -204,7 +204,7 @@ exports[`interpreter default scripts if-shorthand.src 9`] = `"\\"was\\""`;
 
 exports[`interpreter default scripts if-shorthand.src 10`] = `"\\"foo\\""`;
 
-exports[`interpreter default scripts if-shorthand.src 11`] = `"null"`;
+exports[`interpreter default scripts if-shorthand.src 11`] = `""`;
 
 exports[`interpreter default scripts imports.src 1`] = `"\\"file imported and sub file imported\\""`;
 
@@ -440,7 +440,7 @@ exports[`interpreter default scripts self-ms-behaviour.src 10`] = `"\\"show me\\
 
 exports[`interpreter default scripts simple-object.src 1`] = `"\\"was\\""`;
 
-exports[`interpreter default scripts simple-object.src 2`] = `"null"`;
+exports[`interpreter default scripts simple-object.src 2`] = `""`;
 
 exports[`interpreter default scripts slice.src 1`] = `"[\\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"gad\\"]"`;
 
