@@ -12,7 +12,7 @@ export class CustomNil extends CustomValue {
   }
 
   toString(): string {
-    return 'null';
+    return '';
   }
 
   fork(): CustomNil {
