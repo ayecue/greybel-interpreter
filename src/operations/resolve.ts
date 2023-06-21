@@ -141,17 +141,17 @@ export class Resolve extends Operation {
       case ASTType.IndexExpression: {
         const indexExpr = node as ASTIndexExpression;
         await this.buildProcessor(indexExpr.base, visit);
-
-        if (indexExpr.index.type === ASTType.SliceExpression) {
-          const sliceExpr = indexExpr.index as ASTSliceExpression;
-          const left = await visit(sliceExpr.left);
-          const right = await visit(sliceExpr.right);
-          const sliceSegment = new SliceSegment(left, right);
-          this.path.push(sliceSegment);
-        } else {
-          const indexSegment = new IndexSegment(await visit(indexExpr.index));
-          this.path.push(indexSegment);
-        }
+        const indexSegment = new IndexSegment(await visit(indexExpr.index));
+        this.path.push(indexSegment);
+        break;
+      }
+      case ASTType.SliceExpression: {
+        const sliceExpr = node as ASTSliceExpression;
+        await this.buildProcessor(sliceExpr.base, visit);
+        const left = await visit(sliceExpr.left);
+        const right = await visit(sliceExpr.right);
+        const sliceSegment = new SliceSegment(left, right);
+        this.path.push(sliceSegment);
         break;
       }
       case ASTType.Identifier: {
