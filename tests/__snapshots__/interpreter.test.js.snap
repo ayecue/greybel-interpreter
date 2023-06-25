@@ -410,6 +410,66 @@ exports[`interpreter default scripts new-map.src 14`] = `"\\"bar\\""`;
 
 exports[`interpreter default scripts new-map.src 15`] = `"[\\"b\\", \\"a\\", \\"r\\"]"`;
 
+exports[`interpreter default scripts number-ops-with-different-types.src 1`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 2`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 3`] = `"\\"10test\\""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 4`] = `"10"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 5`] = `"11"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 6`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 7`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 8`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 9`] = `"10"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 10`] = `"9"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 11`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 12`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 13`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 14`] = `"0"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 15`] = `"10"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 16`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 17`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 18`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 19`] = `"Infinity"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 20`] = `"10"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 21`] = `"1"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 22`] = `"1"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 23`] = `"1"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 24`] = `"1"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 25`] = `"1"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 26`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 27`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 28`] = `""`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 29`] = `"0"`;
+
+exports[`interpreter default scripts number-ops-with-different-types.src 30`] = `"0"`;
+
 exports[`interpreter default scripts obj-init.src 1`] = `"[\\"123\\", \\"123\\", \\"foo\\"]"`;
 
 exports[`interpreter default scripts obj-init.src 2`] = `"[{\\"another\\":\\"123\\"}, \\"123\\", \\"foo\\"]"`;
