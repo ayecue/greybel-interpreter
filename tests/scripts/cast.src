@@ -33,13 +33,15 @@ value = valueOfTest(null)
 
 print(value)
 
-//operators
+//plus
+print("" + {"test":2} + ["test"])
 print(["bar"] + ["foo", false])
 print({ "foo": 2 } + { "bar": 123 })
 print("was" + 321)
 print("was" + "foo")
 print(true + false)
 
+//minus
 print(["bar"] - ["foo", false])
 print({ "foo": 2 } - { "bar": 123 })
 print("was" - 321)
@@ -55,3 +57,23 @@ print([1,2,3] * 1.5)
 //divide
 print(["was", "foo", 123, 345, 567, 789] / 2)
 print([1,2,3,4,5,6] / 1.5)
+
+//greather than
+print("foo" < "test")
+print(["foo"] < ["test"])
+print({"test":2} < {"test":2})
+
+//greather than + equal
+print("foo" <= "test")
+print(["foo"] <= ["test"])
+print({"test":2} <= {"test":2})
+
+//less than
+print("foo" > "test")
+print(["foo"] > ["test"])
+print({"test":2} > {"test":2})
+
+//less than + equal
+print("foo" >= "test")
+print(["foo"] >= ["test"])
+print({"test":2} >= {"test":2})
