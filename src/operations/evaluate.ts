@@ -153,33 +153,9 @@ export const MapProcessorHandler: ProcessorHandler = {
     }
     return left;
   },
-  [Operator.LessThan]: (left: CustomMap, right: CustomValue) => {
-    if (right instanceof CustomMap) {
-      return new CustomBoolean(left.value.size < right.value.size);
-    }
-    return DefaultType.Void;
-  },
-  [Operator.GreaterThan]: (left: CustomMap, right: CustomValue) => {
-    if (right instanceof CustomMap) {
-      return new CustomBoolean(left.value.size > right.value.size);
-    }
-    return DefaultType.Void;
-  },
-  [Operator.GreaterThanOrEqual]: (left: CustomMap, right: CustomValue) => {
-    if (right instanceof CustomMap) {
-      return new CustomBoolean(left.value.size >= right.value.size);
-    }
-    return DefaultType.Void;
-  },
   [Operator.Equal]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
       return new CustomBoolean(deepEqual(left, right));
-    }
-    return DefaultType.Void;
-  },
-  [Operator.LessThanOrEqual]: (left: CustomMap, right: CustomValue) => {
-    if (right instanceof CustomMap) {
-      return new CustomBoolean(left.value.size <= right.value.size);
     }
     return DefaultType.Void;
   },

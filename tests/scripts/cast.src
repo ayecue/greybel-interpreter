@@ -60,15 +60,19 @@ print([1,2,3,4,5,6] / 1.5)
 //greather than
 print("foo" < "test")
 print(["foo"] < ["test"])
+print({"test":2} < {"test":2})
 
 //greather than + equal
 print("foo" <= "test")
 print(["foo"] <= ["test"])
+print({"test":2} <= {"test":2})
 
 //less than
 print("foo" > "test")
 print(["foo"] > ["test"])
+print({"test":2} > {"test":2})
 
 //less than + equal
 print("foo" >= "test")
 print(["foo"] >= ["test"])
+print({"test":2} >= {"test":2})
