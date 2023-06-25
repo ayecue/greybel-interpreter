@@ -77,14 +77,14 @@ export const StringProcessorHandler: ProcessorHandler = {
   [Operator.Minus]: (a, b) => minusString(a, b),
   [Operator.Asterik]: (a, b) => multiplyString(a, b),
   [Operator.LessThan]: (a, b) =>
-    new CustomBoolean(a.toString().length < b.toString().length),
+    new CustomBoolean(a.toString() < b.toString()),
   [Operator.GreaterThan]: (a, b) =>
-    new CustomBoolean(a.toString().length > b.toString().length),
+    new CustomBoolean(a.toString() > b.toString()),
   [Operator.GreaterThanOrEqual]: (a, b) =>
-    new CustomBoolean(a.toString().length >= b.toString().length),
+    new CustomBoolean(a.toString() >= b.toString()),
   [Operator.Equal]: (a, b) => new CustomBoolean(a.toString() === b.toString()),
   [Operator.LessThanOrEqual]: (a, b) =>
-    new CustomBoolean(a.toString().length <= b.toString().length),
+    new CustomBoolean(a.toString() <= b.toString()),
   [Operator.NotEqual]: (a, b) =>
     new CustomBoolean(a.toString() !== b.toString())
 };
