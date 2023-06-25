@@ -72,29 +72,31 @@ exports[`interpreter default scripts cast.src 23`] = `"[\\"was\\", \\"foo\\", 12
 
 exports[`interpreter default scripts cast.src 24`] = `"[1, 2, 3, 4]"`;
 
-exports[`interpreter default scripts cast.src 25`] = `"1"`;
+exports[`interpreter default scripts cast.src 25`] = `"\\"te\\""`;
 
-exports[`interpreter default scripts cast.src 26`] = `""`;
+exports[`interpreter default scripts cast.src 26`] = `"1"`;
 
 exports[`interpreter default scripts cast.src 27`] = `""`;
 
-exports[`interpreter default scripts cast.src 28`] = `"1"`;
+exports[`interpreter default scripts cast.src 28`] = `""`;
 
-exports[`interpreter default scripts cast.src 29`] = `""`;
+exports[`interpreter default scripts cast.src 29`] = `"1"`;
 
 exports[`interpreter default scripts cast.src 30`] = `""`;
 
-exports[`interpreter default scripts cast.src 31`] = `"0"`;
+exports[`interpreter default scripts cast.src 31`] = `""`;
 
-exports[`interpreter default scripts cast.src 32`] = `""`;
+exports[`interpreter default scripts cast.src 32`] = `"0"`;
 
 exports[`interpreter default scripts cast.src 33`] = `""`;
 
-exports[`interpreter default scripts cast.src 34`] = `"0"`;
+exports[`interpreter default scripts cast.src 34`] = `""`;
 
-exports[`interpreter default scripts cast.src 35`] = `""`;
+exports[`interpreter default scripts cast.src 35`] = `"0"`;
 
 exports[`interpreter default scripts cast.src 36`] = `""`;
+
+exports[`interpreter default scripts cast.src 37`] = `""`;
 
 exports[`interpreter default scripts circular-import.src 1`] = `"\\"circular 2\\""`;
 

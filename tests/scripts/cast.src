@@ -57,6 +57,7 @@ print([1,2,3] * 1.5)
 //divide
 print(["was", "foo", 123, 345, 567, 789] / 2)
 print([1,2,3,4,5,6] / 1.5)
+print("test" / 2)
 
 //greather than
 print("foo" < "test")

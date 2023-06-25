@@ -54,12 +54,7 @@ export const NumberProcessorHandler: ProcessorHandler = {
     new CustomBoolean(a.toNumber() !== b.toNumber())
 };
 
-export const multiplyString = (a: CustomValue, b: CustomValue): CustomValue => {
-  const multiStr = new Array(b.toNumber()).fill(a.toString()).join('');
-  return new CustomString(multiStr);
-};
-
-export const minusString = (a: CustomValue, b: CustomValue): CustomValue => {
+export const minusString = (a: CustomString, b: CustomValue): CustomValue => {
   const origin = a.toString();
   const toRemove = b.toString();
 
@@ -72,10 +67,48 @@ export const minusString = (a: CustomValue, b: CustomValue): CustomValue => {
   return new CustomString(origin);
 };
 
+export const multiplyString = (
+  a: CustomString,
+  b: CustomValue
+): CustomValue => {
+  const factor = b.toNumber();
+
+  if (factor <= 0) {
+    return new CustomList();
+  }
+
+  let newString = '';
+  const max = Math.floor(a.value.length * factor);
+
+  for (let index = 0; index < max; index++) {
+    newString += a.value[index % a.value.length];
+  }
+
+  return new CustomString(newString);
+};
+
+export const divideString = (a: CustomString, b: CustomValue): CustomValue => {
+  const factor = 1 / b.toNumber();
+
+  if (factor <= 0) {
+    return new CustomList();
+  }
+
+  let newString = '';
+  const max = Math.floor(a.value.length * factor);
+
+  for (let index = 0; index < max; index++) {
+    newString += a.value[index % a.value.length];
+  }
+
+  return new CustomString(newString);
+};
+
 export const StringProcessorHandler: ProcessorHandler = {
   [Operator.Plus]: (a, b) => new CustomString(a.toString() + b.toString()),
-  [Operator.Minus]: (a, b) => minusString(a, b),
-  [Operator.Asterik]: (a, b) => multiplyString(a, b),
+  [Operator.Minus]: (a: CustomString, b) => minusString(a, b),
+  [Operator.Asterik]: (a: CustomString, b) => multiplyString(a, b),
+  [Operator.Slash]: (a: CustomString, b) => divideString(a, b),
   [Operator.LessThan]: (a, b) => new CustomBoolean(a.toString() < b.toString()),
   [Operator.GreaterThan]: (a, b) =>
     new CustomBoolean(a.toString() > b.toString()),
