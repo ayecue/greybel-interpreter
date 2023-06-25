@@ -130,33 +130,9 @@ export const ListProcessorHandler: ProcessorHandler = {
     }
     return left;
   },
-  [Operator.LessThan]: (left: CustomList, right: CustomValue) => {
-    if (right instanceof CustomList) {
-      return new CustomBoolean(left.value.length < right.value.length);
-    }
-    return DefaultType.Void;
-  },
-  [Operator.GreaterThan]: (left: CustomList, right: CustomValue) => {
-    if (right instanceof CustomList) {
-      return new CustomBoolean(left.value.length > right.value.length);
-    }
-    return DefaultType.Void;
-  },
-  [Operator.GreaterThanOrEqual]: (left: CustomList, right: CustomValue) => {
-    if (right instanceof CustomList) {
-      return new CustomBoolean(left.value.length >= right.value.length);
-    }
-    return DefaultType.Void;
-  },
   [Operator.Equal]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
       return new CustomBoolean(deepEqual(left, right));
-    }
-    return DefaultType.Void;
-  },
-  [Operator.LessThanOrEqual]: (left: CustomList, right: CustomValue) => {
-    if (right instanceof CustomList) {
-      return new CustomBoolean(left.value.length <= right.value.length);
     }
     return DefaultType.Void;
   },
