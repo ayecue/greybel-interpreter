@@ -70,6 +70,14 @@ exports[`interpreter default scripts cast.src 22`] = `"[\\"was\\", \\"foo\\", 12
 
 exports[`interpreter default scripts cast.src 23`] = `"[1, 2, 3, 4]"`;
 
+exports[`interpreter default scripts cast.src 24`] = `"1"`;
+
+exports[`interpreter default scripts cast.src 25`] = `"1"`;
+
+exports[`interpreter default scripts cast.src 26`] = `"0"`;
+
+exports[`interpreter default scripts cast.src 27`] = `"0"`;
+
 exports[`interpreter default scripts circular-import.src 1`] = `"\\"circular 2\\""`;
 
 exports[`interpreter default scripts circular-import.src 2`] = `"\\"circular 1\\""`;
