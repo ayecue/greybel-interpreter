@@ -59,8 +59,22 @@ export const multiplyString = (a: CustomValue, b: CustomValue): CustomValue => {
   return new CustomString(multiStr);
 };
 
+export const minusString = (a: CustomValue, b: CustomValue): CustomValue => {
+  const origin = a.toString();
+  const toRemove = b.toString();
+
+  if (origin.endsWith(toRemove)) {
+    return new CustomString(
+      origin.substring(0, origin.length - toRemove.length)
+    );
+  }
+
+  return new CustomString(origin);
+};
+
 export const StringProcessorHandler: ProcessorHandler = {
   [Operator.Plus]: (a, b) => new CustomString(a.toString() + b.toString()),
+  [Operator.Minus]: (a, b) => minusString(a, b),
   [Operator.Asterik]: (a, b) => multiplyString(a, b),
   [Operator.LessThan]: (a, b) =>
     new CustomBoolean(a.toString().length < b.toString().length),

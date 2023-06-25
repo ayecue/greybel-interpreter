@@ -44,6 +44,7 @@ print(["bar"] - ["foo", false])
 print({ "foo": 2 } - { "bar": 123 })
 print("was" - 321)
 print("was" - "foo")
+print("test" - "st")
 print(true - false)
 
 //multiply

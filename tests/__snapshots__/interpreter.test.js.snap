@@ -52,21 +52,23 @@ exports[`interpreter default scripts cast.src 13`] = `""`;
 
 exports[`interpreter default scripts cast.src 14`] = `""`;
 
-exports[`interpreter default scripts cast.src 15`] = `""`;
+exports[`interpreter default scripts cast.src 15`] = `"\\"was\\""`;
 
-exports[`interpreter default scripts cast.src 16`] = `""`;
+exports[`interpreter default scripts cast.src 16`] = `"\\"was\\""`;
 
-exports[`interpreter default scripts cast.src 17`] = `"1"`;
+exports[`interpreter default scripts cast.src 17`] = `"\\"te\\""`;
 
-exports[`interpreter default scripts cast.src 18`] = `"[\\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\"]"`;
+exports[`interpreter default scripts cast.src 18`] = `"1"`;
 
-exports[`interpreter default scripts cast.src 19`] = `"\\"abcabcabcabcabc\\""`;
+exports[`interpreter default scripts cast.src 19`] = `"[\\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\", \\"was\\", \\"foo\\"]"`;
 
-exports[`interpreter default scripts cast.src 20`] = `"[1, 2, 3, 1]"`;
+exports[`interpreter default scripts cast.src 20`] = `"\\"abcabcabcabcabc\\""`;
 
-exports[`interpreter default scripts cast.src 21`] = `"[\\"was\\", \\"foo\\", 123]"`;
+exports[`interpreter default scripts cast.src 21`] = `"[1, 2, 3, 1]"`;
 
-exports[`interpreter default scripts cast.src 22`] = `"[1, 2, 3, 4]"`;
+exports[`interpreter default scripts cast.src 22`] = `"[\\"was\\", \\"foo\\", 123]"`;
+
+exports[`interpreter default scripts cast.src 23`] = `"[1, 2, 3, 4]"`;
 
 exports[`interpreter default scripts circular-import.src 1`] = `"\\"circular 2\\""`;
 
