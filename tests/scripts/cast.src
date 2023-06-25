@@ -34,6 +34,7 @@ value = valueOfTest(null)
 print(value)
 
 //plus
+print("" + {"test":2} + ["test"])
 print(["bar"] + ["foo", false])
 print({ "foo": 2 } + { "bar": 123 })
 print("was" + 321)
