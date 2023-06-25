@@ -1,0 +1,22 @@
+MyClass = {
+  "classID": "test",
+}
+
+MyClass.returnAnswer = function
+  return 42
+end function
+
+MySubClass = new MyClass
+MySubClass.classID = "test-sub"
+
+MySubClass.returnAnswer = function
+  return 123
+end function
+
+MySubClass.returnOriginalAnswer = function
+  return super.returnAnswer
+end function
+
+instance = new MySubClass
+
+print(instance.returnOriginalAnswer)

@@ -13,7 +13,7 @@ end function
 
 test2 = new test
 test.moo = function(a, b, c)
-    return super.foo
+    return self.foo
 end function
 
 test3 = new test2

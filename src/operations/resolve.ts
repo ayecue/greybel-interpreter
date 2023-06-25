@@ -264,22 +264,29 @@ export class Resolve extends Operation {
 
       if (result.handle instanceof CustomValueWithIntrinsics) {
         const customValueCtx = result.handle;
+
+        if (this.path.isSuper() && customValueCtx instanceof CustomMap) {
+          const superChild = customValueCtx.isa.get(result.path);
+
+          if (autoCall && superChild instanceof CustomFunction) {
+            if (ctx.functionState.context) {
+              return superChild.run(
+                ctx.functionState.context,
+                [],
+                ctx,
+                customValueCtx.isa
+              );
+            }
+
+            return superChild.run(customValueCtx, [], ctx);
+          }
+
+          return superChild;
+        }
+
         const child = customValueCtx.get(result.path);
 
         if (autoCall && child instanceof CustomFunction) {
-          if (
-            this.path.isSuper() &&
-            ctx.functionState.context &&
-            customValueCtx instanceof CustomMap
-          ) {
-            return child.run(
-              ctx.functionState.context,
-              [],
-              ctx,
-              customValueCtx.isa
-            );
-          }
-
           return child.run(customValueCtx, [], ctx);
         }
 
