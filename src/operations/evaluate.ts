@@ -121,7 +121,7 @@ export const StringProcessorHandler: ProcessorHandler = {
     new CustomBoolean(a.toString() !== b.toString())
 };
 
-export const multiplyList = (a: CustomList, b: CustomValue): CustomValue => {
+export const multiplyList = (a: CustomList, b: CustomNumber): CustomValue => {
   const factor = b.toNumber();
 
   if (factor <= 0) {
@@ -138,7 +138,7 @@ export const multiplyList = (a: CustomList, b: CustomValue): CustomValue => {
   return new CustomList(newListValue);
 };
 
-export const divideList = (a: CustomList, b: CustomValue): CustomValue => {
+export const divideList = (a: CustomList, b: CustomNumber): CustomValue => {
   const factor = 1 / b.toNumber();
 
   if (factor <= 0) {
@@ -160,7 +160,7 @@ export const ListProcessorHandler: ProcessorHandler = {
     if (right instanceof CustomList) {
       return left.fork().extend(right);
     }
-    return left;
+    return DefaultType.Void;
   },
   [Operator.Equal]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
@@ -174,8 +174,18 @@ export const ListProcessorHandler: ProcessorHandler = {
     }
     return DefaultType.Void;
   },
-  [Operator.Asterik]: (left: CustomList, right) => multiplyList(left, right),
-  [Operator.Slash]: (left: CustomList, right) => divideList(left, right)
+  [Operator.Asterik]: (left: CustomList, right) => {
+    if (right instanceof CustomNumber) {
+      return multiplyList(left, right);
+    }
+    return DefaultType.Void;
+  },
+  [Operator.Slash]: (left: CustomList, right) => {
+    if (right instanceof CustomNumber) {
+      return divideList(left, right);
+    }
+    return DefaultType.Void;
+  }
 };
 
 export const MapProcessorHandler: ProcessorHandler = {
@@ -183,7 +193,7 @@ export const MapProcessorHandler: ProcessorHandler = {
     if (right instanceof CustomMap) {
       return left.fork().extend(right);
     }
-    return left;
+    return DefaultType.Void;
   },
   [Operator.Equal]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
@@ -207,6 +217,12 @@ export const InterfaceProcessorHandler: ProcessorHandler = {
 };
 
 export const NilProcessorHandler: ProcessorHandler = {
+  [Operator.Plus]: () => DefaultType.Void,
+  [Operator.Minus]: () => DefaultType.Void,
+  [Operator.Slash]: () => DefaultType.Void,
+  [Operator.Asterik]: () => DefaultType.Void,
+  [Operator.Power]: () => DefaultType.Void,
+  [Operator.PercentSign]: () => DefaultType.Void,
   [Operator.Equal]: (_a, b) => new CustomBoolean(b instanceof CustomNil),
   [Operator.NotEqual]: (_a, b) => new CustomBoolean(!(b instanceof CustomNil))
 };
@@ -221,9 +237,7 @@ export const handleNumber: ProcessorHandlerFunction = (
   a: CustomValue,
   b: CustomValue
 ) => {
-  if (b instanceof CustomNil) {
-    b = new CustomNumber(0);
-  }
+  if (b instanceof CustomNil) b = new CustomNumber(0);
 
   if (op in NumberProcessorHandler && b instanceof CustomNumber) {
     return NumberProcessorHandler[op](a, b);
@@ -239,6 +253,9 @@ export const handleString: ProcessorHandlerFunction = (
   a: CustomValue,
   b: CustomValue
 ) => {
+  if (a instanceof CustomNil) a = new CustomString('');
+  if (b instanceof CustomNil) b = new CustomString('');
+
   if (op in StringProcessorHandler) {
     return StringProcessorHandler[op](a, b);
   } else if (op in GenericProcessorHandler) {
@@ -250,14 +267,11 @@ export const handleString: ProcessorHandlerFunction = (
 
 export const handleList: ProcessorHandlerFunction = (
   op: Operator,
-  a: CustomValue,
+  a: CustomList,
   b: CustomValue
 ) => {
-  const left = a as CustomList;
-  const right = b;
-
   if (op in ListProcessorHandler) {
-    return ListProcessorHandler[op](left, right);
+    return ListProcessorHandler[op](a, b);
   } else if (op in GenericProcessorHandler) {
     return GenericProcessorHandler[op](a, b);
   }
@@ -267,14 +281,11 @@ export const handleList: ProcessorHandlerFunction = (
 
 export const handleMap: ProcessorHandlerFunction = (
   op: Operator,
-  a: CustomValue,
+  a: CustomMap,
   b: CustomValue
 ) => {
-  const left = a as CustomMap;
-  const right = b;
-
   if (op in MapProcessorHandler) {
-    return MapProcessorHandler[op](left, right);
+    return MapProcessorHandler[op](a, b);
   } else if (op in GenericProcessorHandler) {
     return GenericProcessorHandler[op](a, b);
   }
@@ -284,14 +295,11 @@ export const handleMap: ProcessorHandlerFunction = (
 
 export const handleInterface: ProcessorHandlerFunction = (
   op: Operator,
-  a: CustomValue,
+  a: CustomInterface,
   b: CustomValue
 ) => {
-  const left = a as CustomInterface;
-  const right = b;
-
   if (op in InterfaceProcessorHandler) {
-    return InterfaceProcessorHandler[op](left, right);
+    return InterfaceProcessorHandler[op](a, b);
   } else if (op in GenericProcessorHandler) {
     return GenericProcessorHandler[op](a, b);
   }
@@ -353,7 +361,7 @@ export const handle = (
     (a instanceof CustomString || b instanceof CustomString) &&
     op === Operator.Plus
   ) {
-    return StringProcessorHandler[op](a, b);
+    return handleString(op, a, b);
   } else if (a instanceof CustomNumber) {
     return handleNumber(op, a, b);
   } else if (a instanceof CustomString) {
