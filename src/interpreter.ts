@@ -13,6 +13,7 @@ import { Noop } from './operations/noop';
 import { Operation } from './operations/operation';
 import { CustomValue } from './types/base';
 import { DefaultType } from './types/default';
+import { CustomFunction } from './types/function';
 import { CustomList } from './types/list';
 import { CustomMap } from './types/map';
 import { CustomNumber } from './types/number';
@@ -198,11 +199,15 @@ export class Interpreter extends EventEmitter {
     const mapIntrinsics = CustomMap.createWithInitialValue(
       CustomMap.intrinsics
     );
+    const funcRefIntrinsics = CustomMap.createWithInitialValue(
+      CustomFunction.intrinsics
+    );
 
     this.apiContext.set(new CustomString('string'), stringIntrinsics);
     this.apiContext.set(new CustomString('number'), numberIntrinsics);
     this.apiContext.set(new CustomString('list'), listIntrinsics);
     this.apiContext.set(new CustomString('map'), mapIntrinsics);
+    this.apiContext.set(new CustomString('funcRef'), funcRefIntrinsics);
     this.apiContext.extend(this.api);
 
     const newParams = new CustomList(

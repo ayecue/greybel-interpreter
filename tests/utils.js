@@ -11,7 +11,7 @@ const {
   ObjectValue,
   CustomInterface
 } = require('../dist');
-let printMock = jest.fn();
+let printMock = console.log//jest.fn();
 
 function setupAPI() {
   const api = new ObjectValue();

@@ -302,6 +302,16 @@ exports[`interpreter default scripts isa.src 23`] = `"1"`;
 
 exports[`interpreter default scripts isa.src 24`] = `"1"`;
 
+exports[`interpreter default scripts isa.src 25`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 26`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 27`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 28`] = `"0"`;
+
+exports[`interpreter default scripts isa.src 29`] = `"1"`;
+
 exports[`interpreter default scripts list.src 1`] = `"\\"bar\\""`;
 
 exports[`interpreter default scripts list.src 2`] = `"\\"bar\\""`;

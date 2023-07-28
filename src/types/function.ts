@@ -1,6 +1,7 @@
 import { ContextState, ContextType, OperationContext } from '../context';
 import { Operation } from '../operations/operation';
 import { Reference } from '../operations/reference';
+import { ObjectValue } from '../utils/object-value';
 import { CustomValue } from './base';
 import { DefaultType } from './default';
 import { CustomMap } from './map';
@@ -47,6 +48,8 @@ export class Argument {
 }
 
 export class CustomFunction extends CustomValue {
+  static readonly intrinsics: ObjectValue = new ObjectValue();
+
   readonly scope?: OperationContext;
   readonly name: string;
   readonly value: Callback;
@@ -113,7 +116,7 @@ export class CustomFunction extends CustomValue {
   }
 
   instanceOf(v: CustomValue): boolean {
-    return v instanceof CustomFunction;
+    return v.value === CustomFunction.intrinsics;
   }
 
   async run(

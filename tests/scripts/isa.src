@@ -31,3 +31,13 @@ print({} isa map and [1,2,3] isa list)
 
 print(true isa number)
 print(false isa number)
+
+myFunction = function()
+  return "foo"
+end function
+
+print({} isa funcRef)
+print([] isa funcRef)
+print(42 isa funcRef)
+print("test" isa funcRef)
+print(@myFunction isa funcRef)
