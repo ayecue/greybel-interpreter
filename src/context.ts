@@ -201,25 +201,25 @@ export class OperationContext {
   ];
 
   constructor(options: ContextOptions = {}) {
-    this.target = options.target || 'unknown';
-    this.stackTrace = options.stackTrace || [];
-    this.previous = options.previous || null;
-    this.type = options.type || ContextType.Api;
-    this.state = options.state || ContextState.Default;
+    this.target = options.target ?? 'unknown';
+    this.stackTrace = options.stackTrace ?? [];
+    this.previous = options.previous ?? null;
+    this.type = options.type ?? ContextType.Api;
+    this.state = options.state ?? ContextState.Default;
     this.scope = new Scope(this);
-    this.isProtected = options.isProtected || false;
-    this.injected = options.injected || false;
-    this.debugger = options.debugger || new Debugger();
-    this.handler = options.handler || new HandlerContainer();
-    this.cps = options.cps || null;
-    this.processState = options.processState || new ProcessState();
-    this.environmentVariables = options.environmentVariables || new Map();
+    this.isProtected = options.isProtected ?? false;
+    this.injected = options.injected ?? false;
+    this.debugger = options.debugger ?? new Debugger();
+    this.handler = options.handler ?? new HandlerContainer();
+    this.cps = options.cps ?? null;
+    this.processState = options.processState ?? new ProcessState();
+    this.environmentVariables = options.environmentVariables ?? new Map();
     this.functionState = new FunctionState();
     this.loopState = new LoopState();
 
     this.api = this.lookupApi();
     this.globals = this.lookupGlobals();
-    this.locals = this.lookupLocals() || this;
+    this.locals = this.lookupLocals() ?? this;
   }
 
   isIgnoredInDebugging(op: Operation): boolean {
@@ -234,7 +234,7 @@ export class OperationContext {
     this.stackTrace.unshift(op);
 
     if (!this.injected) {
-      this.target = op.target || this.target;
+      this.target = op.target ?? this.target;
 
       this.setLastActive(this);
 
@@ -397,7 +397,7 @@ export class OperationContext {
 
   fork(options: ContextForkOptions): OperationContext {
     const newContext = new OperationContext({
-      target: options.target || this.target,
+      target: options.target ?? this.target,
       stackTrace: this.stackTrace,
       previous: this,
       type: options.type,

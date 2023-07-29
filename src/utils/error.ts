@@ -15,7 +15,7 @@ export class RuntimeError extends Error {
   constructor(message: string, context: RuntimeContext, source?: Error) {
     super(message);
     this.target = context.target;
-    this.stackTrace = context.stackTrace || [];
+    this.stackTrace = context.stackTrace ?? [];
     this.stack = this.createTrace();
     this.source = source;
   }

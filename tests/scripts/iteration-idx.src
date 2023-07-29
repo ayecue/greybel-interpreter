@@ -1,0 +1,28 @@
+myList = [1,2,3,4]
+myObject = { "a": 1, "b": 1, "c": 1}
+
+for e in myObject
+    print(e)
+  __e_idx = __e_idx + 1
+  myObject["d"] = 2
+  myObject["k"] = 2
+end for
+
+for e in myList
+  print(__e_idx)
+  __e_idx = __e_idx + 1
+  if (__e_idx == 3) then
+    myList.push(5)
+    print("extend")
+  end if
+end for
+
+hasReached = false
+
+for e in [1,2,3,4]
+  print(e)
+  if (__e_idx == 3 and not hasReached) then
+    __e_idx = 0
+    hasReached = true
+  end if
+end for

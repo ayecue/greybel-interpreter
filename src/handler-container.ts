@@ -15,8 +15,8 @@ export class HandlerContainer {
 
   constructor(options: HandlerContainerOptions = {}) {
     this.resourceHandler =
-      options?.resourceHandler || new DefaultResourceHandler();
-    this.outputHandler = options?.outputHandler || new DefaultOutputHandler();
-    this.errorHandler = options?.errorHandler || new DefaultErrorHandler();
+      options?.resourceHandler ?? new DefaultResourceHandler();
+    this.outputHandler = options?.outputHandler ?? new DefaultOutputHandler();
+    this.errorHandler = options?.errorHandler ?? new DefaultErrorHandler();
   }
 }

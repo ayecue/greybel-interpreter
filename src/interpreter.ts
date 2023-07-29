@@ -46,17 +46,17 @@ export class Interpreter extends EventEmitter {
   constructor(options: InterpreterOptions) {
     super();
 
-    this.handler = options.handler || new HandlerContainer();
-    this.debugger = options.debugger || new Debugger();
+    this.handler = options.handler ?? new HandlerContainer();
+    this.debugger = options.debugger ?? new Debugger();
 
-    this.api = options.api || new ObjectValue();
-    this.params = options.params || [];
-    this.environmentVariables = options.environmentVariables || new Map();
+    this.api = options.api ?? new ObjectValue();
+    this.params = options.params ?? [];
+    this.environmentVariables = options.environmentVariables ?? new Map();
 
     this.apiContext = null;
     this.globalContext = null;
 
-    this.setTarget(options.target || 'unknown');
+    this.setTarget(options.target ?? 'unknown');
   }
 
   setTarget(target: string): Interpreter {
@@ -144,7 +144,7 @@ export class Interpreter extends EventEmitter {
   async inject(code: string, context?: OperationContext): Promise<Interpreter> {
     try {
       const top = await this.prepare(code);
-      const injectionCtx = (context || this.globalContext).fork({
+      const injectionCtx = (context ?? this.globalContext).fork({
         type: ContextType.Call,
         state: ContextState.Temporary,
         injected: true
@@ -176,7 +176,7 @@ export class Interpreter extends EventEmitter {
 
   async run(customCode?: string): Promise<Interpreter> {
     const code =
-      customCode || (await this.handler.resourceHandler.get(this.target));
+      customCode ?? (await this.handler.resourceHandler.get(this.target));
     const top = await this.prepare(code);
 
     return this.start(top);

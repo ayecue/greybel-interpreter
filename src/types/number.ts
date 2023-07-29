@@ -5,6 +5,8 @@ import { Void } from './nil';
 import { CustomValueWithIntrinsics } from './with-intrinsics';
 
 export class CustomNumberIterator implements Iterator<CustomValue> {
+  index: number = 0;
+
   next(): IteratorResult<CustomValue> {
     return {
       value: null,

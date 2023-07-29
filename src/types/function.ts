@@ -157,7 +157,7 @@ export class CustomFunction extends CustomValue {
 
       argMap.set(
         item.name,
-        args[argIndex++] || (await item.defaultValue.handle(fnCtx))
+        args[argIndex++] ?? (await item.defaultValue.handle(fnCtx))
       );
     }
 
@@ -165,8 +165,8 @@ export class CustomFunction extends CustomValue {
       argMap.set(SELF_NAMESPACE, self);
     }
 
-    const isa = next || (self instanceof CustomMap ? self.isa : null);
+    const isa = next ?? (self instanceof CustomMap ? self.isa : null);
 
-    return this.value(fnCtx || callContext, self, argMap, isa);
+    return this.value(fnCtx ?? callContext, self, argMap, isa);
   }
 }

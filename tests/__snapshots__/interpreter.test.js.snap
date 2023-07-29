@@ -312,6 +312,34 @@ exports[`interpreter default scripts isa.src 28`] = `"0"`;
 
 exports[`interpreter default scripts isa.src 29`] = `"1"`;
 
+exports[`interpreter default scripts iteration-idx.src 1`] = `"{\\"key\\":\\"a\\",\\"value\\":1}"`;
+
+exports[`interpreter default scripts iteration-idx.src 2`] = `"{\\"key\\":\\"c\\",\\"value\\":1}"`;
+
+exports[`interpreter default scripts iteration-idx.src 3`] = `"{\\"key\\":\\"k\\",\\"value\\":2}"`;
+
+exports[`interpreter default scripts iteration-idx.src 4`] = `"0"`;
+
+exports[`interpreter default scripts iteration-idx.src 5`] = `"2"`;
+
+exports[`interpreter default scripts iteration-idx.src 6`] = `"\\"extend\\""`;
+
+exports[`interpreter default scripts iteration-idx.src 7`] = `"4"`;
+
+exports[`interpreter default scripts iteration-idx.src 8`] = `"1"`;
+
+exports[`interpreter default scripts iteration-idx.src 9`] = `"2"`;
+
+exports[`interpreter default scripts iteration-idx.src 10`] = `"3"`;
+
+exports[`interpreter default scripts iteration-idx.src 11`] = `"4"`;
+
+exports[`interpreter default scripts iteration-idx.src 12`] = `"2"`;
+
+exports[`interpreter default scripts iteration-idx.src 13`] = `"3"`;
+
+exports[`interpreter default scripts iteration-idx.src 14`] = `"4"`;
+
 exports[`interpreter default scripts list.src 1`] = `"\\"bar\\""`;
 
 exports[`interpreter default scripts list.src 2`] = `"\\"bar\\""`;

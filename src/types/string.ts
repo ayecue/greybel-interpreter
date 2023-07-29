@@ -18,7 +18,7 @@ export class CustomStringIterator implements Iterator<CustomValue> {
   next(): IteratorResult<CustomValue> {
     const me = this;
 
-    if (me.index === me.value.length) {
+    if (me.index >= me.value.length) {
       return {
         value: null,
         done: true

@@ -5,6 +5,8 @@ import { CustomFunction } from './function';
 import { CustomObject } from './with-intrinsics';
 
 export class CustomInterfaceIterator implements Iterator<CustomValue> {
+  index: number = 0;
+
   next(): IteratorResult<CustomValue> {
     return {
       value: DefaultType.Void,

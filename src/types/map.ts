@@ -16,7 +16,7 @@ export class CustomMapIterator implements Iterator<CustomValue> {
 
   constructor(value: ObjectValue) {
     const me = this;
-    me.value = new ObjectValue(value);
+    me.value = value;
     me.index = 0;
   }
 
@@ -24,7 +24,7 @@ export class CustomMapIterator implements Iterator<CustomValue> {
     const me = this;
     const keys = Array.from(me.value.keys());
 
-    if (me.index === keys.length) {
+    if (me.index >= keys.length) {
       return {
         value: Void,
         done: true

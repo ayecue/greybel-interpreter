@@ -50,7 +50,6 @@ export class For extends OperationBlock {
     }
 
     const loopState = new LoopState();
-    let index = 0;
 
     forCtx.loopState = loopState;
 
@@ -71,7 +70,7 @@ export class For extends OperationBlock {
 
           loopState.isContinue = false;
 
-          forCtx.set(idxIdentifier, new CustomNumber(index++));
+          forCtx.set(idxIdentifier, new CustomNumber(iterator.index - 1));
           forCtx.set(varIdentifier, current);
           await this.block.handle(forCtx);
 
@@ -84,6 +83,8 @@ export class For extends OperationBlock {
             return;
           }
 
+          const idxValue = forCtx.get(idxIdentifier).toNumber();
+          iterator.index += idxValue - (iterator.index - 1);
           iteratorResult = iterator.next();
           process.nextTick(iteration);
         } catch (err: any) {
