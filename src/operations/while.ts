@@ -8,6 +8,7 @@ import {
 } from '../context';
 import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
+import { setImmediate } from '../utils/set-immediate';
 import { Block } from './block';
 import { CPSVisit, Operation, OperationBlock } from './operation';
 
@@ -61,7 +62,7 @@ export class While extends OperationBlock {
             return;
           }
 
-          process.nextTick(iteration);
+          setImmediate(iteration);
         } catch (err: any) {
           reject(err);
         }

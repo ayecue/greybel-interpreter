@@ -11,6 +11,7 @@ import { DefaultType } from '../types/default';
 import { CustomNumber } from '../types/number';
 import { CustomString } from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
+import { setImmediate } from '../utils/set-immediate';
 import { Block } from './block';
 import { CPSVisit, Operation, OperationBlock } from './operation';
 
@@ -86,7 +87,7 @@ export class For extends OperationBlock {
           const idxValue = forCtx.get(idxIdentifier).toNumber();
           iterator.index += idxValue - (iterator.index - 1);
           iteratorResult = iterator.next();
-          process.nextTick(iteration);
+          setImmediate(iteration);
         } catch (err: any) {
           reject(err);
         }

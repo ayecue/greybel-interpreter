@@ -11,6 +11,7 @@ import { CustomMap } from './types/map';
 import { CustomNil } from './types/nil';
 import { ObjectValue } from './utils/object-value';
 import { Path } from './utils/path';
+import { setImmediate } from './utils/set-immediate';
 
 export enum ContextType {
   Api,
@@ -104,7 +105,7 @@ export class Debugger {
           this.nextStep = false;
           resolve();
         } else {
-          setTimeout(check);
+          setImmediate(check);
         }
       };
 
@@ -310,7 +311,7 @@ export class OperationContext {
             this.processState.isExit = false;
             resolve(this);
           } else {
-            setTimeout(check, 0);
+            setImmediate(check);
           }
         };
 
