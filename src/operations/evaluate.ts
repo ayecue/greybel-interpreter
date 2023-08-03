@@ -5,7 +5,6 @@ import { CustomValue } from '../types/base';
 import { CustomBoolean } from '../types/boolean';
 import { DefaultType } from '../types/default';
 import { CustomFunction } from '../types/function';
-import { CustomInterface } from '../types/interface';
 import { CustomList } from '../types/list';
 import { CustomMap } from '../types/map';
 import { CustomNil } from '../types/nil';
@@ -209,13 +208,6 @@ export const MapProcessorHandler: ProcessorHandler = {
   }
 };
 
-export const InterfaceProcessorHandler: ProcessorHandler = {
-  [Operator.Equal]: (left: CustomInterface, right: CustomValue) =>
-    new CustomBoolean(left.value === right.value),
-  [Operator.NotEqual]: (left: CustomInterface, right: CustomValue) =>
-    new CustomBoolean(left.value !== right.value)
-};
-
 export const NilProcessorHandler: ProcessorHandler = {
   [Operator.Plus]: () => DefaultType.Void,
   [Operator.Minus]: () => DefaultType.Void,
@@ -293,20 +285,6 @@ export const handleMap: ProcessorHandlerFunction = (
   return DefaultType.Void;
 };
 
-export const handleInterface: ProcessorHandlerFunction = (
-  op: Operator,
-  a: CustomInterface,
-  b: CustomValue
-) => {
-  if (op in InterfaceProcessorHandler) {
-    return InterfaceProcessorHandler[op](a, b);
-  } else if (op in GenericProcessorHandler) {
-    return GenericProcessorHandler[op](a, b);
-  }
-
-  return DefaultType.Void;
-};
-
 export const handleNil: ProcessorHandlerFunction = (
   op: Operator,
   a: CustomValue,
@@ -370,8 +348,6 @@ export const handle = (
     return handleList(op, a, b);
   } else if (a instanceof CustomMap) {
     return handleMap(op, a, b);
-  } else if (a instanceof CustomInterface) {
-    return handleInterface(op, a, b);
   } else if (a instanceof CustomFunction) {
     return handleFunction(op, a, b);
   } else if (a instanceof CustomNil) {

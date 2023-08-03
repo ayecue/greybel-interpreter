@@ -60,23 +60,7 @@ function setupAPI() {
       Promise.resolve(DefaultType.Void)
     )
   );
-
-  api.set(
-    new CustomString('returnInterface'),
-    CustomFunction.createExternal('returnInterface', (fnCtx, self, args) => {
-      const itrface = new CustomInterface('test');
-
-      itrface.addFunction('foo', CustomFunction.createExternalWithSelf(
-        'foo',
-        async () => {
-          return Promise.resolve(new CustomString("test"));
-        }
-      ));
-
-      return Promise.resolve(itrface);
-    }).addArgument('value')
-  );
-
+  
   api.set(
     new CustomString('mapToObject'),
     CustomFunction.createExternal('mapToObject', (fnCtx, self, args) => {

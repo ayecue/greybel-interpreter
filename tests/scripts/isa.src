@@ -18,15 +18,6 @@ print({} isa string)
 print({} isa list)
 print({} isa map)
 
-iterf = returnInterface
-iterf2 = returnInterface
-
-print(iterf isa number)
-print(iterf isa string)
-print(iterf isa list)
-print(iterf isa map)
-print(iterf isa iterf2)
-
 print({} isa map and [1,2,3] isa list)
 
 print(true isa number)

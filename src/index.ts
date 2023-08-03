@@ -32,7 +32,6 @@ export {
   Evaluate,
   GenericProcessorHandler,
   handle,
-  handleInterface,
   handleList,
   handleMap,
   handleNumber,
@@ -72,7 +71,6 @@ export { CustomValue } from './types/base';
 export { CustomBoolean } from './types/boolean';
 export { DefaultType } from './types/default';
 export { Argument, Callback, CustomFunction } from './types/function';
-export { CustomInterface, CustomInterfaceIterator } from './types/interface';
 export { CustomList, CustomListIterator } from './types/list';
 export { CustomMap, CustomMapIterator } from './types/map';
 export { CustomNil } from './types/nil';
