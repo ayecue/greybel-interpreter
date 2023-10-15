@@ -9,7 +9,7 @@ const {
   DefaultType,
   OutputHandler,
   ObjectValue,
-  CustomInterface
+  CustomNil
 } = require('../dist');
 let printMock = console.log//jest.fn();
 
@@ -93,6 +93,45 @@ function setupAPI() {
   );
 
   api.set(new CustomString('pop'), pop);
+
+  const remove = CustomFunction.createExternalWithSelf(
+    'remove',
+    (
+      _ctx,
+      _self,
+      args
+    ) => {
+      const origin = args.get('self');
+      const keyValue = args.get('keyValue');
+
+      if (origin instanceof CustomNil || keyValue instanceof CustomNil) {
+        throw new Error("argument to 'remove' must not be null");
+      }
+
+      if (origin instanceof CustomMap) {
+        if (origin.has(keyValue)) {
+          origin.value.delete(keyValue);
+          return Promise.resolve(DefaultType.True);
+        }
+        return Promise.resolve(DefaultType.False);
+      } else if (origin instanceof CustomList) {
+        const listIndex = itemAtIndex(origin.value, keyValue.toInt());
+        if (Object.prototype.hasOwnProperty.call(origin.value, listIndex)) {
+          origin.value.splice(listIndex, 1);
+        }
+        return Promise.resolve(DefaultType.Void);
+      } else if (origin instanceof CustomString) {
+        const replaced = new CustomString(
+          origin.value.replace(keyValue.toString(), '')
+        );
+        return Promise.resolve(replaced);
+      }
+
+      throw new Error("Type Error: 'remove' requires map, list, or string");
+    }
+  ).addArgument('keyValue');
+
+  api.set(new CustomString('remove'), remove);
 
   CustomString.addIntrinsic(
     new CustomString('len'),

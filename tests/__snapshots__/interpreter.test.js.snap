@@ -506,6 +506,18 @@ exports[`interpreter default scripts obj-init.src 1`] = `"[\\"123\\", \\"123\\",
 
 exports[`interpreter default scripts obj-init.src 2`] = `"[{\\"another\\":\\"123\\"}, \\"123\\", \\"foo\\"]"`;
 
+exports[`interpreter default scripts override.src 1`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts override.src 2`] = `"123"`;
+
+exports[`interpreter default scripts override.src 3`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts override.src 4`] = `"123"`;
+
+exports[`interpreter default scripts override.src 5`] = `"\\"number\\""`;
+
+exports[`interpreter default scripts override.src 6`] = `"\\"number\\""`;
+
 exports[`interpreter default scripts print.src 1`] = `"123"`;
 
 exports[`interpreter default scripts return-in-loop.src 1`] = `"1"`;

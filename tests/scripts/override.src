@@ -1,0 +1,20 @@
+
+globals.typeof = function()
+  print("test")
+  return 123
+end function
+
+test = function()
+  return typeof(123)
+end function
+
+print(typeof(123))
+print(test)
+
+remove(globals, "typeof")
+
+print(typeof(123))
+
+remove(globals, "typeof")
+
+print(typeof(123))
