@@ -32,6 +32,16 @@ export class ObjectValue extends Map<CustomValue, CustomValue> {
     return this;
   }
 
+  delete(mapKey: CustomValue) {
+    for (const key of this.keys()) {
+      if (deepEqual(key, mapKey)) {
+        super.delete(key);
+        return true;
+      }
+    }
+    return false;
+  }
+
   extend(objVal: ObjectValue): this {
     for (const [key, value] of objVal) {
       this.set(key, value);

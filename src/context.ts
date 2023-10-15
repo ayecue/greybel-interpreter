@@ -51,6 +51,8 @@ export class Scope extends CustomMap {
 
     if (this.has(path)) {
       return super.get(path);
+    } else if (this.context.globals.scope.has(path)) {
+      return this.context.globals.scope.get(path);
     } else if (this.context.api.scope.has(path)) {
       return this.context.api.scope.get(path);
     } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
