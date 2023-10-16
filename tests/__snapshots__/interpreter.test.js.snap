@@ -242,6 +242,12 @@ exports[`interpreter default scripts imports.src 2`] = `"\\"foo included code an
 
 exports[`interpreter default scripts imports.src 3`] = `"\\"foo imported code native and sub foo imported code native\\""`;
 
+exports[`interpreter default scripts imports-within-comments.src 1`] = `"\\"file imported and sub file imported\\""`;
+
+exports[`interpreter default scripts imports-within-comments.src 2`] = `"\\"foo included code and sub foo included code\\""`;
+
+exports[`interpreter default scripts imports-within-comments.src 3`] = `"\\"foo imported code native and sub foo imported code native\\""`;
+
 exports[`interpreter default scripts instances.src 1`] = `"\\"was\\""`;
 
 exports[`interpreter default scripts instances.src 2`] = `"\\"woo\\""`;
