@@ -28,6 +28,11 @@ export class Call extends Operation {
 
   async handle(ctx: OperationContext): Promise<CustomValue> {
     const resolveResult = await this.fnRef.getResult(ctx);
+
+    if (ctx.isExit()) {
+      return DefaultType.Void;
+    }
+
     const valueRef = await this.fnRef.handle(ctx, resolveResult, false);
     const fnArgs: Array<CustomValue> = [];
 

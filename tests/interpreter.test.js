@@ -73,12 +73,16 @@ describe('interpreter', function () {
       debugger: new TestDebugger()
     });
 
-    interpreter.once('start', () => {
-      interpreter.exit();
-    });
+    pseudoAPI.set(
+      new CustomString('exit'),
+      CustomFunction.createExternal('exit', () => {
+        interpreter.exit();
+        return Promise.resolve(DefaultType.Void);
+      })
+    );
 
     interpreter.once('exit', () => {
-      expect(getPrintMock().mock.calls.length).toBeLessThan(3);
+      expect(getPrintMock().mock.calls.length).toEqual(0);
       preparePrintMock();
 
       setTimeout(() => {
@@ -101,6 +105,7 @@ describe('interpreter', function () {
 
     interpreter.run(`
 			test = "foo"
+			exit
 			print("123")
 			print("456")
 			print("789")

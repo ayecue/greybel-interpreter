@@ -175,7 +175,7 @@ export class Resolve extends Operation {
     return this;
   }
 
-  async getResult(ctx: OperationContext): Promise<ResolveResult> {
+  async getResult(ctx: OperationContext): Promise<ResolveResult | null> {
     let traversedPath = new Path<CustomValue>();
     let handle: CustomValue = new ResolveNil();
     const maxIndex = this.path.count();
@@ -183,7 +183,7 @@ export class Resolve extends Operation {
 
     for (let index = 0; index < maxIndex; index++) {
       if (ctx.isExit()) {
-        return null;
+        return new ResolveResult(null, DefaultType.Void);
       }
 
       const current = this.path.at(index);
@@ -256,7 +256,7 @@ export class Resolve extends Operation {
     if (result === null) {
       result = await this.getResult(ctx);
 
-      if (result === null && ctx.isExit()) {
+      if (ctx.isExit()) {
         return DefaultType.Void;
       }
     }

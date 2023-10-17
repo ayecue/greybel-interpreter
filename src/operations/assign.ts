@@ -26,6 +26,11 @@ export class Assign extends Operation {
 
   async handle(ctx: OperationContext): Promise<CustomValue> {
     const resolveResult = await this.left.getResult(ctx);
+
+    if (ctx.isExit()) {
+      return DefaultType.Void;
+    }
+
     const rightValue = await this.right.handle(ctx);
 
     if (!(resolveResult.handle instanceof ResolveNil)) {
