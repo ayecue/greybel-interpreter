@@ -1,0 +1,10 @@
+Foo = {}
+Bar = new Foo
+Bar = Bar + {}
+
+if Bar isa Foo then print "yes"
+
+Foo = {}
+Bar = {"__isa": Foo}
+
+if Bar isa Foo then print "yes"

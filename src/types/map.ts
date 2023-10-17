@@ -49,8 +49,6 @@ export class CustomMap extends CustomObject {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
   value: ObjectValue;
-  /* eslint-disable no-use-before-define */
-  readonly isa: CustomMap | null;
   private isInstance: boolean = false;
 
   static createWithInitialValue(value: ObjectValue): CustomMap {
@@ -59,10 +57,9 @@ export class CustomMap extends CustomObject {
     return map;
   }
 
-  constructor(value?: ObjectValue, isa: CustomMap = null) {
+  constructor(value?: ObjectValue) {
     super();
     this.value = new ObjectValue(value);
-    this.isa = isa;
   }
 
   getCustomType(): string {
@@ -82,10 +79,6 @@ export class CustomMap extends CustomObject {
 
     if (CUSTOM_MAP_MAX_DEPTH < depth) {
       return CUSTOM_MAP_MAX_DEPTH_VALUE;
-    }
-
-    if (this.isa) {
-      fields.push(`${ISA_PROPERTY.toJSON()}:${this.isa.toJSON(depth + 1)}`);
     }
 
     for (const [key, value] of this.value.entries()) {
@@ -123,7 +116,7 @@ export class CustomMap extends CustomObject {
     if (v instanceof CustomMap) {
       let current: CustomMap | null = this;
 
-      while ((current = current.isa)) {
+      while ((current = current.getIsa())) {
         if (current === v) {
           return true;
         }
@@ -169,7 +162,9 @@ export class CustomMap extends CustomObject {
         return traversalPath.count() === 0;
       }
 
-      return this.isa ? this.isa.has(current) : false;
+      const isa = this.getIsa();
+
+      return isa ? isa.has(current) : false;
     }
 
     return false;
@@ -207,6 +202,7 @@ export class CustomMap extends CustomObject {
 
     const traversalPath = path.clone();
     const current = traversalPath.next();
+    const isa = this.getIsa();
 
     if (current !== null) {
       if (this.value.has(current)) {
@@ -219,18 +215,8 @@ export class CustomMap extends CustomObject {
         } else if (traversalPath.count() === 0) {
           return sub;
         }
-      } else if (this.isa?.has(current)) {
-        return this.isa.get(current);
-      } else if (current.toString() === ISA_PROPERTY.toString()) {
-        if (path.count() === 1) {
-          return this.isa;
-        } else {
-          const ahead = traversalPath.next();
-
-          if (this.isa?.has(ahead)) {
-            return this.isa.get(ahead);
-          }
-        }
+      } else if (isa?.has(current)) {
+        return isa.get(current);
       } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
         return CustomMap.getIntrinsics().get(current);
       }
@@ -240,9 +226,14 @@ export class CustomMap extends CustomObject {
   }
 
   createInstance(): CustomMap {
-    const newInstance = new CustomMap(new ObjectValue(), this);
-
+    const newInstance = new CustomMap(new ObjectValue());
+    newInstance.value.set(ISA_PROPERTY, this);
     newInstance.isInstance = true;
     return newInstance;
+  }
+
+  getIsa(): CustomMap | null {
+    const isa = this.value.get(ISA_PROPERTY);
+    return isa instanceof CustomMap ? isa : null;
   }
 }

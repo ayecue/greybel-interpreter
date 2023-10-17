@@ -218,7 +218,7 @@ export class Resolve extends Operation {
               ctx.functionState.context,
               [],
               ctx,
-              previous.isa
+              previous.getIsa()
             );
           } else {
             handle = await handle.run(previous || DefaultType.Void, [], ctx);
@@ -266,7 +266,7 @@ export class Resolve extends Operation {
         const customValueCtx = result.handle;
 
         if (this.path.isSuper() && customValueCtx instanceof CustomMap) {
-          const superChild = customValueCtx.isa.get(result.path);
+          const superChild = customValueCtx.getIsa()?.get(result.path);
 
           if (autoCall && superChild instanceof CustomFunction) {
             if (ctx.functionState.context) {
@@ -274,7 +274,7 @@ export class Resolve extends Operation {
                 ctx.functionState.context,
                 [],
                 ctx,
-                customValueCtx.isa
+                customValueCtx.getIsa()
               );
             }
 
