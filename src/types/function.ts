@@ -1,4 +1,5 @@
 import { ContextState, ContextType, OperationContext } from '../context';
+import { Literal } from '../operations/literal';
 import { Operation } from '../operations/operation';
 import { Reference } from '../operations/reference';
 import { ObjectValue } from '../utils/object-value';
@@ -6,6 +7,7 @@ import { CustomValue } from './base';
 import { DefaultType } from './default';
 import { CustomMap } from './map';
 import { CustomNil } from './nil';
+import { CustomString } from './string';
 
 export interface Callback {
   (
@@ -107,7 +109,23 @@ export class CustomFunction extends CustomValue {
   }
 
   toString(): string {
-    const args = this.argumentDefs.map((item: Argument) => item.name);
+    let refs = 1;
+    const args = this.argumentDefs.map((item: Argument) => {
+      if (item.defaultValue instanceof Literal) {
+        const value = item.defaultValue.value;
+
+        if (value instanceof CustomNil) {
+          return item.name;
+        } else if (value instanceof CustomString) {
+          return `${item.name}="${value.value}"`;
+        }
+
+        return `${item.name}=${value.value}`;
+      } else if (item.defaultValue.item != null) {
+        return `${item.name}=_${refs++}`;
+      }
+      return item.name;
+    });
     return `FUNCTION(${args.join(', ')})`;
   }
 

@@ -41,31 +41,29 @@ export class FunctionOperation extends Operation {
       this.item.body.map((child) => visit(child))
     );
     this.block = new Block(this.item, stack);
-    this.args = [];
-    const defers = this.item.parameters.map(async (child) => {
-      switch (child.type) {
-        case ASTType.AssignmentStatement: {
-          const assignStatement = child as ASTAssignmentStatement;
-          const assignKey = assignStatement.variable as ASTIdentifier;
-          this.args.push({
-            name: assignKey.name,
-            op: await visit(assignStatement.init)
-          });
-          break;
+    this.args = await Promise.all(
+      this.item.parameters.map(async (child) => {
+        switch (child.type) {
+          case ASTType.AssignmentStatement: {
+            const assignStatement = child as ASTAssignmentStatement;
+            const assignKey = assignStatement.variable as ASTIdentifier;
+            return {
+              name: assignKey.name,
+              op: await visit(assignStatement.init)
+            };
+          }
+          case ASTType.Identifier: {
+            const identifierKey = child as ASTIdentifier;
+            return {
+              name: identifierKey.name,
+              op: new Reference(DefaultType.Void)
+            };
+          }
+          default:
+            throw new Error('Unexpected operation in arguments.');
         }
-        case ASTType.Identifier: {
-          const identifierKey = child as ASTIdentifier;
-          this.args.push({
-            name: identifierKey.name,
-            op: new Reference(DefaultType.Void)
-          });
-          break;
-        }
-        default:
-          throw new Error('Unexpected operation in arguments.');
-      }
-    });
-    await Promise.all(defers);
+      })
+    );
     return this;
   }
 
