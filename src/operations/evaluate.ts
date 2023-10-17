@@ -190,7 +190,7 @@ export const ListProcessorHandler: ProcessorHandler = {
 export const MapProcessorHandler: ProcessorHandler = {
   [Operator.Plus]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
-      return left.extend(right);
+      return left.fork().extend(right);
     }
     return DefaultType.Void;
   },
