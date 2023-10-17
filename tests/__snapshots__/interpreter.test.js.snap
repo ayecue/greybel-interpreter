@@ -260,6 +260,10 @@ exports[`interpreter default scripts intrinsics.src 3`] = `"[\\"s\\", \\"t\\", \
 
 exports[`interpreter default scripts intrinsics.src 4`] = `"0"`;
 
+exports[`interpreter default scripts is-greybel.src 1`] = `"1"`;
+
+exports[`interpreter default scripts is-greybel.src 2`] = `"1"`;
+
 exports[`interpreter default scripts isa.src 1`] = `"1"`;
 
 exports[`interpreter default scripts isa.src 2`] = `"0"`;

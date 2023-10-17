@@ -20,8 +20,10 @@ import { CustomNumber } from './types/number';
 import { CustomString } from './types/string';
 import { PrepareError, RuntimeError } from './utils/error';
 import { ObjectValue } from './utils/object-value';
+import { CustomBoolean } from './types/boolean';
 
 export const PARAMS_PROPERTY = new CustomString('params');
+export const IS_GREYBEL_PROPERTY = new CustomString('IS_GREYBEL');
 
 export interface InterpreterOptions {
   target?: string;
@@ -214,6 +216,7 @@ export class Interpreter extends EventEmitter {
       this.params.map((item) => new CustomString(item))
     );
 
+    this.globalContext.scope.set(IS_GREYBEL_PROPERTY, new CustomBoolean(true));
     this.globalContext.scope.set(PARAMS_PROPERTY, newParams);
 
     this.globalContext.set(

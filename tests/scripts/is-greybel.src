@@ -1,0 +1,2 @@
+print(IS_GREYBEL)
+print(globals.hasIndex("IS_GREYBEL"))
