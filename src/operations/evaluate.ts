@@ -73,7 +73,7 @@ export const multiplyString = (
   const factor = b.toNumber();
 
   if (factor <= 0) {
-    return new CustomList();
+    return new CustomString('');
   }
 
   let newString = '';
@@ -90,7 +90,7 @@ export const divideString = (a: CustomString, b: CustomValue): CustomValue => {
   const factor = 1 / b.toNumber();
 
   if (factor <= 0) {
-    return new CustomList();
+    return new CustomString('');
   }
 
   let newString = '';
