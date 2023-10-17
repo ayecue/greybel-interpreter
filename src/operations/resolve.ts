@@ -182,6 +182,10 @@ export class Resolve extends Operation {
     const lastIndex = maxIndex - 1;
 
     for (let index = 0; index < maxIndex; index++) {
+      if (ctx.isExit()) {
+        return null;
+      }
+
       const current = this.path.at(index);
 
       if (current instanceof OperationSegment) {
@@ -251,6 +255,10 @@ export class Resolve extends Operation {
   ): Promise<CustomValue> {
     if (result === null) {
       result = await this.getResult(ctx);
+
+      if (result === null && ctx.isExit()) {
+        return DefaultType.Void;
+      }
     }
 
     if (!(result.handle instanceof ResolveNil)) {
