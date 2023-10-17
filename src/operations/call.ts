@@ -47,7 +47,7 @@ export class Call extends Operation {
           ctx.functionState.context,
           fnArgs,
           ctx,
-          resolveResult.handle.isa
+          resolveResult.handle.getIsa()
         );
       }
 

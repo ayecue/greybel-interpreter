@@ -1,0 +1,10 @@
+f = {}
+
+f.a = function()
+    exit "bye"
+end function
+
+f.b = function()
+end function
+
+f.a.b
