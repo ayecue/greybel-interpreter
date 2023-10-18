@@ -51,6 +51,8 @@ export class Scope extends CustomMap {
 
     if (this.has(path)) {
       return super.get(path);
+    } else if (this.context.outer?.scope.has(path)) {
+      return this.context.outer.scope.get(path);
     } else if (this.context.globals?.scope.has(path)) {
       return this.context.globals.scope.get(path);
     } else if (this.context.api?.scope.has(path)) {
@@ -191,6 +193,8 @@ export class OperationContext {
   /* eslint-disable no-use-before-define */
   readonly locals: OperationContext;
   /* eslint-disable no-use-before-define */
+  readonly outer: OperationContext;
+  /* eslint-disable no-use-before-define */
   readonly globals: OperationContext;
 
   private static readonly lookupApiType: Array<ContextType> = [ContextType.Api];
@@ -223,6 +227,7 @@ export class OperationContext {
     this.api = this.lookupApi();
     this.globals = this.lookupGlobals();
     this.locals = this.lookupLocals() ?? this;
+    this.outer = this.locals.previous?.lookupLocals() ?? null;
   }
 
   isIgnoredInDebugging(op: Operation): boolean {

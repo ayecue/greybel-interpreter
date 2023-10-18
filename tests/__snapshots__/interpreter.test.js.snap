@@ -640,6 +640,10 @@ exports[`interpreter default scripts unary.src 8`] = `"\\"inner-function\\""`;
 
 exports[`interpreter default scripts unary.src 9`] = `"\\"function\\""`;
 
+exports[`interpreter default scripts use-global-scope.src 1`] = `"\\"global\\""`;
+
+exports[`interpreter default scripts use-local-scope.src 1`] = `"\\"local\\""`;
+
 exports[`interpreter should contain correct stack 1`] = `
 "at unknown:3:11
 at unknown:9:11

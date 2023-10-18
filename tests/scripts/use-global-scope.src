@@ -1,0 +1,13 @@
+globals.foo = function; print "global"; end function
+
+bar = function()
+	locals.foo = function; print "local"; end function
+	inner = function()
+    x = function()
+      foo()
+    end function
+		x
+	end function
+	inner
+end function
+bar
