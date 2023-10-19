@@ -1,4 +1,4 @@
-import { ASTLiteral, ASTType } from 'greyscript-core';
+import { ASTLiteral, ASTType } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

@@ -1,4 +1,4 @@
-import { ASTMapConstructorExpression, ASTMapKeyString } from 'greyscript-core';
+import { ASTMapConstructorExpression, ASTMapKeyString } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

@@ -1,4 +1,4 @@
-import { ASTForGenericStatement, ASTIdentifier } from 'greyscript-core';
+import { ASTForGenericStatement, ASTIdentifier } from 'miniscript-core';
 
 import {
   ContextState,

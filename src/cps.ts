@@ -15,7 +15,6 @@ import {
   ASTFunctionStatement,
   ASTIdentifier,
   ASTIfStatement,
-  ASTImportCodeExpression,
   ASTListConstructorExpression,
   ASTLiteral,
   ASTMapConstructorExpression,
@@ -25,7 +24,7 @@ import {
   ASTType,
   ASTUnaryExpression,
   ASTWhileStatement
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { HandlerContainer } from './handler-container';
 import { Break } from './operations/break';
@@ -208,57 +207,6 @@ const visit = async (
         const subVisit = visit.bind(null, context, [...stack, target]);
         const importStatement = await new Include(
           includeExpr,
-          currentTarget,
-          target,
-          code
-        ).build(subVisit);
-
-        return importStatement;
-      } catch (err: any) {
-        if (err instanceof PrepareError) {
-          throw err;
-        }
-
-        throw new PrepareError(
-          err.message,
-          {
-            target,
-            range: new ASTRange(item.start, item.end)
-          },
-          err
-        );
-      }
-    }
-    case ASTType.ImportCodeExpression: {
-      const importExpr = item as ASTImportCodeExpression;
-
-      const target = await context.handler.resourceHandler.getTargetRelativeTo(
-        currentTarget,
-        importExpr.directory
-      );
-
-      if (stack.includes(target)) {
-        console.warn(
-          `Found circular dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
-        );
-        return new Noop(item, target);
-      }
-
-      const code = await context.handler.resourceHandler.get(target);
-
-      if (code == null) {
-        const range = new ASTRange(item.start, item.end);
-
-        throw new PrepareError(`Cannot find native import "${currentTarget}"`, {
-          target: currentTarget,
-          range
-        });
-      }
-
-      try {
-        const subVisit = visit.bind(null, context, [...stack, target]);
-        const importStatement = await new Include(
-          importExpr,
           currentTarget,
           target,
           code

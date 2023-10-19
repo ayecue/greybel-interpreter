@@ -1,4 +1,4 @@
-import { ASTListConstructorExpression, ASTListValue } from 'greyscript-core';
+import { ASTListConstructorExpression, ASTListValue } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

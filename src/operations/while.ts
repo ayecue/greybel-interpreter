@@ -1,4 +1,4 @@
-import { ASTWhileStatement } from 'greyscript-core';
+import { ASTWhileStatement } from 'miniscript-core';
 
 import {
   ContextState,

@@ -1,4 +1,4 @@
-import { ASTChunk } from 'greyscript-core';
+import { ASTChunk } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

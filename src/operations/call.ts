@@ -1,4 +1,4 @@
-import { ASTCallExpression } from 'greyscript-core';
+import { ASTCallExpression } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

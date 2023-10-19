@@ -1,4 +1,4 @@
-import { ASTRange } from 'greyscript-core';
+import { ASTRange } from 'miniscript-core';
 
 import { Operation } from '../operations/operation';
 

@@ -1,4 +1,4 @@
-import { ASTEvaluationExpression, ASTType, Operator } from 'greyscript-core';
+import { ASTEvaluationExpression, ASTType, Operator } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
