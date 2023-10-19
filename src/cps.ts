@@ -65,13 +65,19 @@ export class CPSContext {
   }
 }
 
-const visit = async (
+export type CPSVisitCallback = (
+  context: CPSContext,
+  stack: string[],
+  item: ASTBase
+) => Promise<Operation>;
+
+export const defaultCPSVisit: CPSVisitCallback = async (
   context: CPSContext,
   stack: string[],
   item: ASTBase
 ): Promise<Operation> => {
   const currentTarget = stack[stack.length - 1];
-  const defaultVisit = visit.bind(null, context, stack);
+  const defaultVisit = defaultCPSVisit.bind(null, context, stack);
 
   switch (item.type) {
     case ASTType.MapConstructorExpression:
@@ -154,7 +160,7 @@ const visit = async (
       }
 
       try {
-        const subVisit = visit.bind(null, context, [...stack, target]);
+        const subVisit = defaultCPSVisit.bind(null, context, [...stack, target]);
         const importStatement = await new Import(
           importExpr,
           currentTarget,
@@ -204,7 +210,7 @@ const visit = async (
       }
 
       try {
-        const subVisit = visit.bind(null, context, [...stack, target]);
+        const subVisit = defaultCPSVisit.bind(null, context, [...stack, target]);
         const importStatement = await new Include(
           includeExpr,
           currentTarget,
@@ -293,9 +299,9 @@ export class CPS {
   private readonly context: CPSContext;
   private __visit: CPSVisit;
 
-  constructor(context: CPSContext) {
+  constructor(context: CPSContext, cpsVisit: CPSVisitCallback = defaultCPSVisit) {
     this.context = context;
-    this.__visit = visit.bind(null, context, [context.target]);
+    this.__visit = cpsVisit.bind(null, context, [context.target]);
   }
 
   visit(item: ASTBase): Promise<Operation> {
