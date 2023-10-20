@@ -90,12 +90,11 @@ const visit = async (
         defaultVisit
       );
     case ASTType.MemberExpression:
+    case ASTType.IndexExpression:
+    case ASTType.SliceExpression:
       return createResolve(item, currentTarget).build(defaultVisit);
     case ASTType.Identifier:
       return createIdentifierResolve(item as ASTIdentifier, currentTarget).build(defaultVisit);
-    case ASTType.IndexExpression:
-    case ASTType.SliceExpression:
-      return new Resolve(item, currentTarget).build(defaultVisit);
     case ASTType.FunctionDeclaration:
       return new FunctionOperation(
         item as ASTFunctionStatement,

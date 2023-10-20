@@ -396,6 +396,10 @@ exports[`interpreter default scripts lookup-path-opt.src 2`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts lookup-path-opt.src 3`] = `"2"`;
 
+exports[`interpreter default scripts lookup-path-opt.src 4`] = `"{\\"x\\":\\"test\\"}"`;
+
+exports[`interpreter default scripts lookup-path-opt.src 5`] = `"\\"te\\""`;
+
 exports[`interpreter default scripts loops.src 1`] = `"[\\"test0\\", 0, 0, 0]"`;
 
 exports[`interpreter default scripts loops.src 2`] = `"\\"before accepted\\""`;

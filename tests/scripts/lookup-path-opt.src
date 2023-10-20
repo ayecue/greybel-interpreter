@@ -5,3 +5,5 @@ test.foo.x = "test"
 print(globals.test.foo.x)
 print(globals.test["foo"].x)
 print(globals.test.foo.x[0:2].len)
+print(globals.test["foo"])
+print(globals.test.foo.x[0:2])

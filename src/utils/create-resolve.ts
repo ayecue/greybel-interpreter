@@ -1,4 +1,10 @@
-import { ASTBase, ASTIdentifier, ASTMemberExpression } from 'greyscript-core';
+import {
+  ASTBase,
+  ASTIdentifier,
+  ASTIndexExpression,
+  ASTMemberExpression,
+  ASTSliceExpression
+} from 'greyscript-core';
 
 import { Operation } from '../operations/operation';
 import { ReferenceGlobals } from '../operations/reference-globals';
@@ -46,9 +52,12 @@ const optResolveMap: Record<
 };
 
 export function createResolve(item: ASTBase, target?: string): Resolve {
-  if (item instanceof ASTMemberExpression) {
-    const memberExpr = item as ASTMemberExpression;
-    const path = lookupPath(memberExpr);
+  if (
+    item instanceof ASTMemberExpression ||
+    item instanceof ASTIndexExpression ||
+    item instanceof ASTSliceExpression
+  ) {
+    const path = lookupPath(item);
     if (
       path.length > 0 &&
       path[0] instanceof ASTMemberExpression &&
@@ -65,7 +74,7 @@ export function createResolve(item: ASTBase, target?: string): Resolve {
       const newBase = path[1];
       newBase.base = right;
 
-      return new OptResolve(memberExpr, target);
+      return new OptResolve(item, target);
     }
   }
   return new Resolve(item, target);

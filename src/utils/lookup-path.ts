@@ -7,7 +7,7 @@ import {
 
 export type PathItem = ASTBase & { base: ASTBase };
 
-export function lookupPath(item: ASTMemberExpression): PathItem[] {
+export function lookupPath(item: PathItem): PathItem[] {
   const path: PathItem[] = [item];
   let current = item.base;
 
