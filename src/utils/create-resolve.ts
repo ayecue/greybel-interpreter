@@ -51,6 +51,7 @@ export function createResolve(item: ASTBase, target?: string): Resolve {
     const path = lookupPath(memberExpr);
     if (
       path.length > 0 &&
+      path[0] instanceof ASTMemberExpression &&
       path[0].base instanceof ASTIdentifier &&
       hasOwnProperty.call(optResolveMap, path[0].base.name)
     ) {

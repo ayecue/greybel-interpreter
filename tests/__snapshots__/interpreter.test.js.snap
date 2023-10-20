@@ -390,6 +390,12 @@ exports[`interpreter default scripts long-circular-import.src 3`] = `"\\"long ci
 
 exports[`interpreter default scripts long-circular-import.src 4`] = `"\\"start long circular\\""`;
 
+exports[`interpreter default scripts lookup-path-opt.src 1`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts lookup-path-opt.src 2`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts lookup-path-opt.src 3`] = `"2"`;
+
 exports[`interpreter default scripts loops.src 1`] = `"[\\"test0\\", 0, 0, 0]"`;
 
 exports[`interpreter default scripts loops.src 2`] = `"\\"before accepted\\""`;
