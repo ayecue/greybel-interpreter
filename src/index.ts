@@ -80,7 +80,6 @@ export {
   CustomObject,
   CustomValueWithIntrinsics
 } from './types/with-intrinsics';
-export { deepEqual } from './utils/deep-equal';
 export { PrepareError, RuntimeError } from './utils/error';
 export { ObjectValue } from './utils/object-value';
 export { Path } from './utils/path';

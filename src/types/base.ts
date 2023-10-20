@@ -8,4 +8,5 @@ export abstract class CustomValue {
   abstract toTruthy(): boolean;
   abstract fork(): CustomValue;
   abstract instanceOf(value: CustomValue): boolean;
+  abstract hash(recursionDepth?: number): number;
 }

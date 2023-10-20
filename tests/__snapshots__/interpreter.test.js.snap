@@ -118,7 +118,7 @@ exports[`interpreter default scripts deep-equal.src 6`] = `"0"`;
 
 exports[`interpreter default scripts deep-equal.src 7`] = `"\\"test\\""`;
 
-exports[`interpreter default scripts deep-equal.src 8`] = `"{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{...}:{...}}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}:{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{...}:{...}}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}}"`;
+exports[`interpreter default scripts deep-equal.src 8`] = `"{\\"was\\":1,\\"second\\":2,{\\"foo\\":2}:{\\"was\\":1,\\"second\\":2,{\\"foo\\":2}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}}"`;
 
 exports[`interpreter default scripts deep-equal.src 9`] = `"0"`;
 

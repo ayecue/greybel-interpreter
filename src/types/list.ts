@@ -1,3 +1,4 @@
+import { getHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
@@ -200,5 +201,14 @@ export class CustomList extends CustomObject {
     }
 
     throw new Error(`Unknown path in list ${path.toString()}.`);
+  }
+
+  hash(recursionDepth = 0): number {
+    let result = getHashCode(this.value.length);
+    if (recursionDepth > 16) return result;
+    this.value.forEach((value: CustomValue, index: number) => {
+      result ^= value.hash(recursionDepth + 1) + index;
+    });
+    return result;
   }
 }

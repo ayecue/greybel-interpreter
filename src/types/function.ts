@@ -2,6 +2,7 @@ import { ContextState, ContextType, OperationContext } from '../context';
 import { Literal } from '../operations/literal';
 import { Operation } from '../operations/operation';
 import { Reference } from '../operations/reference';
+import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { CustomValue } from './base';
 import { DefaultType } from './default';
@@ -181,5 +182,9 @@ export class CustomFunction extends CustomValue {
     }
 
     return this.value(fnCtx ?? callContext, selfValue, argMap, isa);
+  }
+
+  hash() {
+    return getStringHashCode(this.toString());
   }
 }

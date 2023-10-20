@@ -1,3 +1,4 @@
+import { getHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
@@ -238,5 +239,15 @@ export class CustomMap extends CustomObject {
   getIsa(): CustomMap | null {
     const isa = this.value.get(ISA_PROPERTY);
     return isa instanceof CustomMap ? isa : null;
+  }
+
+  hash(recursionDepth = 0): number {
+    let result = getHashCode(this.value.size);
+    if (recursionDepth > 16) return result;
+    this.value.forEach((value: CustomValue, key: CustomValue) => {
+      result ^= key.hash(recursionDepth + 1);
+      result ^= value.hash(recursionDepth + 1);
+    });
+    return result;
   }
 }
