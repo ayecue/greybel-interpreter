@@ -33,6 +33,10 @@ export class Assign extends Operation {
 
     const rightValue = await this.right.handle(ctx);
 
+    if (resolveResult.path.count() === 0) {
+      throw new Error('Resolve path cannot be empty.');
+    }
+    
     if (!(resolveResult.handle instanceof ResolveNil)) {
       const resultValueCtx = resolveResult.handle as CustomValueWithIntrinsics;
       resultValueCtx.set(resolveResult.path, rightValue);

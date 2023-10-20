@@ -79,16 +79,12 @@ export class FunctionOperation extends Operation {
       ): Promise<CustomValue> => {
         const functionState = new FunctionState();
 
-        fnCtx.set(SELF_PROPERTY, self);
         functionState.context = self;
 
         if (next) {
           fnCtx.set(SUPER_PROPERTY, next);
           functionState.super = next;
         }
-
-        fnCtx.set(new CustomString('locals'), fnCtx.locals.scope);
-        fnCtx.set(new CustomString('outer'), fnCtx.previous.locals.scope);
 
         for (const [key, value] of args) {
           fnCtx.set(new CustomString(key), value);

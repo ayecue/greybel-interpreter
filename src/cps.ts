@@ -13,11 +13,13 @@ import {
   ASTEvaluationExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
+  ASTIdentifier,
   ASTIfStatement,
   ASTImportCodeExpression,
   ASTListConstructorExpression,
   ASTLiteral,
   ASTMapConstructorExpression,
+  ASTMemberExpression,
   ASTParenthesisExpression,
   ASTRange,
   ASTReturnStatement,
@@ -53,6 +55,19 @@ import { Resolve } from './operations/resolve';
 import { Return } from './operations/return';
 import { While } from './operations/while';
 import { PrepareError } from './utils/error';
+import { AssignSelf } from './operations/assign-self';
+import { AssignGlobals } from './operations/assign-globals';
+import { AssignLocals } from './operations/assign-locals';
+import { AssignOuter } from './operations/assign-outer';
+import { ReferenceSelf } from './operations/reference-self';
+import { ReferenceGlobals } from './operations/reference-globals';
+import { ReferenceLocals } from './operations/reference-locals';
+import { ReferenceOuter } from './operations/reference-outer';
+import { ResolveSelf } from './operations/resolve-self';
+import { ResolveGlobals } from './operations/resolve-globals';
+import { ResolveLocals } from './operations/resolve-locals';
+import { ResolveOuter } from './operations/resolve-outer';
+import { lookupPath } from './utils/lookup-base';
 
 export class CPSContext {
   readonly target: string;
@@ -67,7 +82,8 @@ export class CPSContext {
 const visit = async (
   context: CPSContext,
   stack: string[],
-  item: ASTBase
+  item: ASTBase,
+  isWithinResolve: boolean = false
 ): Promise<Operation> => {
   const currentTarget = stack[stack.length - 1];
   const defaultVisit = visit.bind(null, context, stack);
@@ -84,11 +100,63 @@ const visit = async (
         currentTarget
       ).build(defaultVisit);
     case ASTType.AssignmentStatement:
-      return new Assign(item as ASTAssignmentStatement, currentTarget).build(
+      const assignStatement = item as ASTAssignmentStatement;
+
+      if (assignStatement.variable instanceof ASTIdentifier) {
+        switch (assignStatement.variable.name) {
+          case 'self':
+            return new AssignSelf(assignStatement, currentTarget).build(
+              defaultVisit
+            );
+          case 'globals':
+            return new AssignGlobals(assignStatement, currentTarget).build(
+              defaultVisit
+            );
+          case 'locals':
+            return new AssignLocals(assignStatement, currentTarget).build(
+              defaultVisit
+            );
+          case 'outer':
+            return new AssignOuter(assignStatement, currentTarget).build(
+              defaultVisit
+            );
+        }
+      }
+
+      return new Assign(assignStatement, currentTarget).build(
         defaultVisit
       );
     case ASTType.MemberExpression:
+      const memberExpr = item as ASTMemberExpression;
+      const path = lookupPath(memberExpr);
+      if (!isWithinResolve && path[0] instanceof ASTIdentifier) {
+        switch (path[0].name) {
+          case 'self': 
+            return new ResolveSelf(path[1], currentTarget).build(defaultVisit);
+          case 'globals': 
+            return new ResolveGlobals(path[1], currentTarget).build(defaultVisit);
+          case 'locals': 
+            return new ResolveLocals(path[1], currentTarget).build(defaultVisit);
+          case 'outer': 
+            return new ResolveOuter(path[1], currentTarget).build(defaultVisit);
+        }
+      }
+      return new Resolve(memberExpr, currentTarget).build(defaultVisit);
     case ASTType.Identifier:
+      const identifier = item as ASTIdentifier;
+      if (!isWithinResolve) {
+        switch (identifier.name) {
+          case 'self': 
+            return new ReferenceSelf(item, currentTarget).build(defaultVisit);
+          case 'globals': 
+            return new ReferenceGlobals(item, currentTarget).build(defaultVisit);
+          case 'locals': 
+            return new ReferenceLocals(item, currentTarget).build(defaultVisit);
+          case 'outer': 
+            return new ReferenceOuter(item, currentTarget).build(defaultVisit);
+        }
+      }
+      return new Resolve(identifier, currentTarget).build(defaultVisit);
     case ASTType.IndexExpression:
     case ASTType.SliceExpression:
       return new Resolve(item, currentTarget).build(defaultVisit);

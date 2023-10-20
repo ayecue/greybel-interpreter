@@ -161,7 +161,7 @@ export class Resolve extends Operation {
         break;
       }
       default: {
-        const opSegment = new OperationSegment(await visit(node));
+        const opSegment = new OperationSegment(await visit(node, true));
         this.path.push(opSegment);
         break;
       }
@@ -175,15 +175,15 @@ export class Resolve extends Operation {
     return this;
   }
 
-  async getResult(ctx: OperationContext): Promise<ResolveResult | null> {
+  async getResult(ctx: OperationContext, handle: CustomValue = new ResolveNil()): Promise<ResolveResult | null> {
     let traversedPath = new Path<CustomValue>();
-    let handle: CustomValue = new ResolveNil();
+    let index = 0;
     const maxIndex = this.path.count();
     const lastIndex = maxIndex - 1;
 
-    for (let index = 0; index < maxIndex; index++) {
+    for (; index < maxIndex; index++) {
       if (ctx.isExit()) {
-        return new ResolveResult(null, DefaultType.Void);
+        return new ResolveResult(null, new ResolveNil());
       }
 
       const current = this.path.at(index);
