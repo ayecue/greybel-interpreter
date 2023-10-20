@@ -672,20 +672,6 @@ exports[`interpreter default scripts use-global-scope.src 1`] = `"\\"global\\""`
 
 exports[`interpreter default scripts use-local-scope.src 1`] = `"\\"local\\""`;
 
-exports[`interpreter should contain correct stack 1`] = `
-"at unknown:3:11
-at unknown:9:11
-at unknown:12:16"
-`;
-
-exports[`interpreter should exit 1`] = `"\\"123\\""`;
-
-exports[`interpreter should exit 2`] = `"\\"456\\""`;
-
-exports[`interpreter should exit 3`] = `"\\"789\\""`;
-
-exports[`interpreter should exit 4`] = `"\\"foo\\""`;
-
 exports[`interpreter specific cases should contain correct stack 1`] = `
 "at unknown:3:13
 at unknown:9:13
