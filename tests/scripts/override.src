@@ -1,5 +1,5 @@
 
-globals.typeof = function()
+globals.typeof = function(a)
   print("test")
   return 123
 end function

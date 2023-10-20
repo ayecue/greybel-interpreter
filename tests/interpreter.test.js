@@ -45,7 +45,7 @@ describe('interpreter', function () {
           CustomFunction.createExternal('exit', (fnCtx, self, args) => {
             interpreter.exit();
             return Promise.resolve(DefaultType.Void);
-          })
+          }).addArgument("message")
         );
 
         try {
@@ -77,7 +77,7 @@ describe('interpreter', function () {
       CustomFunction.createExternal('exit', () => {
         interpreter.exit();
         return Promise.resolve(DefaultType.Void);
-      })
+      }).addArgument("message")
     );
 
     interpreter.once('exit', () => {
