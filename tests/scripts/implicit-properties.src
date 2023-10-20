@@ -1,0 +1,25 @@
+print locals.hasIndex("self")
+print locals.hasIndex("outer")
+print locals.hasIndex("globals")
+print locals.hasIndex("locals")
+print locals.hasIndex("super")
+
+Foo = {"a":123}
+Foo.a = function
+  print locals.hasIndex("self")
+  print locals.hasIndex("outer")
+  print locals.hasIndex("globals")
+  print locals.hasIndex("locals")
+  print locals.hasIndex("super")
+
+	locals.self = self
+	b = function
+	  print locals.hasIndex("self")
+    print locals.hasIndex("outer")
+    print locals.hasIndex("globals")
+    print locals.hasIndex("locals")
+    print locals.hasIndex("super")
+	end function
+	b
+end function
+Foo.a

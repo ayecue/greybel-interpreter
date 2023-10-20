@@ -236,6 +236,36 @@ exports[`interpreter default scripts if-shorthand.src 10`] = `"\\"foo\\""`;
 
 exports[`interpreter default scripts if-shorthand.src 11`] = `"null"`;
 
+exports[`interpreter default scripts implicit-properties.src 1`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 2`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 3`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 4`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 5`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 6`] = `"1"`;
+
+exports[`interpreter default scripts implicit-properties.src 7`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 8`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 9`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 10`] = `"1"`;
+
+exports[`interpreter default scripts implicit-properties.src 11`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 12`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 13`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 14`] = `"0"`;
+
+exports[`interpreter default scripts implicit-properties.src 15`] = `"0"`;
+
 exports[`interpreter default scripts imports.src 1`] = `"\\"file imported and sub file imported\\""`;
 
 exports[`interpreter default scripts imports.src 2`] = `"\\"foo included code and sub foo included code\\""`;
@@ -655,3 +685,17 @@ exports[`interpreter should exit 2`] = `"\\"456\\""`;
 exports[`interpreter should exit 3`] = `"\\"789\\""`;
 
 exports[`interpreter should exit 4`] = `"\\"foo\\""`;
+
+exports[`interpreter specific cases should contain correct stack 1`] = `
+"at unknown:3:13
+at unknown:9:13
+at unknown:12:18"
+`;
+
+exports[`interpreter specific cases should exit 1`] = `"\\"123\\""`;
+
+exports[`interpreter specific cases should exit 2`] = `"\\"456\\""`;
+
+exports[`interpreter specific cases should exit 3`] = `"\\"789\\""`;
+
+exports[`interpreter specific cases should exit 4`] = `"\\"foo\\""`;
