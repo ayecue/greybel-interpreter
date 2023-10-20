@@ -14,6 +14,7 @@ import {
   SUPER_NAMESPACE
 } from '../types/function';
 import { CustomString } from '../types/string';
+import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import { Block } from './block';
 import { CPSVisit, Operation } from './operation';
 import { Reference } from './reference';
@@ -79,18 +80,19 @@ export class FunctionOperation extends Operation {
       ): Promise<CustomValue> => {
         const functionState = new FunctionState();
 
-        fnCtx.set(SELF_PROPERTY, self);
         functionState.context = self;
+
+        if (self instanceof CustomValueWithIntrinsics) {
+          fnCtx.set(SELF_PROPERTY, self);
+        }
 
         if (next) {
           fnCtx.set(SUPER_PROPERTY, next);
           functionState.super = next;
         }
 
-        fnCtx.set(new CustomString('locals'), fnCtx.locals.scope);
-        fnCtx.set(new CustomString('outer'), fnCtx.previous.locals.scope);
-
         for (const [key, value] of args) {
+          if (key === SELF_NAMESPACE) continue;
           fnCtx.set(new CustomString(key), value);
         }
 

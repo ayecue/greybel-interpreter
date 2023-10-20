@@ -164,7 +164,6 @@ function setupAPI() {
     CustomFunction.createExternalWithSelf('push', (fnCtx, self, args) => {
       const value = args.get('value');
       const nextIndex = args.get('self').value.push(value);
-
       return Promise.resolve(new CustomNumber(nextIndex));
     }).addArgument('value', new CustomString(','))
   );

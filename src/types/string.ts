@@ -1,7 +1,6 @@
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
-import { DefaultType } from './default';
 import { CustomNumber } from './number';
 import { CustomValueWithIntrinsics } from './with-intrinsics';
 
@@ -146,12 +145,12 @@ export class CustomString extends CustomValueWithIntrinsics {
         `Index error (string index ${currentIndex} out of range).`
       );
     } else if (
-      path.count() === 1 &&
+      traversalPath.count() === 0 &&
       CustomString.getIntrinsics().has(current)
     ) {
       return CustomString.intrinsics.get(current);
     }
 
-    return DefaultType.Void;
+    throw new Error(`Unknown path in string ${path.toString()}.`);
   }
 }

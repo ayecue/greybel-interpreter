@@ -143,48 +143,43 @@ export class CustomFunction extends CustomValue {
     callContext: OperationContext,
     next?: CustomMap
   ): Promise<CustomValue> {
+    if (args.length > this.argumentDefs.length) {
+      throw new Error('Too many arguments.');
+    }
+
     const fnCtx = this.scope?.fork({
       type: ContextType.Function,
       state: ContextState.Default
     });
     const argMap: Map<string, CustomValue> = new Map();
-    const isSelfNull = self instanceof CustomNil;
-    let index = 0;
+    const hasSelf = !(self instanceof CustomNil);
+    let selfWithinArgs: CustomValue = DefaultType.Void;
 
-    if (!isSelfNull) {
-      for (; index < this.argumentDefs.length; index++) {
-        const item = this.argumentDefs[index];
-        if (item.name !== SELF_NAMESPACE) break;
-      }
-    }
+    let argIndex = this.argumentDefs.length - 1;
+    const selfParam =
+      hasSelf && this.argumentDefs[0]?.name === SELF_NAMESPACE ? 1 : 0;
 
-    let argIndex = 0;
+    for (; argIndex >= selfParam; argIndex--) {
+      const item = this.argumentDefs[argIndex];
 
-    for (; index < this.argumentDefs.length; index++) {
-      const item = this.argumentDefs[index];
-
-      if (!isSelfNull && item.name === SELF_NAMESPACE) {
-        argIndex++;
-        continue;
-      }
-
-      if (argMap.has(item.name)) {
-        argIndex++;
+      if (item.name === SELF_NAMESPACE) {
+        selfWithinArgs = args[argIndex - selfParam] ?? DefaultType.Void;
         continue;
       }
 
       argMap.set(
         item.name,
-        args[argIndex++] ?? (await item.defaultValue.handle(fnCtx))
+        args[argIndex - selfParam] ?? (await item.defaultValue.handle(fnCtx))
       );
     }
 
-    if (!isSelfNull) {
-      argMap.set(SELF_NAMESPACE, self);
-    }
-
+    const selfValue = hasSelf ? self : selfWithinArgs;
     const isa = next ?? (self instanceof CustomMap ? self.getIsa() : null);
 
-    return this.value(fnCtx ?? callContext, self, argMap, isa);
+    if (selfValue) {
+      argMap.set(SELF_NAMESPACE, selfValue);
+    }
+
+    return this.value(fnCtx ?? callContext, selfValue, argMap, isa);
   }
 }

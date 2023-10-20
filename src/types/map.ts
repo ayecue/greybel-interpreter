@@ -217,7 +217,10 @@ export class CustomMap extends CustomObject {
         }
       } else if (isa?.has(current)) {
         return isa.get(current);
-      } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
+      } else if (
+        traversalPath.count() === 0 &&
+        CustomMap.getIntrinsics().has(current)
+      ) {
         return CustomMap.getIntrinsics().get(current);
       }
     }

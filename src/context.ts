@@ -57,10 +57,8 @@ export class Scope extends CustomMap {
       return this.context.globals.scope.get(path);
     } else if (this.context.api?.scope.has(path)) {
       return this.context.api.scope.get(path);
-    } else if (path.count() === 1 && CustomMap.getIntrinsics().has(current)) {
+    } else if (traversalPath.count() === 0 && CustomMap.getIntrinsics().has(current)) {
       return CustomMap.getIntrinsics().get(current);
-    } else if (this.context.previous !== null) {
-      return this.context.previous.get(path);
     }
 
     throw new Error(`Unknown path ${path.toString()}.`);

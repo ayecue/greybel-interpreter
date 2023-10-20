@@ -1,7 +1,6 @@
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
-import { Void } from './nil';
 import { CustomValueWithIntrinsics } from './with-intrinsics';
 
 export class CustomNumberIterator implements Iterator<CustomValue> {
@@ -76,11 +75,14 @@ export class CustomNumber extends CustomValueWithIntrinsics {
     const traversalPath = path.clone();
     const current = traversalPath.next();
 
-    if (path.count() === 1 && CustomNumber.getIntrinsics().has(current)) {
+    if (
+      traversalPath.count() === 0 &&
+      CustomNumber.getIntrinsics().has(current)
+    ) {
       return CustomNumber.intrinsics.get(current);
     }
 
-    return Void;
+    throw new Error(`Unknown path in number ${path.toString()}.`);
   }
 }
 

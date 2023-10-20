@@ -4,6 +4,7 @@ import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
+import { createResolve } from '../utils/create-resolve';
 import { CPSVisit, Operation } from './operation';
 import { Resolve, ResolveNil } from './resolve';
 
@@ -18,7 +19,7 @@ export class Assign extends Operation {
   }
 
   async build(visit: CPSVisit): Promise<Operation> {
-    this.left = new Resolve(this.item.variable);
+    this.left = createResolve(this.item.variable, this.target);
     await this.left.build(visit);
     this.right = await visit(this.item.init);
     return this;
@@ -32,6 +33,10 @@ export class Assign extends Operation {
     }
 
     const rightValue = await this.right.handle(ctx);
+
+    if (resolveResult.path.count() === 0) {
+      throw new Error('Resolve path cannot be empty.');
+    }
 
     if (!(resolveResult.handle instanceof ResolveNil)) {
       const resultValueCtx = resolveResult.handle as CustomValueWithIntrinsics;

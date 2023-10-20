@@ -4,7 +4,8 @@ import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { CustomFunction } from '../types/function';
-import { CustomMap } from '../types/map';
+import { createResolve } from '../utils/create-resolve';
+import { getSuper } from '../utils/get-super';
 import { CPSVisit, Operation } from './operation';
 import { Resolve } from './resolve';
 
@@ -19,7 +20,7 @@ export class Call extends Operation {
   }
 
   async build(visit: CPSVisit): Promise<Call> {
-    this.fnRef = new Resolve(this.item.base);
+    this.fnRef = createResolve(this.item.base, this.target);
     await this.fnRef.build(visit);
     const args = this.item.arguments.map((arg) => visit(arg));
     this.args = await Promise.all(args);
@@ -42,21 +43,13 @@ export class Call extends Operation {
 
     if (valueRef instanceof CustomFunction) {
       const func = valueRef as CustomFunction;
+      const next = getSuper(resolveResult.handle);
 
-      if (
-        this.fnRef.path.isSuper() &&
-        ctx.functionState.context &&
-        resolveResult.handle instanceof CustomMap
-      ) {
-        return func.run(
-          ctx.functionState.context,
-          fnArgs,
-          ctx,
-          resolveResult.handle.getIsa()
-        );
+      if (this.fnRef.path.isSuper() && ctx.functionState.context && next) {
+        return func.run(ctx.functionState.context, fnArgs, ctx, next);
       }
 
-      return func.run(resolveResult.handle, fnArgs, ctx);
+      return func.run(resolveResult.handle, fnArgs, ctx, next);
     }
 
     return DefaultType.Void;
