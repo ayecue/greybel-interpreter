@@ -162,7 +162,7 @@ export class Resolve extends Operation {
         break;
       }
       default: {
-        const opSegment = new OperationSegment(await visit(node, true));
+        const opSegment = new OperationSegment(await visit(node));
         this.path.push(opSegment);
         break;
       }

@@ -5,7 +5,7 @@ import { CustomValue } from '../types/base';
 
 export interface CPSVisit {
   /* eslint-disable no-use-before-define */
-  (item: ASTBase, isWithinResolve?: boolean): Promise<Operation>;
+  (item: ASTBase): Promise<Operation>;
 }
 
 export abstract class Operation {

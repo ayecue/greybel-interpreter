@@ -19,7 +19,6 @@ import {
   ASTListConstructorExpression,
   ASTLiteral,
   ASTMapConstructorExpression,
-  ASTMemberExpression,
   ASTParenthesisExpression,
   ASTRange,
   ASTReturnStatement,
@@ -78,8 +77,7 @@ export class CPSContext {
 const visit = async (
   context: CPSContext,
   stack: string[],
-  item: ASTBase,
-  isWithinResolve: boolean = false
+  item: ASTBase
 ): Promise<Operation> => {
   const currentTarget = stack[stack.length - 1];
   const defaultVisit = visit.bind(null, context, stack);
@@ -123,23 +121,18 @@ const visit = async (
         defaultVisit
       );
     case ASTType.MemberExpression:
-      if (!isWithinResolve) {
-        return createResolve(item, currentTarget).build(defaultVisit);;
-      }
-      return new Resolve(item, currentTarget).build(defaultVisit);
+      return createResolve(item, currentTarget).build(defaultVisit);
     case ASTType.Identifier:
       const identifier = item as ASTIdentifier;
-      if (!isWithinResolve) {
-        switch (identifier.name) {
-          case 'self': 
-            return new ReferenceSelf(item, currentTarget).build(defaultVisit);
-          case 'globals': 
-            return new ReferenceGlobals(item, currentTarget).build(defaultVisit);
-          case 'locals': 
-            return new ReferenceLocals(item, currentTarget).build(defaultVisit);
-          case 'outer': 
-            return new ReferenceOuter(item, currentTarget).build(defaultVisit);
-        }
+      switch (identifier.name) {
+        case 'self': 
+          return new ReferenceSelf(item, currentTarget).build(defaultVisit);
+        case 'globals': 
+          return new ReferenceGlobals(item, currentTarget).build(defaultVisit);
+        case 'locals': 
+          return new ReferenceLocals(item, currentTarget).build(defaultVisit);
+        case 'outer': 
+          return new ReferenceOuter(item, currentTarget).build(defaultVisit);
       }
       return new Resolve(identifier, currentTarget).build(defaultVisit);
     case ASTType.IndexExpression:
