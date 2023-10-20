@@ -17,6 +17,10 @@ export abstract class CustomValueWithIntrinsics extends CustomValue {
   static addIntrinsic(key: CustomValue, fn: CustomFunction) {
     this.intrinsics.set(key, fn);
   }
+
+  getIntrinsics(): ObjectValue {
+    return (this.constructor as any).intrinsics as ObjectValue;
+  }
 }
 
 export abstract class CustomObject extends CustomValueWithIntrinsics {}

@@ -16,6 +16,7 @@ import { CustomMap } from '../types/map';
 import { CustomNil } from '../types/nil';
 import { CustomString } from '../types/string';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
+import { getSuper } from '../utils/get-super';
 import { Path } from '../utils/path';
 import { CPSVisit, Operation } from './operation';
 
@@ -275,21 +276,17 @@ export class Resolve extends Operation {
 
       if (result.handle instanceof CustomValueWithIntrinsics) {
         const customValueCtx = result.handle;
+        const next = getSuper(customValueCtx);
 
         if (this.path.isSuper() && customValueCtx instanceof CustomMap) {
           const superChild = customValueCtx.getIsa()?.get(result.path);
 
           if (autoCall && superChild instanceof CustomFunction) {
             if (ctx.functionState.context) {
-              return superChild.run(
-                ctx.functionState.context,
-                [],
-                ctx,
-                customValueCtx.getIsa()
-              );
+              return superChild.run(ctx.functionState.context, [], ctx, next);
             }
 
-            return superChild.run(customValueCtx, [], ctx);
+            return superChild.run(customValueCtx, [], ctx, next);
           }
 
           return superChild;
@@ -298,7 +295,7 @@ export class Resolve extends Operation {
         const child = customValueCtx.get(result.path);
 
         if (autoCall && child instanceof CustomFunction) {
-          return child.run(customValueCtx, [], ctx);
+          return child.run(customValueCtx, [], ctx, next);
         }
 
         return child;
