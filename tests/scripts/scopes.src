@@ -8,7 +8,6 @@ test = function()
 
   bar = function()
     print(outer.testLocals)
-    print(outer.outer.testLocals)
 
     outer.testLocals = "test bar local"
   end function

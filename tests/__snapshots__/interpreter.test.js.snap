@@ -558,9 +558,7 @@ exports[`interpreter default scripts scopes.src 1`] = `"\\"main local\\""`;
 
 exports[`interpreter default scripts scopes.src 2`] = `"\\"test fn local\\""`;
 
-exports[`interpreter default scripts scopes.src 3`] = `"\\"main local\\""`;
-
-exports[`interpreter default scripts scopes.src 4`] = `"\\"test bar local\\""`;
+exports[`interpreter default scripts scopes.src 3`] = `"\\"test bar local\\""`;
 
 exports[`interpreter default scripts self-ms-behaviour.src 1`] = `"{\\"bar\\":FUNCTION(actualValue, self, self)}"`;
 
