@@ -28,7 +28,6 @@ import {
 } from 'greyscript-core';
 
 import { HandlerContainer } from './handler-container';
-import { Assign } from './operations/assign';
 import { Break } from './operations/break';
 import { Call } from './operations/call';
 import { Chunk } from './operations/chunk';
@@ -54,15 +53,8 @@ import { Resolve } from './operations/resolve';
 import { Return } from './operations/return';
 import { While } from './operations/while';
 import { PrepareError } from './utils/error';
-import { AssignSelf } from './operations/assign-self';
-import { AssignGlobals } from './operations/assign-globals';
-import { AssignLocals } from './operations/assign-locals';
-import { AssignOuter } from './operations/assign-outer';
-import { ReferenceSelf } from './operations/reference-self';
-import { ReferenceGlobals } from './operations/reference-globals';
-import { ReferenceLocals } from './operations/reference-locals';
-import { ReferenceOuter } from './operations/reference-outer';
-import { createResolve } from './utils/create-resolve';
+import { createIdentifierResolve, createResolve } from './utils/create-resolve';
+import { createAssign } from './utils/create-assign';
 
 export class CPSContext {
   readonly target: string;
@@ -94,47 +86,13 @@ const visit = async (
         currentTarget
       ).build(defaultVisit);
     case ASTType.AssignmentStatement:
-      const assignStatement = item as ASTAssignmentStatement;
-
-      if (assignStatement.variable instanceof ASTIdentifier) {
-        switch (assignStatement.variable.name) {
-          case 'self':
-            return new AssignSelf(assignStatement, currentTarget).build(
-              defaultVisit
-            );
-          case 'globals':
-            return new AssignGlobals(assignStatement, currentTarget).build(
-              defaultVisit
-            );
-          case 'locals':
-            return new AssignLocals(assignStatement, currentTarget).build(
-              defaultVisit
-            );
-          case 'outer':
-            return new AssignOuter(assignStatement, currentTarget).build(
-              defaultVisit
-            );
-        }
-      }
-
-      return new Assign(assignStatement, currentTarget).build(
+      return createAssign(item as ASTAssignmentStatement, currentTarget).build(
         defaultVisit
       );
     case ASTType.MemberExpression:
       return createResolve(item, currentTarget).build(defaultVisit);
     case ASTType.Identifier:
-      const identifier = item as ASTIdentifier;
-      switch (identifier.name) {
-        case 'self': 
-          return new ReferenceSelf(item, currentTarget).build(defaultVisit);
-        case 'globals': 
-          return new ReferenceGlobals(item, currentTarget).build(defaultVisit);
-        case 'locals': 
-          return new ReferenceLocals(item, currentTarget).build(defaultVisit);
-        case 'outer': 
-          return new ReferenceOuter(item, currentTarget).build(defaultVisit);
-      }
-      return new Resolve(identifier, currentTarget).build(defaultVisit);
+      return createIdentifierResolve(item as ASTIdentifier, currentTarget).build(defaultVisit);
     case ASTType.IndexExpression:
     case ASTType.SliceExpression:
       return new Resolve(item, currentTarget).build(defaultVisit);
