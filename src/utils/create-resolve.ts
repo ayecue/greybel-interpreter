@@ -5,7 +5,7 @@ import { ResolveGlobals } from '../operations/resolve-globals';
 import { ResolveLocals } from '../operations/resolve-locals';
 import { ResolveOuter } from '../operations/resolve-outer';
 import { ResolveSelf } from '../operations/resolve-self';
-import { lookupPath } from './lookup-base';
+import { lookupPath } from './lookup-path';
 
 export function createResolve(item: ASTBase, target?: string): Resolve {
   if (item instanceof ASTMemberExpression) {
