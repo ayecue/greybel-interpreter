@@ -4,6 +4,7 @@ import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
+import { createResolve } from '../utils/create-resolve';
 import { CPSVisit, Operation } from './operation';
 import { Resolve, ResolveNil } from './resolve';
 
@@ -17,7 +18,7 @@ export class FunctionReference extends Operation {
   }
 
   async build(visit: CPSVisit): Promise<FunctionReference> {
-    this.ref = new Resolve(this.item.argument);
+    this.ref = createResolve(this.item.argument, this.target);
     await this.ref.build(visit);
     return this;
   }

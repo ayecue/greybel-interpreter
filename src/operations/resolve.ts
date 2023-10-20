@@ -175,7 +175,10 @@ export class Resolve extends Operation {
     return this;
   }
 
-  async getResult(ctx: OperationContext, handle: CustomValue = new ResolveNil()): Promise<ResolveResult | null> {
+  async getResult(
+    ctx: OperationContext,
+    handle: CustomValue = new ResolveNil()
+  ): Promise<ResolveResult | null> {
     let traversedPath = new Path<CustomValue>();
     let index = 0;
     const maxIndex = this.path.count();

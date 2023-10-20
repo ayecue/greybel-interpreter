@@ -5,6 +5,7 @@ import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { CustomFunction } from '../types/function';
 import { CustomMap } from '../types/map';
+import { createResolve } from '../utils/create-resolve';
 import { CPSVisit, Operation } from './operation';
 import { Resolve } from './resolve';
 
@@ -19,7 +20,7 @@ export class Call extends Operation {
   }
 
   async build(visit: CPSVisit): Promise<Call> {
-    this.fnRef = new Resolve(this.item.base);
+    this.fnRef = createResolve(this.item.base, this.target);
     await this.fnRef.build(visit);
     const args = this.item.arguments.map((arg) => visit(arg));
     this.args = await Promise.all(args);

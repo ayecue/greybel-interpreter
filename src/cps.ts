@@ -63,11 +63,7 @@ import { ReferenceSelf } from './operations/reference-self';
 import { ReferenceGlobals } from './operations/reference-globals';
 import { ReferenceLocals } from './operations/reference-locals';
 import { ReferenceOuter } from './operations/reference-outer';
-import { ResolveSelf } from './operations/resolve-self';
-import { ResolveGlobals } from './operations/resolve-globals';
-import { ResolveLocals } from './operations/resolve-locals';
-import { ResolveOuter } from './operations/resolve-outer';
-import { lookupPath } from './utils/lookup-base';
+import { createResolve } from './utils/create-resolve';
 
 export class CPSContext {
   readonly target: string;
@@ -127,21 +123,10 @@ const visit = async (
         defaultVisit
       );
     case ASTType.MemberExpression:
-      const memberExpr = item as ASTMemberExpression;
-      const path = lookupPath(memberExpr);
-      if (!isWithinResolve && path[0] instanceof ASTIdentifier) {
-        switch (path[0].name) {
-          case 'self': 
-            return new ResolveSelf(path[1], currentTarget).build(defaultVisit);
-          case 'globals': 
-            return new ResolveGlobals(path[1], currentTarget).build(defaultVisit);
-          case 'locals': 
-            return new ResolveLocals(path[1], currentTarget).build(defaultVisit);
-          case 'outer': 
-            return new ResolveOuter(path[1], currentTarget).build(defaultVisit);
-        }
+      if (!isWithinResolve) {
+        return createResolve(item, currentTarget).build(defaultVisit);;
       }
-      return new Resolve(memberExpr, currentTarget).build(defaultVisit);
+      return new Resolve(item, currentTarget).build(defaultVisit);
     case ASTType.Identifier:
       const identifier = item as ASTIdentifier;
       if (!isWithinResolve) {

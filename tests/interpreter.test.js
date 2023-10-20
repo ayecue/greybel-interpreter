@@ -52,7 +52,6 @@ describe('interpreter', function () {
           await interpreter.run();
           success = true;
         } catch (e) {
-          const opc = interpreter.apiContext.getLastActive() || interpreter.globalContext;
           console.log(`${filepath} failed with: `, e);
         }
 

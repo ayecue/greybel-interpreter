@@ -219,11 +219,6 @@ export class Interpreter extends EventEmitter {
     this.globalContext.scope.set(IS_GREYBEL_PROPERTY, new CustomBoolean(true));
     this.globalContext.scope.set(PARAMS_PROPERTY, newParams);
 
-    this.globalContext.set(
-      new CustomString('globals'),
-      this.globalContext.scope
-    );
-
     try {
       this.apiContext.setPending(true);
 
