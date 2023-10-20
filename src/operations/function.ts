@@ -87,6 +87,7 @@ export class FunctionOperation extends Operation {
         }
 
         for (const [key, value] of args) {
+          if (key === SELF_NAMESPACE) continue;
           fnCtx.set(new CustomString(key), value);
         }
 
