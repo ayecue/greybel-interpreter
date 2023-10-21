@@ -5,7 +5,7 @@ import {
   ASTSliceExpression
 } from 'greyscript-core';
 
-export type PathItem = ASTBase & { base: ASTBase };
+export type PathItem = ASTMemberExpression | ASTIndexExpression | ASTSliceExpression;
 
 export function lookupPath(item: PathItem): PathItem[] {
   const path: PathItem[] = [item];

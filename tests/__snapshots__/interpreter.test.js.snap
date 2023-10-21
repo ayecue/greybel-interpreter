@@ -400,6 +400,12 @@ exports[`interpreter default scripts lookup-path-opt.src 4`] = `"{\\"x\\":\\"tes
 
 exports[`interpreter default scripts lookup-path-opt.src 5`] = `"\\"te\\""`;
 
+exports[`interpreter default scripts lookup-path-opt.src 6`] = `"\\"xxx\\""`;
+
+exports[`interpreter default scripts lookup-path-opt.src 7`] = `"\\"xx\\""`;
+
+exports[`interpreter default scripts lookup-path-opt.src 8`] = `"\\"xxx\\""`;
+
 exports[`interpreter default scripts loops.src 1`] = `"[\\"test0\\", 0, 0, 0]"`;
 
 exports[`interpreter default scripts loops.src 2`] = `"\\"before accepted\\""`;

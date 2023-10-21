@@ -16,7 +16,7 @@ import { ResolveGlobals } from '../operations/resolve-globals';
 import { ResolveLocals } from '../operations/resolve-locals';
 import { ResolveOuter } from '../operations/resolve-outer';
 import { ResolveSelf } from '../operations/resolve-self';
-import { lookupPath } from './lookup-path';
+import { PathItem, lookupPath } from './lookup-path';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -60,20 +60,11 @@ export function createResolve(item: ASTBase, target?: string): Resolve {
     const path = lookupPath(item);
     if (
       path.length > 0 &&
-      path[0] instanceof ASTMemberExpression &&
       path[0].base instanceof ASTIdentifier &&
       hasOwnProperty.call(optResolveMap, path[0].base.name)
     ) {
       const OptResolve = optResolveMap[path[0].base.name];
-      const right = path[0].identifier;
-
-      if (path.length === 1) {
-        return new OptResolve(right, target);
-      }
-
-      const newBase = path[1];
-      newBase.base = right;
-
+      path[0].base = null;
       return new OptResolve(item, target);
     }
   }

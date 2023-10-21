@@ -135,20 +135,20 @@ export class Resolve extends Operation {
     switch (node.type) {
       case ASTType.MemberExpression: {
         const memberExpr = node as ASTMemberExpression;
-        await this.buildProcessor(memberExpr.base, visit);
+        if (memberExpr.base != null) await this.buildProcessor(memberExpr.base, visit);
         await this.buildProcessor(memberExpr.identifier, visit);
         break;
       }
       case ASTType.IndexExpression: {
         const indexExpr = node as ASTIndexExpression;
-        await this.buildProcessor(indexExpr.base, visit);
+        if (indexExpr.base  != null) await this.buildProcessor(indexExpr.base, visit);
         const indexSegment = new IndexSegment(await visit(indexExpr.index));
         this.path.push(indexSegment);
         break;
       }
       case ASTType.SliceExpression: {
         const sliceExpr = node as ASTSliceExpression;
-        await this.buildProcessor(sliceExpr.base, visit);
+        if (sliceExpr.base != null) await this.buildProcessor(sliceExpr.base, visit);
         const left = await visit(sliceExpr.left);
         const right = await visit(sliceExpr.right);
         const sliceSegment = new SliceSegment(left, right);
