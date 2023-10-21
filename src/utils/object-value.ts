@@ -10,7 +10,7 @@ export class ObjectValue {
     if (entries == null) {
       this.data = new Map();
     } else if (entries instanceof ObjectValue) {
-      this.data = new Map(entries.data)
+      this.data = new Map(entries.data);
     } else if (Array.isArray(entries)) {
       this.data = new Map();
 
@@ -62,10 +62,12 @@ export class ObjectValue {
     return this.data.size;
   }
 
-  forEach(callback: (value: CustomValue, key: CustomValue, map: ObjectValue) => any): void {
+  forEach(
+    callback: (value: CustomValue, key: CustomValue, map: ObjectValue) => any
+  ): void {
     for (const [key, value] of this.data.values()) {
       callback(value, key, this);
-    } 
+    }
   }
 
   extend(objVal: ObjectValue): this {
