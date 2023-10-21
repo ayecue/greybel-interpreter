@@ -566,6 +566,12 @@ exports[`interpreter default scripts obj-init.src 1`] = `"[\\"123\\", \\"123\\",
 
 exports[`interpreter default scripts obj-init.src 2`] = `"[{\\"another\\":\\"123\\"}, \\"123\\", \\"foo\\"]"`;
 
+exports[`interpreter default scripts opt-shorthand.src 1`] = `"1"`;
+
+exports[`interpreter default scripts opt-shorthand.src 2`] = `"2"`;
+
+exports[`interpreter default scripts opt-shorthand.src 3`] = `"3"`;
+
 exports[`interpreter default scripts override.src 1`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts override.src 2`] = `"123"`;

@@ -1,0 +1,17 @@
+Tokenizer = {}
+Tokenizer.constructor = function()
+  self.index = 0
+
+  return self
+end function
+
+Tokenizer.nextIndex = function(offset = 1)
+  self.index += offset
+  return self.index
+end function
+
+x = new Tokenizer.constructor
+
+print(x.nextIndex)
+print(x.nextIndex)
+print(x.nextIndex)
