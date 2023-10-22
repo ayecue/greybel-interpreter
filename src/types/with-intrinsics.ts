@@ -18,6 +18,10 @@ export abstract class CustomValueWithIntrinsics extends CustomValue {
     this.intrinsics.set(key, fn);
   }
 
+  static clearIntrinsics() {
+    this.intrinsics.clear();
+  }
+
   getIntrinsics(): ObjectValue {
     return (this.constructor as any).intrinsics as ObjectValue;
   }
