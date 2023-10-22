@@ -35,6 +35,14 @@ export interface InterpreterOptions {
 }
 
 export class Interpreter extends EventEmitter {
+  static clearAllIntrinsics() {
+    CustomNumber.clearIntrinsics();
+    CustomString.clearIntrinsics();
+    CustomFunction.intrinsics.clear();
+    CustomList.clearIntrinsics();
+    CustomMap.clearIntrinsics();
+  }
+
   target: string;
   api: ObjectValue;
   params: Array<string>;
