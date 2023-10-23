@@ -10,7 +10,6 @@ import { CustomMap } from '../types/map';
 import { CustomNil } from '../types/nil';
 import { CustomNumber } from '../types/number';
 import { CustomString } from '../types/string';
-import { deepEqual } from '../utils/deep-equal';
 import { CPSVisit, Operation } from './operation';
 
 export interface ProcessorHandlerFunction {
@@ -163,13 +162,13 @@ export const ListProcessorHandler: ProcessorHandler = {
   },
   [Operator.Equal]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
-      return new CustomBoolean(deepEqual(left, right));
+      return new CustomBoolean(left.hash() === right.hash());
     }
     return DefaultType.Void;
   },
   [Operator.NotEqual]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
-      return new CustomBoolean(!deepEqual(left, right));
+      return new CustomBoolean(left.hash() !== right.hash());
     }
     return DefaultType.Void;
   },
@@ -196,13 +195,13 @@ export const MapProcessorHandler: ProcessorHandler = {
   },
   [Operator.Equal]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
-      return new CustomBoolean(deepEqual(left, right));
+      return new CustomBoolean(left.hash() === right.hash());
     }
     return DefaultType.Void;
   },
   [Operator.NotEqual]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
-      return new CustomBoolean(!deepEqual(left, right));
+      return new CustomBoolean(left.hash() !== right.hash());
     }
     return DefaultType.Void;
   }

@@ -1,11 +1,13 @@
 import {
-  ASTBase,
   ASTIndexExpression,
   ASTMemberExpression,
   ASTSliceExpression
 } from 'greyscript-core';
 
-export type PathItem = ASTMemberExpression | ASTIndexExpression | ASTSliceExpression;
+export type PathItem =
+  | ASTMemberExpression
+  | ASTIndexExpression
+  | ASTSliceExpression;
 
 export function lookupPath(item: PathItem): PathItem[] {
   const path: PathItem[] = [item];

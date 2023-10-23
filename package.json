@@ -1,6 +1,6 @@
 {
     "name": "greybel-interpreter",
-    "version": "2.5.3",
+    "version": "2.6.1",
     "description": "Interpreter",
     "main": "dist/index",
     "typings": "dist/index",
@@ -49,7 +49,8 @@
     },
     "dependencies": {
         "greybel-core": "^0.9.13",
-        "greyscript-core": "^0.9.14"
+        "greyscript-core": "^0.9.14",
+        "lru-cache": "^10.0.1"
     },
     "keywords": [
         "greyscript",

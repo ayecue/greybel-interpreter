@@ -1,0 +1,25 @@
+someFunc = function(fn)
+    fn
+end function
+
+x = "abc"
+
+main = function()
+    a = function(x)
+        someFunc function
+        print x
+        end function
+    end function
+    
+    b = function(x)
+        foo = function
+        print x
+        end function
+        someFunc @foo
+    end function
+    
+    a("wa")
+    b("wa")
+end function
+
+main

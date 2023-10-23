@@ -1,3 +1,4 @@
+import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
@@ -152,5 +153,9 @@ export class CustomString extends CustomValueWithIntrinsics {
     }
 
     throw new Error(`Unknown path in string ${path.toString()}.`);
+  }
+
+  hash() {
+    return getStringHashCode(this.value);
   }
 }

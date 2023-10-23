@@ -118,7 +118,7 @@ exports[`interpreter default scripts deep-equal.src 6`] = `"0"`;
 
 exports[`interpreter default scripts deep-equal.src 7`] = `"\\"test\\""`;
 
-exports[`interpreter default scripts deep-equal.src 8`] = `"{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{...}:{...}}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}:{\\"was\\":1,\\"second\\":2,{\\"was\\":1,\\"second\\":2,{...}:{...}}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}}"`;
+exports[`interpreter default scripts deep-equal.src 8`] = `"{\\"was\\":1,\\"second\\":2,{\\"foo\\":2}:{\\"was\\":1,\\"second\\":2,{\\"foo\\":2}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}}"`;
 
 exports[`interpreter default scripts deep-equal.src 9`] = `"0"`;
 
@@ -611,6 +611,10 @@ exports[`interpreter default scripts scopes.src 1`] = `"\\"main local\\""`;
 exports[`interpreter default scripts scopes.src 2`] = `"\\"test fn local\\""`;
 
 exports[`interpreter default scripts scopes.src 3`] = `"\\"test bar local\\""`;
+
+exports[`interpreter default scripts scopes-in-anonymous-functions.src 1`] = `"\\"abc\\""`;
+
+exports[`interpreter default scripts scopes-in-anonymous-functions.src 2`] = `"\\"wa\\""`;
 
 exports[`interpreter default scripts self-ms-behaviour.src 1`] = `"{\\"bar\\":FUNCTION(actualValue, self, self)}"`;
 

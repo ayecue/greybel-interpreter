@@ -5,6 +5,7 @@ import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { CustomValueWithIntrinsics } from '../types/with-intrinsics';
 import { createResolve } from '../utils/create-resolve';
+import { FunctionOperation } from './function';
 import { CPSVisit, Operation } from './operation';
 import { Resolve, ResolveNil } from './resolve';
 
@@ -32,10 +33,16 @@ export class Assign extends Operation {
       return DefaultType.Void;
     }
 
-    const rightValue = await this.right.handle(ctx);
-
     if (resolveResult.path.count() === 0) {
       throw new Error('Resolve path cannot be empty.');
+    }
+
+    let rightValue;
+
+    if (this.right instanceof FunctionOperation) {
+      rightValue = await this.right.handle(ctx, true);
+    } else {
+      rightValue = await this.right.handle(ctx);
     }
 
     if (!(resolveResult.handle instanceof ResolveNil)) {

@@ -19,8 +19,9 @@ bar = {key:"test"}
 print(bar[{"second":2,"was":1}])
 
 foo = {"was":1,"second":2}
-foo[foo] = foo
-print(foo[foo])
+x = {"foo":2}
+foo[x] = foo
+print(foo[x])
 
 print([] == null)
 print({} == null)

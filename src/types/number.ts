@@ -1,3 +1,4 @@
+import { getHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
@@ -83,6 +84,10 @@ export class CustomNumber extends CustomValueWithIntrinsics {
     }
 
     throw new Error(`Unknown path in number ${path.toString()}.`);
+  }
+
+  hash() {
+    return getHashCode(this.value);
   }
 }
 

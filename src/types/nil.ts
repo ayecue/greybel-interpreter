@@ -34,6 +34,10 @@ export class CustomNil extends CustomValue {
   instanceOf(v: CustomValue): boolean {
     return v instanceof CustomNil;
   }
+
+  hash() {
+    return 0;
+  }
 }
 
 export const Void = new CustomNil();

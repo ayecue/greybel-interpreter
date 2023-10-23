@@ -1,51 +1,83 @@
 import { CustomValue } from '../types/base';
 import { Void } from '../types/nil';
-import { deepEqual } from './deep-equal';
 
-export class ObjectValue extends Map<CustomValue, CustomValue> {
-  get(mapKey: CustomValue): CustomValue {
-    for (const [key, value] of this.entries()) {
-      if (deepEqual(key, mapKey)) {
-        return value;
+export type ObjectValueKeyPair = [CustomValue, CustomValue];
+
+export class ObjectValue {
+  private data: Map<number, ObjectValueKeyPair>;
+
+  constructor(entries?: ObjectValue | ObjectValueKeyPair[] | null) {
+    if (entries == null) {
+      this.data = new Map();
+    } else if (entries instanceof ObjectValue) {
+      this.data = new Map(entries.data);
+    } else if (Array.isArray(entries)) {
+      this.data = new Map();
+
+      for (const [key, value] of entries) {
+        this.set(key, value);
       }
     }
-    return Void;
+
+    if (this.data == null) {
+      throw new Error('Unknown entries type.');
+    }
+  }
+
+  get(mapKey: CustomValue): CustomValue {
+    const hash = mapKey.hash();
+    if (!this.data.has(hash)) return Void;
+    return this.data.get(hash)[1];
   }
 
   has(mapKey: CustomValue): boolean {
-    for (const key of this.keys()) {
-      if (deepEqual(key, mapKey)) {
-        return true;
-      }
-    }
-    return false;
+    const hash = mapKey.hash();
+    return this.data.has(hash);
   }
 
   set(mapKey: CustomValue, mapValue: CustomValue): this {
-    for (const key of this.keys()) {
-      if (deepEqual(key, mapKey)) {
-        super.set(key, mapValue);
-        return;
-      }
-    }
-    super.set(mapKey, mapValue);
+    const hash = mapKey.hash();
+    this.data.set(hash, [mapKey, mapValue]);
     return this;
   }
 
   delete(mapKey: CustomValue) {
-    for (const key of this.keys()) {
-      if (deepEqual(key, mapKey)) {
-        super.delete(key);
-        return true;
-      }
+    const hash = mapKey.hash();
+    return this.data.delete(hash);
+  }
+
+  values(): CustomValue[] {
+    return [...this.data.values()].map(([_, v]) => v);
+  }
+
+  keys(): CustomValue[] {
+    return [...this.data.values()].map(([k]) => k);
+  }
+
+  entries(): ObjectValueKeyPair[] {
+    return [...this.data.values()];
+  }
+
+  get size(): number {
+    return this.data.size;
+  }
+
+  forEach(
+    callback: (value: CustomValue, key: CustomValue, map: ObjectValue) => any
+  ): void {
+    for (const [key, value] of this.data.values()) {
+      callback(value, key, this);
     }
-    return false;
   }
 
   extend(objVal: ObjectValue): this {
-    for (const [key, value] of objVal) {
+    for (const [key, value] of objVal.entries()) {
       this.set(key, value);
     }
     return this;
+  }
+
+  clear() {
+    this.data.clear();
   }
 }
