@@ -76,4 +76,8 @@ export class ObjectValue {
     }
     return this;
   }
+
+  clear() {
+    this.data.clear();
+  }
 }
