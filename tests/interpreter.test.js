@@ -173,5 +173,34 @@ describe('interpreter', function () {
         `)
       ).rejects.toEqual(new Error('Unknown path a.'));
     });
+
+    test('should throw since anonymous function do not have an outer', async function () {
+      await expect(interpreter.run(`
+        someFunc = function(fn)
+          fn
+        end function
+
+        main = function()
+            a = function(x)
+              someFunc function
+                print x
+              end function
+            end function
+            
+            b = function(x)
+              foo = function
+                print x
+              end function
+              someFunc @foo
+            end function
+            
+            a("wa")
+            b("wa")
+        end function
+
+        main
+        `)
+      ).rejects.toEqual(new Error('Unknown path x.'));
+    });
   });
 });

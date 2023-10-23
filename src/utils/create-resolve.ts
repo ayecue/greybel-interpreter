@@ -16,7 +16,7 @@ import { ResolveGlobals } from '../operations/resolve-globals';
 import { ResolveLocals } from '../operations/resolve-locals';
 import { ResolveOuter } from '../operations/resolve-outer';
 import { ResolveSelf } from '../operations/resolve-self';
-import { PathItem, lookupPath } from './lookup-path';
+import { lookupPath } from './lookup-path';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 

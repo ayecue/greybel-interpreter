@@ -57,6 +57,7 @@ export class CustomFunction extends CustomValue {
   readonly name: string;
   readonly value: Callback;
   readonly argumentDefs: Array<Argument>;
+  readonly assignOuter: boolean;
 
   static createExternalAnonymous(callback: Callback): CustomFunction {
     return new CustomFunction(null, DEFAULT_FUNCTION_NAME, callback);
@@ -73,12 +74,18 @@ export class CustomFunction extends CustomValue {
     return new CustomFunction(null, name, callback).addArgument(SELF_NAMESPACE);
   }
 
-  constructor(scope: OperationContext, name: string, callback: Callback) {
+  constructor(
+    scope: OperationContext,
+    name: string,
+    callback: Callback,
+    assignOuter: boolean = false
+  ) {
     super();
     this.scope = scope;
     this.name = name;
     this.value = callback;
     this.argumentDefs = [];
+    this.assignOuter = assignOuter;
   }
 
   addArgument(
@@ -150,7 +157,8 @@ export class CustomFunction extends CustomValue {
 
     const fnCtx = this.scope?.fork({
       type: ContextType.Function,
-      state: ContextState.Default
+      state: ContextState.Default,
+      ignoreOuter: !this.assignOuter
     });
     const argMap: Map<string, CustomValue> = new Map();
     const hasSelf = !(self instanceof CustomNil);

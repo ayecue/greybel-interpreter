@@ -68,7 +68,10 @@ export class FunctionOperation extends Operation {
     return this;
   }
 
-  handle(ctx: OperationContext): Promise<CustomValue> {
+  handle(
+    ctx: OperationContext,
+    assignOuter: boolean = false
+  ): Promise<CustomValue> {
     const func = new CustomFunction(
       ctx,
       'anonymous',
@@ -101,7 +104,8 @@ export class FunctionOperation extends Operation {
         await this.block.handle(fnCtx);
 
         return functionState.value;
-      }
+      },
+      assignOuter
     );
 
     for (const item of this.args) {

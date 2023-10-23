@@ -156,6 +156,7 @@ export interface ContextOptions {
   cps?: CPS;
   processState?: ProcessState;
   environmentVariables?: Map<string, string>;
+  ignoreOuter?: boolean;
 }
 
 export interface ContextForkOptions {
@@ -163,6 +164,7 @@ export interface ContextForkOptions {
   state: ContextState;
   target?: string;
   injected?: boolean;
+  ignoreOuter?: boolean;
 }
 
 export class OperationContext {
@@ -225,7 +227,7 @@ export class OperationContext {
     this.api = this.lookupApi();
     this.globals = this.lookupGlobals();
     this.locals = this.lookupLocals() ?? this;
-    this.outer = this.locals.previous?.lookupLocals() ?? null;
+    this.outer = options.ignoreOuter ? null : this.lookupOuter();
   }
 
   isIgnoredInDebugging(op: Operation): boolean {
@@ -363,6 +365,10 @@ export class OperationContext {
     return this.lookupType(OperationContext.lookupLocalsType);
   }
 
+  lookupOuter(): OperationContext {
+    return this.locals.previous?.lookupLocals() ?? null;
+  }
+
   extend(map: ObjectValue): OperationContext {
     if (this.state === ContextState.Temporary) {
       this.previous?.extend(map);
@@ -408,6 +414,7 @@ export class OperationContext {
       previous: this,
       type: options.type,
       state: options.state,
+      ignoreOuter: options.ignoreOuter,
       isProtected: false,
       injected: this.injected,
       debugger: this.debugger,
