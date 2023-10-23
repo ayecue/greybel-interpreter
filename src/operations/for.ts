@@ -15,6 +15,8 @@ import { setImmediate } from '../utils/set-immediate';
 import { Block } from './block';
 import { CPSVisit, Operation, OperationBlock } from './operation';
 
+const FOR_BATCH_SIZE = 30;
+
 export class For extends OperationBlock {
   readonly item: ASTForGenericStatement;
   block: Block;
@@ -60,33 +62,40 @@ export class For extends OperationBlock {
       const varIdentifier = new CustomString(identifier);
       let iteratorResult = iterator.next();
 
-      const iteration = async (): Promise<void> => {
+      const next = async () => {
+        if (iteratorResult.done) {
+          return false;
+        }
+
+        const current = iteratorResult.value as CustomValue;
+
+        loopState.isContinue = false;
+
+        forCtx.set(idxIdentifier, new CustomNumber(iterator.index - 1));
+        forCtx.set(varIdentifier, current);
+        await this.block.handle(forCtx);
+
+        if (
+          loopState.isBreak ||
+          forCtx.functionState.isReturn ||
+          ctx.isExit()
+        ) {
+          return false;
+        }
+
+        const idxValue = forCtx.get(idxIdentifier).toNumber();
+        iterator.index += idxValue - (iterator.index - 1);
+        iteratorResult = iterator.next();
+        return true;
+      };
+      const iteration = async function () {
         try {
-          if (iteratorResult.done) {
-            resolve(DefaultType.Void);
-            return;
+          for (let index = 0; index < FOR_BATCH_SIZE; index++) {
+            if (!(await next())) {
+              resolve(DefaultType.Void);
+              return;
+            }
           }
-
-          const current = iteratorResult.value as CustomValue;
-
-          loopState.isContinue = false;
-
-          forCtx.set(idxIdentifier, new CustomNumber(iterator.index - 1));
-          forCtx.set(varIdentifier, current);
-          await this.block.handle(forCtx);
-
-          if (
-            loopState.isBreak ||
-            forCtx.functionState.isReturn ||
-            ctx.isExit()
-          ) {
-            resolve(DefaultType.Void);
-            return;
-          }
-
-          const idxValue = forCtx.get(idxIdentifier).toNumber();
-          iterator.index += idxValue - (iterator.index - 1);
-          iteratorResult = iterator.next();
           setImmediate(iteration);
         } catch (err: any) {
           reject(err);
