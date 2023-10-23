@@ -12,6 +12,8 @@ import { setImmediate } from '../utils/set-immediate';
 import { Block } from './block';
 import { CPSVisit, Operation, OperationBlock } from './operation';
 
+const WHILE_BATCH_SIZE = 30;
+
 export class While extends OperationBlock {
   readonly item: ASTWhileStatement;
   block: Block;
@@ -41,27 +43,36 @@ export class While extends OperationBlock {
     whileCtx.loopState = loopState;
 
     return new Promise((resolve, reject) => {
-      const iteration = async (): Promise<void> => {
+      const next = async () => {
+        const conditionResult = await whileCtx.step(this.condition);
+
+        if (!conditionResult.toTruthy()) {
+          resolve(DefaultType.Void);
+          return false;
+        }
+
+        loopState.isContinue = false;
+        await this.block.handle(whileCtx);
+
+        if (
+          loopState.isBreak ||
+          whileCtx.functionState.isReturn ||
+          ctx.isExit()
+        ) {
+          resolve(DefaultType.Void);
+          return false;
+        }
+        return true;
+      };
+
+      const iteration = async function () {
         try {
-          const conditionResult = await whileCtx.step(this.condition);
-
-          if (!conditionResult.toTruthy()) {
-            resolve(DefaultType.Void);
-            return;
+          for (let index = 0; index < WHILE_BATCH_SIZE; index++) {
+            if (!(await next())) {
+              resolve(DefaultType.Void);
+              return;
+            }
           }
-
-          loopState.isContinue = false;
-          await this.block.handle(whileCtx);
-
-          if (
-            loopState.isBreak ||
-            whileCtx.functionState.isReturn ||
-            ctx.isExit()
-          ) {
-            resolve(DefaultType.Void);
-            return;
-          }
-
           setImmediate(iteration);
         } catch (err: any) {
           reject(err);
