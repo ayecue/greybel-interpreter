@@ -15,8 +15,6 @@ import { setImmediate } from '../utils/set-immediate';
 import { Block } from './block';
 import { CPSVisit, Operation, OperationBlock } from './operation';
 
-const BATCH_SIZE = 5;
-
 export class For extends OperationBlock {
   readonly item: ASTForGenericStatement;
   block: Block;
@@ -90,11 +88,9 @@ export class For extends OperationBlock {
       };
       const iteration = async function () {
         try {
-          for (let index = 0; index < BATCH_SIZE; index++) {
-            if (!(await next())) {
-              resolve(DefaultType.Void);
-              return;
-            }
+          if (!(await next())) {
+            resolve(DefaultType.Void);
+            return;
           }
           setImmediate(iteration);
         } catch (err: any) {
