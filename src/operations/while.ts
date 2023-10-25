@@ -41,34 +41,27 @@ export class While extends OperationBlock {
     whileCtx.loopState = loopState;
 
     return new Promise((resolve, reject) => {
-      const next = async () => {
-        const conditionResult = await whileCtx.step(this.condition);
-
-        if (!conditionResult.toTruthy()) {
-          resolve(DefaultType.Void);
-          return false;
-        }
-
-        loopState.isContinue = false;
-        await this.block.handle(whileCtx);
-
-        if (
-          loopState.isBreak ||
-          whileCtx.functionState.isReturn ||
-          ctx.isExit()
-        ) {
-          resolve(DefaultType.Void);
-          return false;
-        }
-        return true;
-      };
-
-      const iteration = async function () {
+      const iteration = async (): Promise<void> => {
         try {
-          if (!(await next())) {
+          const conditionResult = await whileCtx.step(this.condition);
+
+          if (!conditionResult.toTruthy()) {
             resolve(DefaultType.Void);
             return;
           }
+
+          loopState.isContinue = false;
+          await this.block.handle(whileCtx);
+
+          if (
+            loopState.isBreak ||
+            whileCtx.functionState.isReturn ||
+            ctx.isExit()
+          ) {
+            resolve(DefaultType.Void);
+            return;
+          }
+
           setImmediate(iteration);
         } catch (err: any) {
           reject(err);

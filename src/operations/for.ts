@@ -60,38 +60,33 @@ export class For extends OperationBlock {
       const varIdentifier = new CustomString(identifier);
       let iteratorResult = iterator.next();
 
-      const next = async () => {
-        if (iteratorResult.done) {
-          return false;
-        }
-
-        const current = iteratorResult.value as CustomValue;
-
-        loopState.isContinue = false;
-
-        forCtx.set(idxIdentifier, new CustomNumber(iterator.index - 1));
-        forCtx.set(varIdentifier, current);
-        await this.block.handle(forCtx);
-
-        if (
-          loopState.isBreak ||
-          forCtx.functionState.isReturn ||
-          ctx.isExit()
-        ) {
-          return false;
-        }
-
-        const idxValue = forCtx.get(idxIdentifier).toNumber();
-        iterator.index += idxValue - (iterator.index - 1);
-        iteratorResult = iterator.next();
-        return true;
-      };
-      const iteration = async function () {
+      const iteration = async (): Promise<void> => {
         try {
-          if (!(await next())) {
+          if (iteratorResult.done) {
             resolve(DefaultType.Void);
             return;
           }
+
+          const current = iteratorResult.value as CustomValue;
+
+          loopState.isContinue = false;
+
+          forCtx.set(idxIdentifier, new CustomNumber(iterator.index - 1));
+          forCtx.set(varIdentifier, current);
+          await this.block.handle(forCtx);
+
+          if (
+            loopState.isBreak ||
+            forCtx.functionState.isReturn ||
+            ctx.isExit()
+          ) {
+            resolve(DefaultType.Void);
+            return;
+          }
+
+          const idxValue = forCtx.get(idxIdentifier).toNumber();
+          iterator.index += idxValue - (iterator.index - 1);
+          iteratorResult = iterator.next();
           setImmediate(iteration);
         } catch (err: any) {
           reject(err);
