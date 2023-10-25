@@ -12,7 +12,7 @@ import { setImmediate } from '../utils/set-immediate';
 import { Block } from './block';
 import { CPSVisit, Operation, OperationBlock } from './operation';
 
-const WHILE_BATCH_SIZE = 30;
+const BATCH_SIZE = 5;
 
 export class While extends OperationBlock {
   readonly item: ASTWhileStatement;
@@ -67,7 +67,7 @@ export class While extends OperationBlock {
 
       const iteration = async function () {
         try {
-          for (let index = 0; index < WHILE_BATCH_SIZE; index++) {
+          for (let index = 0; index < BATCH_SIZE; index++) {
             if (!(await next())) {
               resolve(DefaultType.Void);
               return;

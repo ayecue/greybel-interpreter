@@ -162,7 +162,7 @@ export const ListProcessorHandler: ProcessorHandler = {
   },
   [Operator.Equal]: (left: CustomList, right: CustomValue) => {
     if (right instanceof CustomList) {
-      return new CustomBoolean(left.hash() === right.hash());
+      return new CustomBoolean(left === right || left.hash() === right.hash());
     }
     return DefaultType.Void;
   },
@@ -195,7 +195,7 @@ export const MapProcessorHandler: ProcessorHandler = {
   },
   [Operator.Equal]: (left: CustomMap, right: CustomValue) => {
     if (right instanceof CustomMap) {
-      return new CustomBoolean(left.hash() === right.hash());
+      return new CustomBoolean(left === right || left.hash() === right.hash());
     }
     return DefaultType.Void;
   },
