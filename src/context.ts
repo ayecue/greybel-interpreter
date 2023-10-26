@@ -185,6 +185,7 @@ export interface ContextForkOptions {
   target?: string;
   injected?: boolean;
   ignoreOuter?: boolean;
+  processState?: ProcessState;
 }
 
 export class OperationContext {
@@ -435,7 +436,7 @@ export class OperationContext {
       debugger: this.debugger,
       handler: this.handler,
       cps: this.cps,
-      processState: this.processState,
+      processState: options.processState ?? this.processState,
       environmentVariables: this.environmentVariables
     });
 

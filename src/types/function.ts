@@ -161,7 +161,8 @@ export class CustomFunction extends CustomValue {
     const fnCtx = this.scope?.fork({
       type: ContextType.Function,
       state: ContextState.Default,
-      ignoreOuter: !this.assignOuter
+      ignoreOuter: !this.assignOuter,
+      processState: callContext.processState
     });
     const argMap: Map<string, CustomValue> = new Map();
     const hasSelf = !(self instanceof CustomNil);
