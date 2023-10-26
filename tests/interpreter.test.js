@@ -42,7 +42,7 @@ describe('interpreter', function () {
 
         pseudoAPI.set(
           new CustomString('exit'),
-          CustomFunction.createExternal('exit', (fnCtx, self, args) => {
+          CustomFunction.createExternal('exit', async (fnCtx, self, args) => {
             interpreter.exit();
             return Promise.resolve(DefaultType.Void);
           }).addArgument("message")

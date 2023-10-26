@@ -281,6 +281,11 @@ export class OperationContext {
 
   setPending(pending: boolean): OperationContext {
     this.processState.isPending = pending;
+
+    if (!this.processState.isPending && this.processState.isExit) {
+      this.processState.isExit = false;
+    }
+
     return this;
   }
 
@@ -315,7 +320,6 @@ export class OperationContext {
       return new Promise((resolve) => {
         const check = () => {
           if (!this.processState.isPending) {
-            this.processState.isExit = false;
             resolve(this);
           } else {
             setImmediate(check);
