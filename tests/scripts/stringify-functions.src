@@ -1,0 +1,7 @@
+stringify(@"test".split)
+
+test = function(a, b = 123, c = "abc")
+
+end function
+
+stringify(@test)

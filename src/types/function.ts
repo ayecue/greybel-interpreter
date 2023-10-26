@@ -119,7 +119,10 @@ export class CustomFunction extends CustomValue {
   toString(): string {
     let refs = 1;
     const args = this.argumentDefs.map((item: Argument) => {
-      if (item.defaultValue instanceof Literal) {
+      if (
+        item.defaultValue instanceof Literal ||
+        item.defaultValue instanceof Reference
+      ) {
         const value = item.defaultValue.value;
 
         if (value instanceof CustomNil) {

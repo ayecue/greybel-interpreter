@@ -654,6 +654,10 @@ exports[`interpreter default scripts slice.src 4`] = `"\\"bc\\""`;
 
 exports[`interpreter default scripts slice.src 5`] = `"\\"a\\""`;
 
+exports[`interpreter default scripts stringify-functions.src 1`] = `"FUNCTION(self, delimiter=\\",\\")"`;
+
+exports[`interpreter default scripts stringify-functions.src 2`] = `"FUNCTION(a, b=123, c=\\"abc\\")"`;
+
 exports[`interpreter default scripts super.src 1`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts super.src 2`] = `"\\"doing math\\""`;
