@@ -36,7 +36,7 @@ export class CustomNil extends CustomValue {
   }
 
   hash() {
-    return 0;
+    return -1;
   }
 }
 

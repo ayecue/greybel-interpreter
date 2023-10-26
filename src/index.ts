@@ -83,3 +83,4 @@ export {
 export { PrepareError, RuntimeError } from './utils/error';
 export { ObjectValue } from './utils/object-value';
 export { Path } from './utils/path';
+export { deepEqual } from './utils/deep-equal';
