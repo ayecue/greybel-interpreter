@@ -27,9 +27,12 @@ export class Assign extends Operation {
   }
 
   async handle(ctx: OperationContext): Promise<CustomValue> {
+    const exitObserver = ctx.processState.createExitObserver();
     const resolveResult = await this.left.getResult(ctx);
 
-    if (ctx.isExit()) {
+    exitObserver.close();
+
+    if (exitObserver.occured()) {
       return DefaultType.Void;
     }
 

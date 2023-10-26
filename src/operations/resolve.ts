@@ -185,11 +185,13 @@ export class Resolve extends Operation {
   ): Promise<ResolveResult | null> {
     let traversedPath = new Path<CustomValue>();
     let index = 0;
+    const exitObserver = ctx.processState.createExitObserver();
     const maxIndex = this.path.count();
     const lastIndex = maxIndex - 1;
 
     for (; index < maxIndex; index++) {
-      if (ctx.isExit()) {
+      if (exitObserver.occured()) {
+        exitObserver.close();
         return new ResolveResult(null, new ResolveNil());
       }
 
@@ -252,6 +254,8 @@ export class Resolve extends Operation {
       }
     }
 
+    exitObserver.close();
+
     return new ResolveResult(traversedPath, handle);
   }
 
@@ -261,9 +265,13 @@ export class Resolve extends Operation {
     autoCall: boolean = true
   ): Promise<CustomValue> {
     if (result === null) {
+      const exitObserver = ctx.processState.createExitObserver();
+
       result = await this.getResult(ctx);
 
-      if (ctx.isExit()) {
+      exitObserver.close();
+
+      if (exitObserver.occured()) {
         return DefaultType.Void;
       }
     }

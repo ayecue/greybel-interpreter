@@ -33,8 +33,10 @@ export class Block extends Operation {
       isEOL = () => ctx.functionState.isReturn;
     }
 
+    const exitObserver = ctx.processState.createExitObserver();
+
     for (let index = 0; index < this.stack.length; index++) {
-      if (isEOL() || ctx.isExit()) {
+      if (isEOL() || exitObserver.occured()) {
         break;
       }
 
@@ -42,6 +44,8 @@ export class Block extends Operation {
 
       await ctx.step(op);
     }
+
+    exitObserver.close();
 
     return DefaultType.Void;
   }

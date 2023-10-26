@@ -123,11 +123,31 @@ export class Debugger {
   }
 }
 
+export interface ExitObserver {
+  occured: () => boolean;
+  close: () => void;
+}
+
 export class ProcessState extends EventEmitter {
-  isExit: boolean = false;
   isPending: boolean = false;
   /* eslint-disable no-use-before-define */
   last: OperationContext = null;
+
+  createExitObserver(): ExitObserver {
+    let isExit = false;
+    const listener = () => {
+      isExit = true;
+    };
+
+    this.once('exit', listener);
+
+    return {
+      occured: () => isExit,
+      close: () => {
+        this.off('exit', listener);
+      }
+    };
+  }
 }
 
 export class LoopState {
@@ -271,20 +291,12 @@ export class OperationContext {
     return this.processState.last;
   }
 
-  isExit(): boolean {
-    return this.processState.isExit;
-  }
-
   isPending(): boolean {
     return this.processState.isPending;
   }
 
   setPending(pending: boolean): OperationContext {
     this.processState.isPending = pending;
-
-    if (!this.processState.isPending && this.processState.isExit) {
-      this.processState.isExit = false;
-    }
 
     return this;
   }
@@ -314,7 +326,6 @@ export class OperationContext {
 
   exit(): Promise<OperationContext> {
     if (this.processState.isPending) {
-      this.processState.isExit = true;
       this.processState.emit('exit');
 
       return new Promise((resolve) => {

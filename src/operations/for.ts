@@ -51,6 +51,7 @@ export class For extends OperationBlock {
     }
 
     const loopState = new LoopState();
+    const exitObserver = ctx.processState.createExitObserver();
 
     forCtx.loopState = loopState;
 
@@ -63,6 +64,7 @@ export class For extends OperationBlock {
       const iteration = async (): Promise<void> => {
         try {
           if (iteratorResult.done) {
+            exitObserver.close();
             resolve(DefaultType.Void);
             return;
           }
@@ -78,8 +80,9 @@ export class For extends OperationBlock {
           if (
             loopState.isBreak ||
             forCtx.functionState.isReturn ||
-            ctx.isExit()
+            exitObserver.occured()
           ) {
+            exitObserver.close();
             resolve(DefaultType.Void);
             return;
           }
@@ -89,6 +92,7 @@ export class For extends OperationBlock {
           iteratorResult = iterator.next();
           setImmediate(iteration);
         } catch (err: any) {
+          exitObserver.close();
           reject(err);
         }
       };

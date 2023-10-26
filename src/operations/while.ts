@@ -37,6 +37,7 @@ export class While extends OperationBlock {
       state: ContextState.Temporary
     });
     const loopState = new LoopState();
+    const exitObserver = ctx.processState.createExitObserver();
 
     whileCtx.loopState = loopState;
 
@@ -46,6 +47,7 @@ export class While extends OperationBlock {
           const conditionResult = await whileCtx.step(this.condition);
 
           if (!conditionResult.toTruthy()) {
+            exitObserver.close();
             resolve(DefaultType.Void);
             return;
           }
@@ -56,14 +58,16 @@ export class While extends OperationBlock {
           if (
             loopState.isBreak ||
             whileCtx.functionState.isReturn ||
-            ctx.isExit()
+            exitObserver.occured()
           ) {
+            exitObserver.close();
             resolve(DefaultType.Void);
             return;
           }
 
           setImmediate(iteration);
         } catch (err: any) {
+          exitObserver.close();
           reject(err);
         }
       };
