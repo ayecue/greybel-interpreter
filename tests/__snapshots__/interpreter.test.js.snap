@@ -572,6 +572,10 @@ exports[`interpreter default scripts opt-shorthand.src 2`] = `"2"`;
 
 exports[`interpreter default scripts opt-shorthand.src 3`] = `"3"`;
 
+exports[`interpreter default scripts outer.src 1`] = `"{\\"IS_GREYBEL\\":1,\\"params\\":[],\\"foo\\":\\"bar\\"}"`;
+
+exports[`interpreter default scripts outer.src 2`] = `"1"`;
+
 exports[`interpreter default scripts override.src 1`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts override.src 2`] = `"123"`;

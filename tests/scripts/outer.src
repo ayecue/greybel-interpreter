@@ -1,0 +1,5 @@
+print(outer)
+
+globals.foo = "bar"
+
+print(outer.foo == "bar")

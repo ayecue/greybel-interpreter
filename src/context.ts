@@ -227,7 +227,7 @@ export class OperationContext {
     this.api = this.lookupApi();
     this.globals = this.lookupGlobals();
     this.locals = this.lookupLocals() ?? this;
-    this.outer = options.ignoreOuter ? null : this.lookupOuter();
+    this.outer = (options.ignoreOuter ? null : this.lookupOuter()) ?? this.globals;
   }
 
   isIgnoredInDebugging(op: Operation): boolean {
