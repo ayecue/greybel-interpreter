@@ -1,9 +1,16 @@
 import { OperationContext } from '../context';
 
-export interface KeyEvent {
+interface KeyEventWithKeyCode {
   keyCode: number;
   code: string;
 }
+
+interface KeyEventWithCharCode {
+  charCode: number;
+  code: string;
+}
+
+export type KeyEvent = KeyEventWithKeyCode | KeyEventWithCharCode;
 
 export interface PrintOptions {
   appendNewLine: boolean;
