@@ -47,3 +47,20 @@ m5 = new m4
 
 m5.test
 stringify(m5)
+
+Foo = {}
+Foo.f = function; return 123; end function
+Bar = new Foo
+Bar.f = function; return super.f; end function
+print Bar.f
+print """" + Bar.f + """"
+
+Foo = {}
+Foo.f = function; return 123; end function
+Foo.o = function; return self.f; end function
+Bar = new Foo
+Bar.f = function; return 25; end function
+Bar.x = function; return super.f; end function
+instance = new Bar
+print instance.x
+print """" + Bar.x + """"

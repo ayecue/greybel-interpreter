@@ -2,7 +2,10 @@ import { getHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
-import { CustomValueWithIntrinsics } from './with-intrinsics';
+import {
+  CustomValueWithIntrinsics,
+  CustomValueWithIntrinsicsResult
+} from './with-intrinsics';
 
 export class CustomNumberIterator implements Iterator<CustomValue> {
   index: number = 0;
@@ -84,6 +87,15 @@ export class CustomNumber extends CustomValueWithIntrinsics {
     }
 
     throw new Error(`Unknown path in number ${path.toString()}.`);
+  }
+
+  getWithOrigin(
+    path: Path<CustomValue> | CustomValue
+  ): CustomValueWithIntrinsicsResult {
+    return {
+      value: this.get(path),
+      origin: null
+    };
   }
 
   hash() {

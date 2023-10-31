@@ -4,7 +4,11 @@ import { Path } from '../utils/path';
 import { CustomValue } from './base';
 import { Void } from './nil';
 import { CustomString } from './string';
-import { CustomObject, CustomValueWithIntrinsics } from './with-intrinsics';
+import {
+  CustomObject,
+  CustomValueWithIntrinsics,
+  CustomValueWithIntrinsicsResult
+} from './with-intrinsics';
 
 export const CLASS_ID_PROPERTY = new CustomString('classID');
 export const ISA_PROPERTY = new CustomString('__isa');
@@ -223,6 +227,55 @@ export class CustomMap extends CustomObject {
         CustomMap.getIntrinsics().has(current)
       ) {
         return CustomMap.getIntrinsics().get(current);
+      }
+    }
+
+    throw new Error(`Unknown path in map ${path.toString()}.`);
+  }
+
+  getWithOrigin(
+    path: Path<CustomValue> | CustomValue
+  ): CustomValueWithIntrinsicsResult {
+    if (path instanceof CustomValue) {
+      return this.getWithOrigin(new Path<CustomValue>([path]));
+    }
+
+    const traversalPath = path.clone();
+    const current = traversalPath.next();
+    const isa = this.getIsa();
+
+    if (current !== null) {
+      if (this.value.has(current)) {
+        const sub = this.value.get(current);
+
+        if (traversalPath.count() > 0) {
+          if (sub instanceof CustomMap) {
+            return sub.getWithOrigin(traversalPath);
+          }
+          if (sub instanceof CustomValueWithIntrinsics) {
+            return {
+              value: sub.get(traversalPath),
+              origin: this
+            };
+          }
+        } else if (traversalPath.count() === 0) {
+          return {
+            value: sub,
+            origin: this
+          };
+        }
+      } else if (isa?.has(current)) {
+        return isa.getWithOrigin(current);
+      } else if (
+        traversalPath.count() === 0 &&
+        CustomMap.getIntrinsics().has(current)
+      ) {
+        const intrinsics = CustomMap.getIntrinsics();
+
+        return {
+          value: intrinsics.get(current),
+          origin: null
+        };
       }
     }
 

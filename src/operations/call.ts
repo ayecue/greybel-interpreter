@@ -5,7 +5,6 @@ import { CustomValue } from '../types/base';
 import { DefaultType } from '../types/default';
 import { CustomFunction } from '../types/function';
 import { createResolve } from '../utils/create-resolve';
-import { getSuper } from '../utils/get-super';
 import { CPSVisit, Operation } from './operation';
 import { Resolve } from './resolve';
 
@@ -46,13 +45,13 @@ export class Call extends Operation {
 
     if (valueRef instanceof CustomFunction) {
       const func = valueRef as CustomFunction;
-      const next = getSuper(resolveResult.handle);
+      const next = func.getNextContext();
 
       if (this.fnRef.path.isSuper() && ctx.functionState.context && next) {
-        return func.run(ctx.functionState.context, fnArgs, ctx, next);
+        return func.run(ctx.functionState.context, fnArgs, ctx);
       }
 
-      return func.run(resolveResult.handle, fnArgs, ctx, next);
+      return func.run(resolveResult.handle, fnArgs, ctx);
     }
 
     return DefaultType.Void;

@@ -59,6 +59,8 @@ export class CustomFunction extends CustomValue {
   readonly argumentDefs: Array<Argument>;
   readonly assignOuter: boolean;
 
+  private _nextContext: CustomValue;
+
   static createExternalAnonymous(callback: Callback): CustomFunction {
     return new CustomFunction(null, DEFAULT_FUNCTION_NAME, callback);
   }
@@ -86,6 +88,7 @@ export class CustomFunction extends CustomValue {
     this.value = callback;
     this.argumentDefs = [];
     this.assignOuter = assignOuter;
+    this._nextContext = null;
   }
 
   addArgument(
@@ -148,11 +151,19 @@ export class CustomFunction extends CustomValue {
     return v.value === CustomFunction.intrinsics;
   }
 
+  setNextContext(value: CustomValue) {
+    this._nextContext = value;
+    return this;
+  }
+
+  getNextContext(): CustomValue {
+    return this._nextContext;
+  }
+
   async run(
     self: CustomValue,
     args: Array<CustomValue>,
-    callContext: OperationContext,
-    next?: CustomMap
+    callContext: OperationContext
   ): Promise<CustomValue> {
     if (args.length > this.argumentDefs.length) {
       throw new Error('Too many arguments.');
@@ -187,13 +198,22 @@ export class CustomFunction extends CustomValue {
     }
 
     const selfValue = hasSelf ? self : selfWithinArgs;
-    const isa = next ?? (self instanceof CustomMap ? self.getIsa() : null);
+    const isa =
+      this.getNextContext() ??
+      (self instanceof CustomMap ? self.getIsa() : null);
 
     if (selfValue) {
       argMap.set(SELF_NAMESPACE, selfValue);
     }
 
-    return this.value(fnCtx ?? callContext, selfValue, argMap, isa);
+    const result = await this.value(
+      fnCtx ?? callContext,
+      selfValue,
+      argMap,
+      isa
+    );
+    this._nextContext = null;
+    return result;
   }
 
   hash() {

@@ -674,6 +674,14 @@ exports[`interpreter default scripts super.src 7`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"test\\":FUNCTION()},\\"test\\":FUNCTION()},\\"lllbefore\\":\\"moo\\",\\"lll\\":\\"was\\"}"`;
 
+exports[`interpreter default scripts super.src 9`] = `"123"`;
+
+exports[`interpreter default scripts super.src 10`] = `"\\"\\"123\\"\\""`;
+
+exports[`interpreter default scripts super.src 11`] = `"123"`;
+
+exports[`interpreter default scripts super.src 12`] = `"\\"\\"123\\"\\""`;
+
 exports[`interpreter default scripts super-alt.src 1`] = `"42"`;
 
 exports[`interpreter default scripts uglified.src 1`] = `"{\\"B\\":{\\"exports\\":{\\"bar\\":123}}}"`;

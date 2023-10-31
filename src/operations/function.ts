@@ -78,8 +78,7 @@ export class FunctionOperation extends Operation {
       async (
         fnCtx: OperationContext,
         self: CustomValue,
-        args: Map<string, CustomValue>,
-        next: CustomValue
+        args: Map<string, CustomValue>
       ): Promise<CustomValue> => {
         const functionState = new FunctionState();
 
@@ -88,6 +87,8 @@ export class FunctionOperation extends Operation {
         if (self instanceof CustomValueWithIntrinsics) {
           fnCtx.set(SELF_PROPERTY, self);
         }
+
+        const next = func.getNextContext();
 
         if (next) {
           fnCtx.set(SUPER_PROPERTY, next);

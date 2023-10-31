@@ -227,12 +227,8 @@ export class Resolve extends Operation {
             ctx.functionState.context &&
             previous instanceof CustomMap
           ) {
-            handle = await handle.run(
-              ctx.functionState.context,
-              [],
-              ctx,
-              previous.getIsa()
-            );
+            handle.setNextContext(previous.getIsa());
+            handle = await handle.run(ctx.functionState.context, [], ctx);
           } else {
             handle = await handle.run(previous || DefaultType.Void, [], ctx);
           }
@@ -287,26 +283,29 @@ export class Resolve extends Operation {
 
       if (result.handle instanceof CustomValueWithIntrinsics) {
         const customValueCtx = result.handle;
-        const next = getSuper(customValueCtx);
+        const { value: child, origin } = customValueCtx.getWithOrigin(
+          result.path
+        );
+        const next = getSuper(origin);
 
-        if (this.path.isSuper() && customValueCtx instanceof CustomMap) {
-          const superChild = customValueCtx.getIsa()?.get(result.path);
-
-          if (autoCall && superChild instanceof CustomFunction) {
-            if (ctx.functionState.context) {
-              return superChild.run(ctx.functionState.context, [], ctx, next);
-            }
-
-            return superChild.run(customValueCtx, [], ctx, next);
-          }
-
-          return superChild;
+        if (child instanceof CustomFunction) {
+          child.setNextContext(next);
         }
 
-        const child = customValueCtx.get(result.path);
+        if (this.path.isSuper() && customValueCtx instanceof CustomMap) {
+          if (autoCall && child instanceof CustomFunction) {
+            if (ctx.functionState.context) {
+              return child.run(ctx.functionState.context, [], ctx);
+            }
+
+            return child.run(customValueCtx, [], ctx);
+          }
+
+          return child;
+        }
 
         if (autoCall && child instanceof CustomFunction) {
-          return child.run(customValueCtx, [], ctx, next);
+          return child.run(customValueCtx, [], ctx);
         }
 
         return child;

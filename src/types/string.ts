@@ -3,7 +3,10 @@ import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
 import { CustomNumber } from './number';
-import { CustomValueWithIntrinsics } from './with-intrinsics';
+import {
+  CustomValueWithIntrinsics,
+  CustomValueWithIntrinsicsResult
+} from './with-intrinsics';
 
 export class CustomStringIterator implements Iterator<CustomValue> {
   value: string;
@@ -153,6 +156,15 @@ export class CustomString extends CustomValueWithIntrinsics {
     }
 
     throw new Error(`Unknown path in string ${path.toString()}.`);
+  }
+
+  getWithOrigin(
+    path: Path<CustomValue> | CustomValue
+  ): CustomValueWithIntrinsicsResult {
+    return {
+      value: this.get(path),
+      origin: null
+    };
   }
 
   hash() {
