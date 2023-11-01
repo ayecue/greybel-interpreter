@@ -6,7 +6,6 @@ import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { CustomValue } from './base';
 import { DefaultType } from './default';
-import { CustomMap } from './map';
 import { CustomNil } from './nil';
 import { CustomString } from './string';
 
@@ -14,8 +13,7 @@ export interface Callback {
   (
     ctx: OperationContext,
     self: CustomValue,
-    args: Map<string, CustomValue>,
-    next?: CustomValue
+    args: Map<string, CustomValue>
   ): Promise<NonNullable<CustomValue>>;
 }
 
@@ -198,20 +196,12 @@ export class CustomFunction extends CustomValue {
     }
 
     const selfValue = hasSelf ? self : selfWithinArgs;
-    const isa =
-      this.getNextContext() ??
-      (self instanceof CustomMap ? self.getIsa() : null);
 
     if (selfValue) {
       argMap.set(SELF_NAMESPACE, selfValue);
     }
 
-    const result = await this.value(
-      fnCtx ?? callContext,
-      selfValue,
-      argMap,
-      isa
-    );
+    const result = await this.value(fnCtx ?? callContext, selfValue, argMap);
     this._nextContext = null;
     return result;
   }
