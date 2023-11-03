@@ -97,8 +97,12 @@ export class CustomFunction extends CustomValue {
     return this;
   }
 
-  fork(): CustomValue {
+  fork(): CustomFunction {
     return new CustomFunction(this.scope, this.name, this.value);
+  }
+
+  forkAs(name: string): CustomFunction {
+    return new CustomFunction(this.scope, name, this.value);
   }
 
   getCustomType(): string {
