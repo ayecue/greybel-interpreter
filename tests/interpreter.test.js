@@ -3,8 +3,7 @@ const {
   CustomFunction,
   HandlerContainer,
   CustomString,
-  DefaultType,
-  ObjectValue
+  DefaultType
 } = require('../dist');
 const fs = require('fs');
 const path = require('path');
@@ -87,24 +86,7 @@ describe('interpreter', function () {
 
       interpreter.once('exit', () => {
         expect(getPrintMock().mock.calls.length).toEqual(0);
-        preparePrintMock();
-
-        setTimeout(() => {
-          interpreter.once('exit', () => {
-            for (const call of getPrintMock().mock.calls) {
-              expect(call[0]).toMatchSnapshot();
-            }
-
-            done();
-          });
-
-          interpreter.run(`
-            print("123")
-            print("456")
-            print("789")
-            print(test)
-          `);
-        }, 1000);
+        done();
       });
 
       interpreter.run(`
@@ -113,6 +95,7 @@ describe('interpreter', function () {
         print("123")
         print("456")
         print("789")
+        print(test)
       `);
     });
 

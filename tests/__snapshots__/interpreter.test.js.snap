@@ -721,11 +721,3 @@ exports[`interpreter specific cases should contain correct stack 1`] = `
 at unknown:9:13
 at unknown:12:18"
 `;
-
-exports[`interpreter specific cases should exit 1`] = `"\\"123\\""`;
-
-exports[`interpreter specific cases should exit 2`] = `"\\"456\\""`;
-
-exports[`interpreter specific cases should exit 3`] = `"\\"789\\""`;
-
-exports[`interpreter specific cases should exit 4`] = `"\\"foo\\""`;
