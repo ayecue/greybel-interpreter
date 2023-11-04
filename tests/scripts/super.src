@@ -64,3 +64,10 @@ Bar.x = function; return super.f; end function
 instance = new Bar
 print instance.x
 print """" + Bar.x + """"
+
+test = new {}
+test.bar = function
+    return super.hasIndex("bar")
+end function
+
+print(test.bar)

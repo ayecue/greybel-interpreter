@@ -3,7 +3,7 @@ import { CustomMap } from '../types/map';
 
 export function getSuper(item: CustomValue): CustomMap {
   if (item instanceof CustomMap) {
-    return item.getIsa() ?? new CustomMap(item.getIntrinsics());
+    return item.getIsa() ?? new CustomMap();
   }
   return null;
 }

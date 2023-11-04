@@ -45,9 +45,8 @@ export class Call extends Operation {
 
     if (valueRef instanceof CustomFunction) {
       const func = valueRef as CustomFunction;
-      const next = func.getNextContext();
 
-      if (this.fnRef.path.isSuper() && ctx.functionState.context && next) {
+      if (this.fnRef.path.isSuper() && ctx.functionState.context) {
         return func.run(ctx.functionState.context, fnArgs, ctx);
       }
 

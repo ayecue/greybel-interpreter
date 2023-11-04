@@ -35,14 +35,6 @@ export interface InterpreterOptions {
 }
 
 export class Interpreter extends EventEmitter {
-  static clearAllIntrinsics() {
-    CustomNumber.clearIntrinsics();
-    CustomString.clearIntrinsics();
-    CustomFunction.intrinsics.clear();
-    CustomList.clearIntrinsics();
-    CustomMap.clearIntrinsics();
-  }
-
   target: string;
   api: ObjectValue;
   params: Array<string>;
@@ -76,29 +68,12 @@ export class Interpreter extends EventEmitter {
 
     this.target = target;
 
-    const cpsCtx = new CPSContext(target, this.handler);
-    this.cps = new CPS(cpsCtx);
-
-    this.apiContext = new OperationContext({
-      target,
-      isProtected: true,
-      debugger: this.debugger,
-      handler: this.handler,
-      cps: this.cps,
-      environmentVariables: this.environmentVariables
-    });
-
-    this.globalContext = this.apiContext.fork({
-      type: ContextType.Global,
-      state: ContextState.Default
-    });
-
     return this;
   }
 
   setDebugger(dbgr: Debugger): Interpreter {
     if (this.apiContext !== null && this.apiContext.isPending()) {
-      throw new Error('You cannot set a target while a process is running.');
+      throw new Error('You cannot set a debugger while a process is running.');
     }
 
     this.debugger = dbgr;
@@ -110,7 +85,7 @@ export class Interpreter extends EventEmitter {
 
   setApi(newApi: ObjectValue): Interpreter {
     if (this.apiContext !== null && this.apiContext.isPending()) {
-      throw new Error('You cannot set a target while a process is running.');
+      throw new Error('You cannot set an api object while a process is running.');
     }
 
     this.api = newApi;
@@ -120,7 +95,7 @@ export class Interpreter extends EventEmitter {
 
   setHandler(handler: HandlerContainer): Interpreter {
     if (this.apiContext !== null && this.apiContext.isPending()) {
-      throw new Error('You cannot set a target while a process is running.');
+      throw new Error('You cannot set a handler while a process is running.');
     }
 
     this.handler = handler;
@@ -184,7 +159,65 @@ export class Interpreter extends EventEmitter {
     throw new Error('Unable to inject into last context.');
   }
 
+  private initScopes() {
+    const cpsCtx = new CPSContext(this.target, this.handler);
+    this.cps = new CPS(cpsCtx);
+
+    const apiContext =  new OperationContext({
+      target: this.target,
+      isProtected: true,
+      debugger: this.debugger,
+      handler: this.handler,
+      cps: this.cps,
+      environmentVariables: this.environmentVariables
+    });
+    const stringIntrinsics = new CustomMap(
+      CustomString.intrinsics
+    );
+    const numberIntrinsics = new CustomMap(
+      CustomNumber.intrinsics
+    );
+    const listIntrinsics = new CustomMap(
+      CustomList.intrinsics
+    );
+    const mapIntrinsics = new CustomMap(
+      CustomMap.intrinsics
+    );
+    const funcRefIntrinsics = new CustomMap(
+      CustomFunction.intrinsics
+    );
+
+    apiContext.contextTypeIntrinsics.string = stringIntrinsics.value;
+    apiContext.contextTypeIntrinsics.number = numberIntrinsics.value;
+    apiContext.contextTypeIntrinsics.list = listIntrinsics.value;
+    apiContext.contextTypeIntrinsics.map = mapIntrinsics.value;
+    apiContext.contextTypeIntrinsics.function = funcRefIntrinsics.value;
+
+    apiContext.scope.set(new CustomString('string'), stringIntrinsics);
+    apiContext.scope.set(new CustomString('number'), numberIntrinsics);
+    apiContext.scope.set(new CustomString('list'), listIntrinsics);
+    apiContext.scope.set(new CustomString('map'), mapIntrinsics);
+    apiContext.scope.set(new CustomString('funcRef'), funcRefIntrinsics);
+    apiContext.scope.extend(this.api);
+
+    const globalContext = apiContext.fork({
+      type: ContextType.Global,
+      state: ContextState.Default
+    });
+    const newParams = new CustomList(
+      this.params.map((item) => new CustomString(item))
+    );
+
+    globalContext.scope.set(IS_GREYBEL_PROPERTY, new CustomBoolean(true));
+    globalContext.scope.set(PARAMS_PROPERTY, newParams);
+
+    this.apiContext = apiContext;
+    this.globalContext = globalContext;
+  }
+
   async run(customCode?: string): Promise<Interpreter> {
+    this.initScopes();
+
     const code =
       customCode ?? (await this.handler.resourceHandler.get(this.target));
     const top = await this.prepare(code);
@@ -196,36 +229,6 @@ export class Interpreter extends EventEmitter {
     if (this.apiContext !== null && this.apiContext.isPending()) {
       throw new Error('Process already running.');
     }
-
-    const stringIntrinsics = CustomMap.createWithInitialValue(
-      CustomString.intrinsics
-    );
-    const numberIntrinsics = CustomMap.createWithInitialValue(
-      CustomNumber.intrinsics
-    );
-    const listIntrinsics = CustomMap.createWithInitialValue(
-      CustomList.intrinsics
-    );
-    const mapIntrinsics = CustomMap.createWithInitialValue(
-      CustomMap.intrinsics
-    );
-    const funcRefIntrinsics = CustomMap.createWithInitialValue(
-      CustomFunction.intrinsics
-    );
-
-    this.apiContext.set(new CustomString('string'), stringIntrinsics);
-    this.apiContext.set(new CustomString('number'), numberIntrinsics);
-    this.apiContext.set(new CustomString('list'), listIntrinsics);
-    this.apiContext.set(new CustomString('map'), mapIntrinsics);
-    this.apiContext.set(new CustomString('funcRef'), funcRefIntrinsics);
-    this.apiContext.extend(this.api);
-
-    const newParams = new CustomList(
-      this.params.map((item) => new CustomString(item))
-    );
-
-    this.globalContext.scope.set(IS_GREYBEL_PROPERTY, new CustomBoolean(true));
-    this.globalContext.scope.set(PARAMS_PROPERTY, newParams);
 
     try {
       this.apiContext.setPending(true);

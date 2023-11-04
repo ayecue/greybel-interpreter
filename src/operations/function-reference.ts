@@ -39,7 +39,7 @@ export class FunctionReference extends Operation {
       }
 
       const customValueCtx = refResult.handle as CustomValueWithIntrinsics;
-      return customValueCtx.get(refResult.path);
+      return customValueCtx.get(refResult.path, ctx.contextTypeIntrinsics);
     }
 
     return ctx.get(refResult.path);

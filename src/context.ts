@@ -12,6 +12,7 @@ import { CustomNil } from './types/nil';
 import { ObjectValue } from './utils/object-value';
 import { Path } from './utils/path';
 import { setImmediate } from './utils/set-immediate';
+import { ContextTypeIntrinsics } from './context/types';
 
 export enum ContextType {
   Api,
@@ -37,9 +38,9 @@ export class Scope extends CustomMap {
     this.context = context;
   }
 
-  get(path: Path<CustomValue> | CustomValue): CustomValue {
+  get(path: Path<CustomValue> | CustomValue, typeIntrinsics: ContextTypeIntrinsics): CustomValue {
     if (path instanceof CustomValue) {
-      return this.get(new Path<CustomValue>([path]));
+      return this.get(new Path<CustomValue>([path]), typeIntrinsics);
     }
 
     if (path.count() === 0) {
@@ -50,15 +51,19 @@ export class Scope extends CustomMap {
     const current = traversalPath.next();
 
     if (this.has(path)) {
-      return super.get(path);
+      return super.get(path, typeIntrinsics);
     } else if (this.context.outer?.scope.has(path)) {
-      return this.context.outer.scope.get(path);
+      return this.context.outer.scope.get(path, typeIntrinsics);
     } else if (this.context.globals?.scope.has(path)) {
-      return this.context.globals.scope.get(path);
+      return this.context.globals.scope.get(path, typeIntrinsics);
     } else if (this.context.api?.scope.has(path)) {
-      return this.context.api.scope.get(path);
-    } else if (traversalPath.count() === 0 && CustomMap.getIntrinsics().has(current)) {
-      return CustomMap.getIntrinsics().get(current);
+      return this.context.api.scope.get(path, typeIntrinsics);
+    }
+
+    const intrinsics = typeIntrinsics.map ?? CustomMap.getIntrinsics();
+
+    if (traversalPath.count() === 0 && intrinsics.has(current)) {
+      return intrinsics.get(current);
     }
 
     throw new Error(`Unknown path ${path.toString()}.`);
@@ -177,6 +182,7 @@ export interface ContextOptions {
   processState?: ProcessState;
   environmentVariables?: Map<string, string>;
   ignoreOuter?: boolean;
+  contextTypeIntrinsics?: ContextTypeIntrinsics;
 }
 
 export interface ContextForkOptions {
@@ -194,6 +200,7 @@ export class OperationContext {
   debugger: Debugger;
   environmentVariables: Map<string, string>;
   handler: HandlerContainer;
+  contextTypeIntrinsics: ContextTypeIntrinsics;
   /* eslint-disable no-use-before-define */
   previous: OperationContext;
 
@@ -239,6 +246,13 @@ export class OperationContext {
     this.injected = options.injected ?? false;
     this.debugger = options.debugger ?? new Debugger();
     this.handler = options.handler ?? new HandlerContainer();
+    this.contextTypeIntrinsics = options.contextTypeIntrinsics ?? {
+      string: null,
+      number: null,
+      list: null,
+      map: null,
+      function: null
+    };
     this.cps = options.cps ?? null;
     this.processState = options.processState ?? new ProcessState();
     this.environmentVariables = options.environmentVariables ?? new Map();
@@ -420,7 +434,7 @@ export class OperationContext {
       return this.previous?.get(path);
     }
 
-    return this.locals.scope.get(path);
+    return this.locals.scope.get(path, this.contextTypeIntrinsics);
   }
 
   fork(options: ContextForkOptions): OperationContext {
@@ -437,7 +451,8 @@ export class OperationContext {
       handler: this.handler,
       cps: this.cps,
       processState: options.processState ?? this.processState,
-      environmentVariables: this.environmentVariables
+      environmentVariables: this.environmentVariables,
+      contextTypeIntrinsics: this.contextTypeIntrinsics
     });
 
     if (options.type !== ContextType.Function) {

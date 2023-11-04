@@ -405,7 +405,9 @@ export class Evaluate extends Operation {
         case ASTType.IsaExpression: {
           const left = await this.resolve(ctx, expr.left);
           const right = await this.resolve(ctx, expr.right);
-          return new CustomBoolean(left.instanceOf(right));
+          return new CustomBoolean(
+            left.instanceOf(right, ctx.contextTypeIntrinsics)
+          );
         }
         case ASTType.BinaryExpression:
           return this.resolveBinaryExpression(ctx, expr);

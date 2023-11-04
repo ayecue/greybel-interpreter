@@ -1,3 +1,4 @@
+import { ContextTypeIntrinsics } from '../context/types';
 import { getHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
@@ -55,8 +56,8 @@ export class CustomNumber extends CustomValueWithIntrinsics {
     return !!this.value;
   }
 
-  instanceOf(v: CustomValue): boolean {
-    return v.value === CustomNumber.intrinsics;
+  instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
+    return v.value === (typeIntrinsics.number ?? CustomNumber.intrinsics);
   }
 
   [Symbol.iterator](): CustomNumberIterator {
@@ -71,29 +72,31 @@ export class CustomNumber extends CustomValueWithIntrinsics {
     throw new Error('Mutable operations are not allowed on a number.');
   }
 
-  get(path: Path<CustomValue> | CustomValue): CustomValue {
+  get(
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): CustomValue {
     if (path instanceof CustomValue) {
-      return this.get(new Path<CustomValue>([path]));
+      return this.get(new Path<CustomValue>([path]), typeIntrinsics);
     }
 
     const traversalPath = path.clone();
     const current = traversalPath.next();
+    const intrinsics = typeIntrinsics.number ?? CustomNumber.getIntrinsics();
 
-    if (
-      traversalPath.count() === 0 &&
-      CustomNumber.getIntrinsics().has(current)
-    ) {
-      return CustomNumber.intrinsics.get(current);
+    if (traversalPath.count() === 0 && intrinsics.has(current)) {
+      return intrinsics.get(current);
     }
 
     throw new Error(`Unknown path in number ${path.toString()}.`);
   }
 
   getWithOrigin(
-    path: Path<CustomValue> | CustomValue
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult {
     return {
-      value: this.get(path),
+      value: this.get(path, typeIntrinsics),
       origin: null
     };
   }
