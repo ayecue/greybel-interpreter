@@ -80,7 +80,7 @@ export class Debugger {
     return this.lastContext;
   }
 
-  debug(...segments: any[]): CustomNil {
+  debug(...segments: any[]): CustomValue {
     console.debug(...segments);
     return DefaultType.Void;
   }
