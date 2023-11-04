@@ -77,8 +77,6 @@ export class Interpreter extends EventEmitter {
     }
 
     this.debugger = dbgr;
-    this.apiContext.debugger = dbgr;
-    this.globalContext.debugger = dbgr;
 
     return this;
   }
@@ -99,8 +97,6 @@ export class Interpreter extends EventEmitter {
     }
 
     this.handler = handler;
-    this.apiContext.handler = handler;
-    this.globalContext.handler = handler;
 
     return this;
   }
@@ -215,21 +211,7 @@ export class Interpreter extends EventEmitter {
     this.globalContext = globalContext;
   }
 
-  async run(customCode?: string): Promise<Interpreter> {
-    this.initScopes();
-
-    const code =
-      customCode ?? (await this.handler.resourceHandler.get(this.target));
-    const top = await this.prepare(code);
-
-    return this.start(top);
-  }
-
-  async start(top: Operation): Promise<Interpreter> {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
-      throw new Error('Process already running.');
-    }
-
+  private async start(top: Operation): Promise<Interpreter> {
     try {
       this.apiContext.setPending(true);
 
@@ -250,6 +232,20 @@ export class Interpreter extends EventEmitter {
     }
 
     return this;
+  }
+
+  async run(customCode?: string): Promise<Interpreter> {
+    if (this.apiContext !== null && this.apiContext.isPending()) {
+      throw new Error('Process already running.');
+    }
+
+    this.initScopes();
+
+    const code =
+      customCode ?? (await this.handler.resourceHandler.get(this.target));
+    const top = await this.prepare(code);
+
+    return this.start(top);
   }
 
   resume(): Interpreter {
