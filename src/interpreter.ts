@@ -35,14 +35,6 @@ export interface InterpreterOptions {
 }
 
 export class Interpreter extends EventEmitter {
-  static clearAllIntrinsics() {
-    CustomNumber.clearIntrinsics();
-    CustomString.clearIntrinsics();
-    CustomFunction.intrinsics.clear();
-    CustomList.clearIntrinsics();
-    CustomMap.clearIntrinsics();
-  }
-
   target: string;
   api: ObjectValue;
   params: Array<string>;
@@ -197,21 +189,27 @@ export class Interpreter extends EventEmitter {
       throw new Error('Process already running.');
     }
 
-    const stringIntrinsics = CustomMap.createWithInitialValue(
+    const stringIntrinsics = new CustomMap(
       CustomString.intrinsics
     );
-    const numberIntrinsics = CustomMap.createWithInitialValue(
+    const numberIntrinsics = new CustomMap(
       CustomNumber.intrinsics
     );
-    const listIntrinsics = CustomMap.createWithInitialValue(
+    const listIntrinsics = new CustomMap(
       CustomList.intrinsics
     );
-    const mapIntrinsics = CustomMap.createWithInitialValue(
+    const mapIntrinsics = new CustomMap(
       CustomMap.intrinsics
     );
-    const funcRefIntrinsics = CustomMap.createWithInitialValue(
+    const funcRefIntrinsics = new CustomMap(
       CustomFunction.intrinsics
     );
+
+    this.apiContext.contextTypeIntrinsics.string = stringIntrinsics.value;
+    this.apiContext.contextTypeIntrinsics.number = numberIntrinsics.value;
+    this.apiContext.contextTypeIntrinsics.list = listIntrinsics.value;
+    this.apiContext.contextTypeIntrinsics.map = mapIntrinsics.value;
+    this.apiContext.contextTypeIntrinsics.function = funcRefIntrinsics.value;
 
     this.apiContext.set(new CustomString('string'), stringIntrinsics);
     this.apiContext.set(new CustomString('number'), numberIntrinsics);

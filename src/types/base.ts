@@ -1,3 +1,5 @@
+import { ContextTypeIntrinsics } from '../context/types';
+
 export abstract class CustomValue {
   abstract value: any;
   abstract getCustomType(): string;
@@ -7,6 +9,10 @@ export abstract class CustomValue {
   abstract toString(): string;
   abstract toTruthy(): boolean;
   abstract fork(): CustomValue;
-  abstract instanceOf(value: CustomValue): boolean;
+  abstract instanceOf(
+    value: CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): boolean;
+
   abstract hash(recursionDepth?: number): number;
 }

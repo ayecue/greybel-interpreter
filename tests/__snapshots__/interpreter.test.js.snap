@@ -682,6 +682,8 @@ exports[`interpreter default scripts super.src 11`] = `"123"`;
 
 exports[`interpreter default scripts super.src 12`] = `"\\"\\"123\\"\\""`;
 
+exports[`interpreter default scripts super.src 13`] = `"1"`;
+
 exports[`interpreter default scripts super-alt.src 1`] = `"42"`;
 
 exports[`interpreter default scripts uglified.src 1`] = `"{\\"B\\":{\\"exports\\":{\\"bar\\":123}}}"`;

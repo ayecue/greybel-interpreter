@@ -1,3 +1,4 @@
+import { ContextTypeIntrinsics } from '../context/types';
 import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
@@ -93,8 +94,8 @@ export class CustomString extends CustomValueWithIntrinsics {
     return this.value.length > 0;
   }
 
-  instanceOf(v: CustomValue): boolean {
-    return v.value === CustomString.intrinsics;
+  instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
+    return v.value === (typeIntrinsics.string ?? CustomString.intrinsics);
   }
 
   slice(a: CustomValue, b: CustomValue): CustomString {
@@ -129,9 +130,12 @@ export class CustomString extends CustomValueWithIntrinsics {
     throw new Error('Mutable operations are not allowed on a string.');
   }
 
-  get(path: Path<CustomValue> | CustomValue): CustomValue {
+  get(
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): CustomValue {
     if (path instanceof CustomValue) {
-      return this.get(new Path<CustomValue>([path]));
+      return this.get(new Path<CustomValue>([path]), typeIntrinsics);
     }
 
     const traversalPath = path.clone();
@@ -148,21 +152,23 @@ export class CustomString extends CustomValueWithIntrinsics {
       throw new Error(
         `Index error (string index ${currentIndex} out of range).`
       );
-    } else if (
-      traversalPath.count() === 0 &&
-      CustomString.getIntrinsics().has(current)
-    ) {
-      return CustomString.intrinsics.get(current);
+    }
+
+    const intrinsics = typeIntrinsics.string ?? CustomString.getIntrinsics();
+
+    if (traversalPath.count() === 0 && intrinsics.has(current)) {
+      return intrinsics.get(current);
     }
 
     throw new Error(`Unknown path in string ${path.toString()}.`);
   }
 
   getWithOrigin(
-    path: Path<CustomValue> | CustomValue
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult {
     return {
-      value: this.get(path),
+      value: this.get(path, typeIntrinsics),
       origin: null
     };
   }

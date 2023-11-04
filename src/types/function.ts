@@ -1,4 +1,5 @@
 import { ContextState, ContextType, OperationContext } from '../context';
+import { ContextTypeIntrinsics } from '../context/types';
 import { Literal } from '../operations/literal';
 import { Operation } from '../operations/operation';
 import { Reference } from '../operations/reference';
@@ -149,8 +150,8 @@ export class CustomFunction extends CustomValue {
     return true;
   }
 
-  instanceOf(v: CustomValue): boolean {
-    return v.value === CustomFunction.intrinsics;
+  instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
+    return v.value === (typeIntrinsics.function ?? CustomFunction.intrinsics);
   }
 
   setNextContext(value: CustomValue) {

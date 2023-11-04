@@ -1,3 +1,4 @@
+import { ContextTypeIntrinsics } from '../context/types';
 import { getHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
@@ -117,7 +118,7 @@ export class CustomMap extends CustomObject {
     return this.value.size > 0;
   }
 
-  instanceOf(v: CustomValue): boolean {
+  instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
     if (v instanceof CustomMap) {
       let current: CustomMap | null = this;
 
@@ -127,7 +128,7 @@ export class CustomMap extends CustomObject {
         }
       }
 
-      return v.value === CustomMap.intrinsics;
+      return v.value === (typeIntrinsics.map ?? CustomMap.getIntrinsics());
     }
 
     return false;
@@ -200,9 +201,12 @@ export class CustomMap extends CustomObject {
     this.value.set(last, newValue);
   }
 
-  get(path: Path<CustomValue> | CustomValue): CustomValue {
+  get(
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): CustomValue {
     if (path instanceof CustomValue) {
-      return this.get(new Path<CustomValue>([path]));
+      return this.get(new Path<CustomValue>([path]), typeIntrinsics);
     }
 
     const traversalPath = path.clone();
@@ -215,18 +219,19 @@ export class CustomMap extends CustomObject {
 
         if (traversalPath.count() > 0) {
           if (sub instanceof CustomValueWithIntrinsics) {
-            return sub.get(traversalPath);
+            return sub.get(traversalPath, typeIntrinsics);
           }
         } else if (traversalPath.count() === 0) {
           return sub;
         }
       } else if (isa?.has(current)) {
-        return isa.get(current);
-      } else if (
-        traversalPath.count() === 0 &&
-        CustomMap.getIntrinsics().has(current)
-      ) {
-        return CustomMap.getIntrinsics().get(current);
+        return isa.get(current, typeIntrinsics);
+      }
+
+      const intrinsics = typeIntrinsics.map ?? CustomMap.getIntrinsics();
+
+      if (traversalPath.count() === 0 && intrinsics.has(current)) {
+        return intrinsics.get(current);
       }
     }
 
@@ -234,10 +239,11 @@ export class CustomMap extends CustomObject {
   }
 
   getWithOrigin(
-    path: Path<CustomValue> | CustomValue
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult {
     if (path instanceof CustomValue) {
-      return this.getWithOrigin(new Path<CustomValue>([path]));
+      return this.getWithOrigin(new Path<CustomValue>([path]), typeIntrinsics);
     }
 
     const traversalPath = path.clone();
@@ -250,11 +256,11 @@ export class CustomMap extends CustomObject {
 
         if (traversalPath.count() > 0) {
           if (sub instanceof CustomMap) {
-            return sub.getWithOrigin(traversalPath);
+            return sub.getWithOrigin(traversalPath, typeIntrinsics);
           }
           if (sub instanceof CustomValueWithIntrinsics) {
             return {
-              value: sub.get(traversalPath),
+              value: sub.get(traversalPath, typeIntrinsics),
               origin: this
             };
           }
@@ -265,13 +271,12 @@ export class CustomMap extends CustomObject {
           };
         }
       } else if (isa?.has(current)) {
-        return isa.getWithOrigin(current);
-      } else if (
-        traversalPath.count() === 0 &&
-        CustomMap.getIntrinsics().has(current)
-      ) {
-        const intrinsics = CustomMap.getIntrinsics();
+        return isa.getWithOrigin(current, typeIntrinsics);
+      }
 
+      const intrinsics = typeIntrinsics.map ?? CustomMap.getIntrinsics();
+
+      if (traversalPath.count() === 0 && intrinsics.has(current)) {
         return {
           value: intrinsics.get(current),
           origin: null

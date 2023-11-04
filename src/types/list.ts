@@ -1,3 +1,4 @@
+import { ContextTypeIntrinsics } from '../context/types';
 import { getHashCode, rotateBits } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
@@ -81,8 +82,8 @@ export class CustomList extends CustomObject {
     return this.value.length > 0;
   }
 
-  instanceOf(v: CustomValue): boolean {
-    return v.value === CustomList.intrinsics;
+  instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
+    return v.value === (typeIntrinsics.list ?? CustomList.intrinsics);
   }
 
   slice(a: CustomValue, b: CustomValue): CustomList {
@@ -176,9 +177,12 @@ export class CustomList extends CustomObject {
     throw new Error(`Index is not a number.`);
   }
 
-  get(path: Path<CustomValue> | CustomValue): CustomValue {
+  get(
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): CustomValue {
     if (path instanceof CustomValue) {
-      return this.get(new Path<CustomValue>([path]));
+      return this.get(new Path<CustomValue>([path]), typeIntrinsics);
     }
 
     const traversalPath = path.clone();
@@ -192,7 +196,7 @@ export class CustomList extends CustomObject {
 
         if (traversalPath.count() > 0) {
           if (sub instanceof CustomValueWithIntrinsics) {
-            return sub.get(traversalPath);
+            return sub.get(traversalPath, typeIntrinsics);
           }
         } else if (traversalPath.count() === 0) {
           return sub;
@@ -200,18 +204,23 @@ export class CustomList extends CustomObject {
       }
 
       throw new Error(`Index error (list index ${currentIndex} out of range).`);
-    } else if (path.count() === 1 && CustomList.getIntrinsics().has(current)) {
-      return CustomList.getIntrinsics().get(current);
+    }
+
+    const intrinsics = typeIntrinsics.list ?? CustomList.getIntrinsics();
+
+    if (path.count() === 1 && intrinsics.has(current)) {
+      return intrinsics.get(current);
     }
 
     throw new Error(`Unknown path in list ${path.toString()}.`);
   }
 
   getWithOrigin(
-    path: Path<CustomValue> | CustomValue
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult {
     return {
-      value: this.get(path),
+      value: this.get(path, typeIntrinsics),
       origin: null
     };
   }

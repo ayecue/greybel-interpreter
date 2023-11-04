@@ -50,7 +50,7 @@ export class Import extends Operation {
     await this.top.handle(importCtx);
 
     const item = importCtx.locals.scope.has(EXPORTS_PATH)
-      ? importCtx.scope.get(EXPORTS_PATH)
+      ? importCtx.scope.get(EXPORTS_PATH, ctx.contextTypeIntrinsics)
       : DefaultType.Void;
     const identifier = this.item.name as ASTIdentifier;
 

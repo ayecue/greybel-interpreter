@@ -212,7 +212,10 @@ export class Resolve extends Operation {
         if (!(handle instanceof ResolveNil)) {
           if (handle instanceof CustomValueWithIntrinsics) {
             const customValueCtx = handle as CustomValueWithIntrinsics;
-            handle = customValueCtx.get(traversedPath);
+            handle = customValueCtx.get(
+              traversedPath,
+              ctx.contextTypeIntrinsics
+            );
           } else {
             throw new Error(`Unknown path ${traversedPath.toString()}.`);
           }
@@ -284,7 +287,8 @@ export class Resolve extends Operation {
       if (result.handle instanceof CustomValueWithIntrinsics) {
         const customValueCtx = result.handle;
         const { value: child, origin } = customValueCtx.getWithOrigin(
-          result.path
+          result.path,
+          ctx.contextTypeIntrinsics
         );
         const next = getSuper(origin);
 

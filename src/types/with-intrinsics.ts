@@ -1,3 +1,4 @@
+import { ContextTypeIntrinsics } from '../context/types';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
 import { CustomValue } from './base';
@@ -11,9 +12,14 @@ export type CustomValueWithIntrinsicsResult = {
 export abstract class CustomValueWithIntrinsics extends CustomValue {
   abstract has(path: Path<CustomValue> | CustomValue): boolean;
   abstract set(path: Path<CustomValue> | CustomValue, value: CustomValue): void;
-  abstract get(path: Path<CustomValue> | CustomValue): CustomValue;
+  abstract get(
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): CustomValue;
+
   abstract getWithOrigin(
-    path: Path<CustomValue> | CustomValue
+    path: Path<CustomValue> | CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult;
 
   abstract [Symbol.iterator](): Iterator<CustomValue> & { index: number };
