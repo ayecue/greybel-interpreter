@@ -106,6 +106,7 @@ export class FunctionOperation extends Operation {
 
         return functionState.value;
       },
+      [],
       assignOuter
     );
 

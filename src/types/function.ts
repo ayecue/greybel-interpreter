@@ -79,13 +79,14 @@ export class CustomFunction extends CustomValue {
     scope: OperationContext,
     name: string,
     callback: Callback,
+    argumentDefs: Array<Argument> = [],
     assignOuter: boolean = false
   ) {
     super();
     this.scope = scope;
     this.name = name;
     this.value = callback;
-    this.argumentDefs = [];
+    this.argumentDefs = argumentDefs;
     this.assignOuter = assignOuter;
     this._nextContext = null;
   }
@@ -99,11 +100,11 @@ export class CustomFunction extends CustomValue {
   }
 
   fork(): CustomFunction {
-    return new CustomFunction(this.scope, this.name, this.value);
+    return new CustomFunction(this.scope, this.name, this.value, this.argumentDefs);
   }
 
   forkAs(name: string): CustomFunction {
-    return new CustomFunction(this.scope, name, this.value);
+    return new CustomFunction(this.scope, name, this.value, this.argumentDefs);
   }
 
   getCustomType(): string {

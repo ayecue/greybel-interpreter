@@ -89,35 +89,39 @@ describe('interpreter', function () {
         done();
       });
 
-      interpreter.run(`
-        test = "foo"
-        exit
-        print("123")
-        print("456")
-        print("789")
-        print(test)
-      `);
+      interpreter.run({
+        customCode: `
+          test = "foo"
+          exit
+          print("123")
+          print("456")
+          print("789")
+          print(test)
+        `
+      });
     });
 
     test('should contain correct stack', async function () {
       let stack = [];
 
       try {
-        await interpreter.run(`
-          foo = function
-            unknown.test = "wrong"
-          end function
+        await interpreter.run({
+          customCode: `
+            foo = function
+              unknown.test = "wrong"
+            end function
 
-          bar = function
-            a = 1
-            b = 2
-            foo
-          end function
+            bar = function
+              a = 1
+              b = 2
+              foo
+            end function
 
-          while (bar)
+            while (bar)
 
-          end while
-        `);
+            end while
+          `
+        });
       } catch (err) {
         stack = err.stack;
       }
@@ -126,7 +130,8 @@ describe('interpreter', function () {
     });
 
     test('should throw since definition is not within reachable scope', async function () {
-      await expect(interpreter.run(`
+      await expect(interpreter.run({
+        customCode: `
           a = function
             foo = {"bar": 123}
             b = function
@@ -138,12 +143,14 @@ describe('interpreter', function () {
             b
           end function
           a
-        `)
+        `
+      })
       ).rejects.toEqual(new Error('Unknown path foo.'));
     });
 
     test('should throw since property on self cannot be resolved', async function () {
-      await expect(interpreter.run(`
+      await expect(interpreter.run({
+        customCode: `
           Foo = {"a":123}
           Foo.a = function
             locals.self = self
@@ -153,37 +160,39 @@ describe('interpreter', function () {
             b
           end function
           Foo.a
-        `)
+          `
+        })
       ).rejects.toEqual(new Error('Unknown path a.'));
     });
 
     test('should throw since anonymous function do not have an outer', async function () {
-      await expect(interpreter.run(`
-        someFunc = function(fn)
-          fn
-        end function
+      await expect(interpreter.run({
+        customCode: `
+          someFunc = function(fn)
+            fn
+          end function
 
-        main = function()
-            a = function(x)
-              someFunc function
-                print x
+          main = function()
+              a = function(x)
+                someFunc function
+                  print x
+                end function
               end function
-            end function
-            
-            b = function(x)
-              foo = function
-                print x
+              
+              b = function(x)
+                foo = function
+                  print x
+                end function
+                someFunc @foo
               end function
-              someFunc @foo
-            end function
-            
-            a("wa")
-            b("wa")
-        end function
+              
+              a("wa")
+              b("wa")
+          end function
 
-        main
-        `)
-      ).rejects.toEqual(new Error('Unknown path x.'));
+          main
+        `
+      })).rejects.toEqual(new Error('Unknown path x.'));
     });
   });
 });

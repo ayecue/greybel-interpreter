@@ -70,6 +70,16 @@ export class ObjectValue {
     }
   }
 
+  fork() {
+    const newObject = new ObjectValue();
+
+    for (const [key, value] of this.entries()) {
+      newObject.set(key.fork(), value.fork());
+    }
+
+    return newObject;
+  }
+
   extend(objVal: ObjectValue): this {
     for (const [key, value] of objVal.entries()) {
       this.set(key, value);

@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import { Parser } from 'greybel-core';
 
 import {
+  ContextOptions,
   ContextState,
   ContextType,
   Debugger,
@@ -32,6 +33,11 @@ export interface InterpreterOptions {
   handler?: HandlerContainer;
   debugger?: Debugger;
   environmentVariables?: Map<string, string>;
+}
+
+export interface InterpreterRunOptions {
+  customCode?: string;
+  ctxOptions?: ContextOptions;
 }
 
 export class Interpreter extends EventEmitter {
@@ -155,7 +161,7 @@ export class Interpreter extends EventEmitter {
     throw new Error('Unable to inject into last context.');
   }
 
-  private initScopes() {
+  private initScopes(ctxOptions: ContextOptions) {
     const cpsCtx = new CPSContext(this.target, this.handler);
     this.cps = new CPS(cpsCtx);
 
@@ -165,29 +171,21 @@ export class Interpreter extends EventEmitter {
       debugger: this.debugger,
       handler: this.handler,
       cps: this.cps,
-      environmentVariables: this.environmentVariables
+      environmentVariables: this.environmentVariables,
+      contextTypeIntrinsics: {
+        string: CustomString.getIntrinsics().fork(),
+        number: CustomNumber.getIntrinsics().fork(),
+        list: CustomList.getIntrinsics().fork(),
+        map: CustomMap.getIntrinsics().fork(),
+        function: CustomFunction.intrinsics.fork()
+      },
+      ...ctxOptions
     });
-    const stringIntrinsics = new CustomMap(
-      CustomString.intrinsics
-    );
-    const numberIntrinsics = new CustomMap(
-      CustomNumber.intrinsics
-    );
-    const listIntrinsics = new CustomMap(
-      CustomList.intrinsics
-    );
-    const mapIntrinsics = new CustomMap(
-      CustomMap.intrinsics
-    );
-    const funcRefIntrinsics = new CustomMap(
-      CustomFunction.intrinsics
-    );
-
-    apiContext.contextTypeIntrinsics.string = stringIntrinsics.value;
-    apiContext.contextTypeIntrinsics.number = numberIntrinsics.value;
-    apiContext.contextTypeIntrinsics.list = listIntrinsics.value;
-    apiContext.contextTypeIntrinsics.map = mapIntrinsics.value;
-    apiContext.contextTypeIntrinsics.function = funcRefIntrinsics.value;
+    const stringIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.string);
+    const numberIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.number);
+    const listIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.list);
+    const mapIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.map);
+    const funcRefIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.function);
 
     apiContext.scope.set(new CustomString('string'), stringIntrinsics);
     apiContext.scope.set(new CustomString('number'), numberIntrinsics);
@@ -234,12 +232,15 @@ export class Interpreter extends EventEmitter {
     return this;
   }
 
-  async run(customCode?: string): Promise<Interpreter> {
+  async run({
+    customCode,
+    ctxOptions
+  }: InterpreterRunOptions = {}): Promise<Interpreter> {
     if (this.apiContext !== null && this.apiContext.isPending()) {
       throw new Error('Process already running.');
     }
 
-    this.initScopes();
+    this.initScopes(ctxOptions);
 
     const code =
       customCode ?? (await this.handler.resourceHandler.get(this.target));
