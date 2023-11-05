@@ -152,7 +152,13 @@ exports[`interpreter default scripts envar.src 1`] = `"\\"123\\""`;
 
 exports[`interpreter default scripts exit.src 1`] = `"123"`;
 
+exports[`interpreter default scripts exit.src 2`] = `"\\"test\\""`;
+
+exports[`interpreter default scripts exit-during-path-resolve.src 1`] = `"\\"bye\\""`;
+
 exports[`interpreter default scripts exit-in-loop.src 1`] = `"\\"in loop\\""`;
+
+exports[`interpreter default scripts exit-in-loop.src 2`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts extend-intrinsics.src 1`] = `"\\"was2\\""`;
 

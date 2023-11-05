@@ -17,6 +17,18 @@ function setupAPI() {
   const api = new ObjectValue();
 
   api.set(
+    new CustomString('exit'),
+    CustomFunction.createExternal('exit', async (fnCtx, self, args) => {
+      const message = args.get('message');
+      if (message instanceof CustomString) {
+        fnCtx.handler.outputHandler.print(message);
+      }
+      fnCtx.exit();
+      return Promise.resolve(DefaultType.Void);
+    }).addArgument("message")
+  );
+
+  api.set(
     new CustomString('print'),
     CustomFunction.createExternal('print', (fnCtx, self, args) => {
       fnCtx.handler.outputHandler.print(args.get('value'));

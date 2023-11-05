@@ -30,9 +30,8 @@ export class Call extends Operation {
     const exitObserver = ctx.processState.createExitObserver();
     const resolveResult = await this.fnRef.getResult(ctx);
 
-    exitObserver.close();
-
     if (exitObserver.occured()) {
+      exitObserver.close();
       return DefaultType.Void;
     }
 
@@ -40,8 +39,20 @@ export class Call extends Operation {
     const fnArgs: Array<CustomValue> = [];
 
     for (let index = 0; index < this.args.length; index++) {
+      if (exitObserver.occured()) {
+        exitObserver.close();
+        return DefaultType.Void;
+      }
+
       fnArgs.push(await this.args[index].handle(ctx));
     }
+
+    if (exitObserver.occured()) {
+      exitObserver.close();
+      return DefaultType.Void;
+    }
+
+    exitObserver.close();
 
     if (valueRef instanceof CustomFunction) {
       const func = valueRef as CustomFunction;
