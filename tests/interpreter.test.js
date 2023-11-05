@@ -39,14 +39,6 @@ describe('interpreter', function () {
         });
         let success = false;
 
-        pseudoAPI.set(
-          new CustomString('exit'),
-          CustomFunction.createExternal('exit', async (fnCtx, self, args) => {
-            interpreter.exit();
-            return Promise.resolve(DefaultType.Void);
-          }).addArgument("message")
-        );
-
         try {
           await interpreter.run();
           success = true;
@@ -76,16 +68,8 @@ describe('interpreter', function () {
     });
 
     test('should exit', function (done) {
-      pseudoAPI.set(
-        new CustomString('exit'),
-        CustomFunction.createExternal('exit', () => {
-          interpreter.exit();
-          return Promise.resolve(DefaultType.Void);
-        }).addArgument("message")
-      );
-
       interpreter.once('exit', () => {
-        expect(getPrintMock().mock.calls.length).toEqual(0);
+        expect(getPrintMock()).toBeCalledTimes(0);
         done();
       });
 
@@ -97,6 +81,46 @@ describe('interpreter', function () {
           print("456")
           print("789")
           print(test)
+        `
+      });
+    });
+
+    test('should exit within arg resolve', function (done) {
+      interpreter.once('exit', () => {
+        expect(getPrintMock()).toBeCalledTimes(1);
+        expect(getPrintMock()).toBeCalledWith(expect.objectContaining({
+          value : 'bye'
+        }));
+        done();
+      });
+
+      interpreter.run({
+        customCode: `
+        f = function; exit("bye"); end function
+        u = function(param); print "f"; end function
+        u(f)
+        `
+      });
+    });
+
+    test('should exit within args resolve', function (done) {
+      interpreter.once('exit', () => {
+        expect(getPrintMock()).toBeCalledTimes(3);
+        expect(getPrintMock()).toHaveBeenLastCalledWith(expect.objectContaining({
+          value : 'bye'
+        }));
+        done();
+      });
+
+      interpreter.run({
+        customCode: `
+        a = function; print "a"; end function
+        b = function; print "b"; end function
+        c = function; print "c"; end function
+        d = function; print "d"; end function
+        f = function; exit("bye"); end function
+        u = function(a, b, c, d, e, f); print "f"; end function
+        u(a, b, f, c, d)
         `
       });
     });

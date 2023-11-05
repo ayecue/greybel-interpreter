@@ -100,7 +100,12 @@ export class CustomFunction extends CustomValue {
   }
 
   fork(): CustomFunction {
-    return new CustomFunction(this.scope, this.name, this.value, this.argumentDefs);
+    return new CustomFunction(
+      this.scope,
+      this.name,
+      this.value,
+      this.argumentDefs
+    );
   }
 
   forkAs(name: string): CustomFunction {
