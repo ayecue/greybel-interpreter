@@ -12,7 +12,7 @@ import { ObjectValue } from './utils/object-value';
 import { Path } from './utils/path';
 import { setImmediate } from './utils/set-immediate';
 import { ContextTypeIntrinsics } from './context/types';
-import { v4 as uuid } from 'uuid';
+import { uuid } from './utils/uuid';
 
 export enum ContextType {
   Api,
