@@ -70,15 +70,23 @@ export class IfStatement extends OperationBlock {
   }
 
   async handle(ctx: OperationContext): Promise<CustomValue> {
+    const exitObserver = ctx.processState.createExitObserver();
+
     for (let index = 0; index < this.clauses.length; index++) {
       const clause = this.clauses[index];
       const clauseResult = await ctx.step(clause.condition);
+
+      if (exitObserver.occured()) {
+        break;
+      }
 
       if (clauseResult.toTruthy()) {
         await clause.block.handle(ctx);
         break;
       }
     }
+
+    exitObserver.close();
 
     return DefaultType.Void;
   }

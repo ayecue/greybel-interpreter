@@ -125,6 +125,48 @@ describe('interpreter', function () {
       });
     });
 
+    test('should exit within if statement', function (done) {
+      interpreter.once('exit', () => {
+        expect(getPrintMock()).toBeCalledTimes(1);
+        expect(getPrintMock()).toBeCalledWith(expect.objectContaining({
+          value : 'bye'
+        }));
+        done();
+      });
+
+      interpreter.run({
+        customCode: `
+        if not exit("bye") then
+          print "hey"
+        end if
+        `
+      });
+    });
+
+    test('should exit within if else statement', function (done) {
+      interpreter.once('exit', () => {
+        expect(getPrintMock()).toBeCalledTimes(1);
+        expect(getPrintMock()).toBeCalledWith(expect.objectContaining({
+          value : 'bye'
+        }));
+        done();
+      });
+
+      interpreter.run({
+        customCode: `
+        if false then
+          print "not here"
+        else if exit("bye") then
+          print "not here"
+        else
+          print "hey"
+        end if
+
+        print "hey"
+        `
+      });
+    });
+
     test('should contain correct stack', async function () {
       let stack = [];
 
