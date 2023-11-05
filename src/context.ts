@@ -8,11 +8,11 @@ import { Operation, OperationBlock } from './operations/operation';
 import { CustomValue } from './types/base';
 import { DefaultType } from './types/default';
 import { CustomMap } from './types/map';
-import { CustomNil } from './types/nil';
 import { ObjectValue } from './utils/object-value';
 import { Path } from './utils/path';
 import { setImmediate } from './utils/set-immediate';
 import { ContextTypeIntrinsics } from './context/types';
+import { v4 as uuid } from 'uuid';
 
 export enum ContextType {
   Api,
@@ -138,19 +138,25 @@ export class ProcessState extends EventEmitter {
   /* eslint-disable no-use-before-define */
   last: OperationContext = null;
 
+  private observer: Set<string>;
+  private observerWithExitOccurence: Set<string>;
+
+  constructor() {
+    super();
+    this.observer = new Set();
+    this.observerWithExitOccurence = new Set();
+
+    this.once('exit', () => {
+      this.observerWithExitOccurence = new Set(this.observer);
+    });
+  }
+
   createExitObserver(): ExitObserver {
-    let isExit = false;
-    const listener = () => {
-      isExit = true;
-    };
-
-    this.once('exit', listener);
-
+    const id = uuid();
+    this.observer.add(id);
     return {
-      occured: () => isExit,
-      close: () => {
-        this.off('exit', listener);
-      }
+      occured: () => this.observerWithExitOccurence.has(id),
+      close: () => this.observer.delete(id)
     };
   }
 }
