@@ -107,10 +107,14 @@ export class Interpreter extends EventEmitter {
     return this;
   }
 
+  parse(code: string) {
+    const parser = new Parser(code);
+    return parser.parseChunk();
+  }
+
   prepare(code: string): Promise<Operation> {
     try {
-      const parser = new Parser(code);
-      const chunk = parser.parseChunk();
+      const chunk = this.parse(code);
       return this.cps.visit(chunk);
     } catch (err: any) {
       if (err instanceof PrepareError) {
@@ -161,9 +165,13 @@ export class Interpreter extends EventEmitter {
     throw new Error('Unable to inject into last context.');
   }
 
-  private initScopes(ctxOptions: ContextOptions) {
+  createCPS() {
     const cpsCtx = new CPSContext(this.target, this.handler);
-    this.cps = new CPS(cpsCtx);
+    return new CPS(cpsCtx);
+  }
+
+  private initScopes(ctxOptions: ContextOptions) {
+    this.cps = this.createCPS();
 
     const apiContext =  new OperationContext({
       target: this.target,
