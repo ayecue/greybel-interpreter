@@ -4,7 +4,7 @@ import {
   ASTIndexExpression,
   ASTMemberExpression,
   ASTSliceExpression
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { Operation } from '../operations/operation';
 import { ReferenceGlobals } from '../operations/reference-globals';

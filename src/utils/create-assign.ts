@@ -2,7 +2,7 @@ import {
   ASTAssignmentStatement,
   ASTBase,
   ASTIdentifier
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { Assign } from '../operations/assign';
 import { AssignGlobals } from '../operations/assign-globals';
