@@ -10,7 +10,7 @@ export {
   ProcessState,
   Scope
 } from './context';
-export { CPS, CPSContext } from './cps';
+export { CPS, CPSContext, CPSVisitCallback, defaultCPSVisit } from './cps';
 export { DefaultErrorHandler, ErrorHandler } from './handler/error';
 export {
   DefaultOutputHandler,

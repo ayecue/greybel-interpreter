@@ -3,7 +3,7 @@ import {
   ASTIfClause,
   ASTIfStatement,
   ASTType
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

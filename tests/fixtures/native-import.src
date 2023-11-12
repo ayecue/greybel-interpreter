@@ -1,3 +1,0 @@
-import_code("./sub-native-import")
-
-nativeImportFoo = "foo imported code native" + subNativeImportFoo

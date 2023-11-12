@@ -1,5 +1,5 @@
 import { ASTFeatureImportExpression, Parser } from 'greybel-core';
-import { ASTBase, ASTIdentifier } from 'greyscript-core';
+import { ASTBase, ASTIdentifier } from 'miniscript-core';
 
 import { ContextState, ContextType, OperationContext } from '../context';
 import { CustomValue } from '../types/base';

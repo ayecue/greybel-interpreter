@@ -1,4 +1,4 @@
-import { ASTUnaryExpression, Operator } from 'greyscript-core';
+import { ASTUnaryExpression, Operator } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

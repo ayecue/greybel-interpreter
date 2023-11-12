@@ -15,7 +15,6 @@ import {
   ASTFunctionStatement,
   ASTIdentifier,
   ASTIfStatement,
-  ASTImportCodeExpression,
   ASTListConstructorExpression,
   ASTLiteral,
   ASTMapConstructorExpression,
@@ -25,7 +24,7 @@ import {
   ASTType,
   ASTUnaryExpression,
   ASTWhileStatement
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { HandlerContainer } from './handler-container';
 import { Break } from './operations/break';
@@ -66,13 +65,21 @@ export class CPSContext {
   }
 }
 
-const visit = async (
+export type CPSVisitCallback = (
+  cpsVisit: CPSVisitCallback,
+  context: CPSContext,
+  stack: string[],
+  item: ASTBase
+) => Promise<Operation>;
+
+export const defaultCPSVisit: CPSVisitCallback = async (
+  cpsVisit: CPSVisitCallback,
   context: CPSContext,
   stack: string[],
   item: ASTBase
 ): Promise<Operation> => {
   const currentTarget = stack[stack.length - 1];
-  const defaultVisit = visit.bind(null, context, stack);
+  const defaultVisit = cpsVisit.bind(null, cpsVisit, context, stack);
 
   switch (item.type) {
     case ASTType.MapConstructorExpression:
@@ -155,7 +162,7 @@ const visit = async (
       }
 
       try {
-        const subVisit = visit.bind(null, context, [...stack, target]);
+        const subVisit = cpsVisit.bind(null, cpsVisit, context, [...stack, target]);
         const importStatement = await new Import(
           importExpr,
           currentTarget,
@@ -205,60 +212,9 @@ const visit = async (
       }
 
       try {
-        const subVisit = visit.bind(null, context, [...stack, target]);
+        const subVisit = cpsVisit.bind(null, cpsVisit, context, [...stack, target]);
         const importStatement = await new Include(
           includeExpr,
-          currentTarget,
-          target,
-          code
-        ).build(subVisit);
-
-        return importStatement;
-      } catch (err: any) {
-        if (err instanceof PrepareError) {
-          throw err;
-        }
-
-        throw new PrepareError(
-          err.message,
-          {
-            target,
-            range: new ASTRange(item.start, item.end)
-          },
-          err
-        );
-      }
-    }
-    case ASTType.ImportCodeExpression: {
-      const importExpr = item as ASTImportCodeExpression;
-
-      const target = await context.handler.resourceHandler.getTargetRelativeTo(
-        currentTarget,
-        importExpr.directory
-      );
-
-      if (stack.includes(target)) {
-        console.warn(
-          `Found circular dependency between "${currentTarget}" and "${target}" at line ${item.start.line}. Using noop instead to prevent overflow.`
-        );
-        return new Noop(item, target);
-      }
-
-      const code = await context.handler.resourceHandler.get(target);
-
-      if (code == null) {
-        const range = new ASTRange(item.start, item.end);
-
-        throw new PrepareError(`Cannot find native import "${currentTarget}"`, {
-          target: currentTarget,
-          range
-        });
-      }
-
-      try {
-        const subVisit = visit.bind(null, context, [...stack, target]);
-        const importStatement = await new Include(
-          importExpr,
           currentTarget,
           target,
           code
@@ -345,9 +301,9 @@ export class CPS {
   private readonly context: CPSContext;
   private __visit: CPSVisit;
 
-  constructor(context: CPSContext) {
+  constructor(context: CPSContext, cpsVisit: CPSVisitCallback = defaultCPSVisit) {
     this.context = context;
-    this.__visit = visit.bind(null, context, [context.target]);
+    this.__visit = cpsVisit.bind(null, cpsVisit, context, [context.target]);
   }
 
   visit(item: ASTBase): Promise<Operation> {

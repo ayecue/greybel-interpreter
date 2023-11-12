@@ -1,4 +1,4 @@
-import { ASTReturnStatement } from 'greyscript-core';
+import { ASTReturnStatement } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

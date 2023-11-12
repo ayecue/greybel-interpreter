@@ -1,4 +1,4 @@
-import { ASTAssignmentStatement } from 'greyscript-core';
+import { ASTAssignmentStatement } from 'miniscript-core';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';

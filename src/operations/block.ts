@@ -1,4 +1,4 @@
-import { ASTBase } from 'greyscript-core';
+import { ASTBase } from 'miniscript-core';
 
 import { ContextType, OperationContext } from '../context';
 import { CustomValue } from '../types/base';

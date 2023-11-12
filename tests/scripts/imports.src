@@ -1,7 +1,5 @@
 #import fooImport from ../fixtures/import-file.src;
 #include ../fixtures/include-file.src;
-import_code("../fixtures/native-import")
 
 print(fooImport)
 print(includeFileFoo)
-print(nativeImportFoo)

@@ -3,7 +3,7 @@ import {
   ASTFunctionStatement,
   ASTIdentifier,
   ASTType
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { FunctionState, OperationContext } from '../context';
 import { CustomValue } from '../types/base';

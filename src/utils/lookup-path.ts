@@ -2,7 +2,7 @@ import {
   ASTIndexExpression,
   ASTMemberExpression,
   ASTSliceExpression
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 export type PathItem =
   | ASTMemberExpression
