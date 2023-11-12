@@ -1,4 +1,5 @@
 import { ASTEvaluationExpression, ASTType, Operator } from 'miniscript-core';
+import { Operator as GreybelOperator } from 'greybel-core/dist/types/operators';
 
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
@@ -33,15 +34,15 @@ export const NumberProcessorHandler: ProcessorHandler = {
   [Operator.Asterik]: (a, b) => new CustomNumber(a.toNumber() * b.toNumber()),
   [Operator.Power]: (a, b) =>
     new CustomNumber(Math.pow(a.toNumber(), b.toNumber())),
-  [Operator.BitwiseOr]: (a, b) => new CustomNumber(a.toInt() | b.toInt()),
+  [GreybelOperator.BitwiseOr]: (a, b) => new CustomNumber(a.toInt() | b.toInt()),
   [Operator.LessThan]: (a, b) => new CustomBoolean(a.toNumber() < b.toNumber()),
   [Operator.GreaterThan]: (a, b) =>
     new CustomBoolean(a.toNumber() > b.toNumber()),
-  [Operator.LeftShift]: (a, b) => new CustomNumber(a.toInt() << b.toInt()),
-  [Operator.RightShift]: (a, b) => new CustomNumber(a.toInt() >> b.toInt()),
-  [Operator.UnsignedRightShift]: (a, b) =>
+  [GreybelOperator.LeftShift]: (a, b) => new CustomNumber(a.toInt() << b.toInt()),
+  [GreybelOperator.RightShift]: (a, b) => new CustomNumber(a.toInt() >> b.toInt()),
+  [GreybelOperator.UnsignedRightShift]: (a, b) =>
     new CustomNumber(a.toInt() >> b.toInt()),
-  [Operator.BitwiseAnd]: (a, b) => new CustomNumber(a.toInt() & b.toInt()),
+  [GreybelOperator.BitwiseAnd]: (a, b) => new CustomNumber(a.toInt() & b.toInt()),
   [Operator.PercentSign]: (a, b) =>
     new CustomNumber(a.toNumber() % b.toNumber()),
   [Operator.GreaterThanOrEqual]: (a, b) =>
