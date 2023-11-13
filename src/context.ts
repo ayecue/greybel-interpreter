@@ -189,6 +189,7 @@ export interface ContextOptions {
   environmentVariables?: Map<string, string>;
   ignoreOuter?: boolean;
   contextTypeIntrinsics?: ContextTypeIntrinsics;
+  time?: number;
 }
 
 export interface ContextForkOptions {
@@ -214,6 +215,7 @@ export class OperationContext {
   readonly state: ContextState;
   readonly scope: Scope;
   readonly cps: CPS;
+  readonly time: number;
 
   readonly processState: ProcessState;
   loopState: LoopState;
@@ -244,6 +246,7 @@ export class OperationContext {
   constructor(options: ContextOptions = {}) {
     this.target = options.target ?? 'unknown';
     this.stackTrace = options.stackTrace ?? [];
+    this.time = options.time ?? Date.now();
     this.previous = options.previous ?? null;
     this.type = options.type ?? ContextType.Api;
     this.state = options.state ?? ContextState.Default;
@@ -458,7 +461,8 @@ export class OperationContext {
       cps: this.cps,
       processState: options.processState ?? this.processState,
       environmentVariables: this.environmentVariables,
-      contextTypeIntrinsics: this.contextTypeIntrinsics
+      contextTypeIntrinsics: this.contextTypeIntrinsics,
+      time: this.time
     });
 
     if (options.type !== ContextType.Function) {
