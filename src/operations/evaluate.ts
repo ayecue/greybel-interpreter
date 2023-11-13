@@ -47,8 +47,7 @@ export const NumberProcessorHandler: ProcessorHandler = {
     new CustomNumber(a.toInt() >> b.toInt()),
   [GreybelOperator.BitwiseAnd]: (a, b) =>
     new CustomNumber(a.toInt() & b.toInt()),
-  [Operator.PercentSign]: (a, b) =>
-    new CustomNumber(a.toNumber() % b.toNumber()),
+  [Operator.Modulo]: (a, b) => new CustomNumber(a.toNumber() % b.toNumber()),
   [Operator.GreaterThanOrEqual]: (a, b) =>
     new CustomBoolean(a.toNumber() >= b.toNumber()),
   [Operator.Equal]: (a, b) => new CustomBoolean(a.toNumber() === b.toNumber()),
@@ -219,7 +218,7 @@ export const NilProcessorHandler: ProcessorHandler = {
   [Operator.Slash]: () => DefaultType.Void,
   [Operator.Asterik]: () => DefaultType.Void,
   [Operator.Power]: () => DefaultType.Void,
-  [Operator.PercentSign]: () => DefaultType.Void,
+  [Operator.Modulo]: () => DefaultType.Void,
   [Operator.Equal]: (_a, b) => new CustomBoolean(b instanceof CustomNil),
   [Operator.NotEqual]: (_a, b) => new CustomBoolean(!(b instanceof CustomNil))
 };
