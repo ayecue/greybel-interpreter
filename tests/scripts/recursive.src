@@ -1,0 +1,6 @@
+d1 = {1:"foo"}
+d1["recurse"] = d1
+d2 = {1:"foo"}
+d2["recurse"] = d2
+print(d1 == d1)	// prints 1, as they're the same object
+print(d1 == d2)	// prints 1, because they are equivalent
