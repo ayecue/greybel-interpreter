@@ -1,6 +1,7 @@
 import { CustomValue } from './base';
 
 export class CustomNil extends CustomValue {
+  readonly id: string = 'null';
   value: null = null;
 
   getCustomType(): string {

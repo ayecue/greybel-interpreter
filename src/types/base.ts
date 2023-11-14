@@ -1,13 +1,7 @@
 import { ContextTypeIntrinsics } from '../context/types';
-import { uuid } from '../utils/uuid';
 
 export abstract class CustomValue {
-  readonly id: string;
-
-  constructor() {
-    this.id = uuid();
-  }
-
+  abstract readonly id: string;
   abstract value: any;
   abstract getCustomType(): string;
   abstract toNumber(): number;

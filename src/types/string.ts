@@ -46,10 +46,12 @@ export class CustomString extends CustomValueWithIntrinsics {
     return n;
   }
 
+  readonly id: string;
   readonly value: string;
 
   constructor(value: string) {
     super();
+    this.id = `s:${value}`;
     this.value = value;
   }
 
