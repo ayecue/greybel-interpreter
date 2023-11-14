@@ -22,9 +22,31 @@ export interface ProcessorHandler {
   [op: string]: (a: CustomValue, b: CustomValue) => CustomValue;
 }
 
+const absClamp01 = (d: number): number => {
+  if (d < 0) d = -d;
+  if (d > 1) return 1;
+  return d;
+};
+
 export const GenericProcessorHandler: ProcessorHandler = {
-  [Operator.And]: (a, b) => new CustomBoolean(a.toTruthy() && b.toTruthy()),
-  [Operator.Or]: (a, b) => new CustomBoolean(a.toTruthy() || b.toTruthy())
+  [Operator.And]: (a, b) => {
+    const left = Number(
+      a instanceof CustomNumber ? a.toNumber() : a.toTruthy()
+    );
+    const right = Number(
+      b instanceof CustomNumber ? b.toNumber() : b.toTruthy()
+    );
+    return new CustomNumber(absClamp01(left * right));
+  },
+  [Operator.Or]: (a, b) => {
+    const left = Number(
+      a instanceof CustomNumber ? a.toNumber() : a.toTruthy()
+    );
+    const right = Number(
+      b instanceof CustomNumber ? b.toNumber() : b.toTruthy()
+    );
+    return new CustomNumber(absClamp01(left + right - left * right));
+  }
 };
 
 export const NumberProcessorHandler: ProcessorHandler = {
@@ -393,6 +415,9 @@ export class Evaluate extends Operation {
     if (expr.op === Operator.And && !left.toTruthy()) {
       return new CustomBoolean(false);
     } else if (expr.op === Operator.Or && left.toTruthy()) {
+      if (left instanceof CustomNumber) {
+        return new CustomNumber(absClamp01(left.value));
+      }
       return new CustomBoolean(true);
     }
 
