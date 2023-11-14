@@ -1,49 +1,45 @@
 import { CustomValue } from '../types/base';
-import { CustomList } from '../types/list';
-import { CustomMap } from '../types/map';
 import { CustomObject } from '../types/with-intrinsics';
 
-function equalInner(
-  a: CustomValue,
-  b: CustomValue,
-  maxDepth: number,
-  depth: number = 0
-) {
-  if (maxDepth <= depth) return a === b;
-  if (a.value === b.value) return true;
+export function deepEqual(a: CustomValue, b: CustomValue): boolean {
+  const stack: [CustomValue, CustomValue][] = [];
+  const visited: Set<string> = new Set();
 
-  if (a && b && a instanceof CustomObject && b instanceof CustomObject) {
-    if (a.constructor !== b.constructor) return false;
+  stack.push([a, b]);
 
-    if (a instanceof CustomList) {
-      const length = a.value.length;
-      if (length !== b.value.length) return false;
-      for (let i = length; i-- !== 0; )
-        if (!equalInner(a.value[i], b.value[i], maxDepth, depth + 1))
-          return false;
-      return true;
-    }
+  while (stack.length > 0) {
+    const [a, b] = stack.pop();
 
-    if (a instanceof CustomMap) {
-      if (a.value.size !== b.value.size) return false;
-      for (const i of a.value.keys()) {
-        if (
-          !b.value.has(i) ||
-          !equalInner(a.value.get(i), b.value.get(i), maxDepth, depth + 1)
-        ) {
-          return false;
+    visited.add(`${a.id}:${b.id}`);
+
+    if (a instanceof CustomObject) {
+      if (!(b instanceof CustomObject)) return false;
+
+      if (Array.isArray(a.value)) {
+        if (!Array.isArray(b.value)) return false;
+        if (a.value.length !== b.value.length) return false;
+        for (let index = 0; index < a.value.length; index++) {
+          const valueA = a.value[index];
+          const valueB = b.value[index];
+          if (!visited.has(`${valueA.id}:${valueB.id}`)) {
+            stack.push([valueA, valueB]);
+          }
+        }
+      } else {
+        if (a.value.size !== b.value.size) return false;
+        for (const key of a.value.keys()) {
+          if (!b.value.has(key)) return false;
+          const valueA = a.value.get(key);
+          const valueB = b.value.get(key);
+          if (!visited.has(`${valueA.id}:${valueB.id}`)) {
+            stack.push([valueA, valueB]);
+          }
         }
       }
-      return true;
+    } else if (a.value !== b.value) {
+      return false;
     }
-
-    return false;
   }
 
-  // true if both NaN, false otherwise
-  return Number.isNaN(a.value) && Number.isNaN(b.value);
-}
-
-export function deepEqual(a: any, b: any, maxDepth: number = 10) {
-  return equalInner(a, b, maxDepth);
+  return true;
 }

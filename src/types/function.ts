@@ -5,6 +5,7 @@ import { Operation } from '../operations/operation';
 import { Reference } from '../operations/reference';
 import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
+import { uuid } from '../utils/uuid';
 import { CustomValue } from './base';
 import { DefaultType } from './default';
 import { CustomNil } from './nil';
@@ -57,6 +58,7 @@ export class CustomFunction extends CustomValue {
   readonly value: Callback;
   readonly argumentDefs: Array<Argument>;
   readonly assignOuter: boolean;
+  readonly id: string;
 
   private _nextContext: CustomValue;
 
@@ -83,6 +85,7 @@ export class CustomFunction extends CustomValue {
     assignOuter: boolean = false
   ) {
     super();
+    this.id = uuid();
     this.scope = scope;
     this.name = name;
     this.value = callback;

@@ -1,6 +1,7 @@
 import { ContextTypeIntrinsics } from '../context/types';
 
 export abstract class CustomValue {
+  abstract readonly id: string;
   abstract value: any;
   abstract getCustomType(): string;
   abstract toNumber(): number;

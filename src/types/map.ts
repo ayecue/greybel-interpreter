@@ -2,6 +2,7 @@ import { ContextTypeIntrinsics } from '../context/types';
 import { getHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { Path } from '../utils/path';
+import { uuid } from '../utils/uuid';
 import { CustomValue } from './base';
 import { Void } from './nil';
 import { CustomString } from './string';
@@ -54,6 +55,7 @@ export class CustomMapIterator implements Iterator<CustomValue> {
 export class CustomMap extends CustomObject {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
+  readonly id;
   value: ObjectValue;
   private isInstance: boolean = false;
 
@@ -65,6 +67,7 @@ export class CustomMap extends CustomObject {
 
   constructor(value?: ObjectValue) {
     super();
+    this.id = uuid();
     this.value = new ObjectValue(value);
   }
 
@@ -116,6 +119,10 @@ export class CustomMap extends CustomObject {
 
   toTruthy(): boolean {
     return this.value.size > 0;
+  }
+
+  getSize(): number {
+    return this.value.size;
   }
 
   instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
@@ -301,7 +308,7 @@ export class CustomMap extends CustomObject {
 
   hash(recursionDepth = 0): number {
     let result = getHashCode(this.value.size);
-    if (recursionDepth > 16) return result;
+    if (recursionDepth > 4) return result;
     this.value.forEach((value: CustomValue, key: CustomValue) => {
       result ^= key.hash(recursionDepth + 1);
       result ^= value.hash(recursionDepth + 1);

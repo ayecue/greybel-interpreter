@@ -620,6 +620,10 @@ exports[`interpreter default scripts override.src 6`] = `"\\"number\\""`;
 
 exports[`interpreter default scripts print.src 1`] = `"123"`;
 
+exports[`interpreter default scripts recursive.src 1`] = `"1"`;
+
+exports[`interpreter default scripts recursive.src 2`] = `"1"`;
+
 exports[`interpreter default scripts return-in-loop.src 1`] = `"1"`;
 
 exports[`interpreter default scripts return-in-while.src 1`] = `"\\"iteration\\""`;

@@ -21,10 +21,13 @@ export class CustomNumberIterator implements Iterator<CustomValue> {
 
 export class CustomNumber extends CustomValueWithIntrinsics {
   static readonly intrinsics: ObjectValue = new ObjectValue();
+
+  readonly id: string;
   readonly value: number;
 
   constructor(value: number) {
     super();
+    this.id = `n:${value.toString()}`;
     this.value = value;
   }
 
