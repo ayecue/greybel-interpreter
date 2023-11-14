@@ -121,6 +121,10 @@ export class CustomMap extends CustomObject {
     return this.value.size > 0;
   }
 
+  getSize(): number {
+    return this.value.size;
+  }
+
   instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
     if (v instanceof CustomMap) {
       let current: CustomMap | null = this;

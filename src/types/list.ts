@@ -85,6 +85,10 @@ export class CustomList extends CustomObject {
     return this.value.length > 0;
   }
 
+  getSize(): number {
+    return this.value.length;
+  }
+
   instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
     return v.value === (typeIntrinsics.list ?? CustomList.intrinsics);
   }

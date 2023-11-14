@@ -42,4 +42,6 @@ export abstract class CustomValueWithIntrinsics extends CustomValue {
   }
 }
 
-export abstract class CustomObject extends CustomValueWithIntrinsics {}
+export abstract class CustomObject extends CustomValueWithIntrinsics {
+  abstract getSize(): number;
+}
