@@ -12,7 +12,6 @@ import {
   CustomValueWithIntrinsicsResult
 } from './with-intrinsics';
 
-export const CLASS_ID_PROPERTY = new CustomString('classID');
 export const ISA_PROPERTY = new CustomString('__isa');
 export const CUSTOM_MAP_MAX_DEPTH = 2;
 export const CUSTOM_MAP_MAX_DEPTH_VALUE = '{...}';
@@ -72,10 +71,6 @@ export class CustomMap extends CustomObject {
   }
 
   getCustomType(): string {
-    if (this.value.has(CLASS_ID_PROPERTY)) {
-      return this.value.get(CLASS_ID_PROPERTY).toString();
-    }
-
     return 'map';
   }
 
