@@ -56,7 +56,7 @@ export class CustomMap extends CustomObject {
 
   readonly id;
   value: ObjectValue;
-  private isInstance: boolean = false;
+  isInstance: boolean = false;
 
   static createWithInitialValue(value: ObjectValue): CustomMap {
     const map = new CustomMap();
