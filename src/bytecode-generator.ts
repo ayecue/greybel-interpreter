@@ -113,11 +113,11 @@ export class BytecodeGenerator {
     };
   }
 
-  private getCurrentPointer() {
+  protected getCurrentPointer() {
     return this.context.peek().code.length - 1;
   }
 
-  private getSourceLocation(node: ASTBase): SourceLocation {
+  protected getSourceLocation(node: ASTBase): SourceLocation {
     const target = this.target.peek();
     return {
       path: target,
@@ -126,7 +126,7 @@ export class BytecodeGenerator {
     };
   }
 
-  private getInternalLocation(): SourceLocation {
+  protected getInternalLocation(): SourceLocation {
     return {
       path: 'internal',
       start: { line: 0, character: 0 },
@@ -134,36 +134,36 @@ export class BytecodeGenerator {
     };
   }
 
-  private pushContext() {
+  protected pushContext() {
     this.context.push({
       code: [],
       jumpPoints: []
     });
   }
 
-  private popContext() {
+  protected popContext() {
     return this.context.pop();
   }
 
-  private getLastJumpoint() {
+  protected getLastJumpoint() {
     const jumpPoints = this.context.peek().jumpPoints;
     return jumpPoints[jumpPoints.length - 1];
   }
 
-  private pushJumppoint(start: Instruction, end: Instruction) {
+  protected pushJumppoint(start: Instruction, end: Instruction) {
     this.context.peek().jumpPoints.push([start, end]);
   }
 
-  private popJumppoint() {
+  protected popJumppoint() {
     return this.context.peek().jumpPoints.pop();
   }
 
-  private push(item: Instruction) {
+  protected push(item: Instruction) {
     item.ip = this.getCurrentPointer() + 1;
     this.context.peek().code.push(item);
   }
 
-  private async processNode(node: ASTBase): Promise<void> {
+  protected async processNode(node: ASTBase): Promise<void> {
     if (this.debugMode) {
       this.push({
         op: OpCode.BREAKPOINT,
@@ -320,7 +320,7 @@ export class BytecodeGenerator {
     }
   }
 
-  private async processSubNode(node: ASTBase, ignoreOuter: boolean = true): Promise<void> {
+  protected async processSubNode(node: ASTBase, ignoreOuter: boolean = true): Promise<void> {
     switch (node.type) {
       case ASTType.MemberExpression:
         await this.processMemberExpression(node as ASTMemberExpression);
@@ -391,7 +391,7 @@ export class BytecodeGenerator {
     }
   }
 
-  private async processMemberExpression(node: ASTMemberExpression, isInvoke: boolean = true): Promise<void> {
+  protected async processMemberExpression(node: ASTMemberExpression, isInvoke: boolean = true): Promise<void> {
     if (node.base instanceof ASTIdentifier && node.base.name === 'super') {
       this.push({
         op: OpCode.PUSH,
@@ -413,7 +413,7 @@ export class BytecodeGenerator {
     }
   }
 
-  private async processIndexExpression(node: ASTIndexExpression, isInvoke: boolean = true): Promise<void> {
+  protected async processIndexExpression(node: ASTIndexExpression, isInvoke: boolean = true): Promise<void> {
     if (node.base instanceof ASTIdentifier && node.base.name === 'super') {
       await this.processSubNode(node.index);
       this.push({
@@ -432,7 +432,7 @@ export class BytecodeGenerator {
     }
   }
 
-  private async processSliceExpression(node: ASTSliceExpression): Promise<void> {
+  protected async processSliceExpression(node: ASTSliceExpression): Promise<void> {
     await this.processSubNode(node.base);
     await this.processSubNode(node.left);
     await this.processSubNode(node.right);
@@ -442,7 +442,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processIdentifier(node: ASTIdentifier, isFirst: boolean = true, isInvoke: boolean = true): Promise<void> {
+  protected async processIdentifier(node: ASTIdentifier, isFirst: boolean = true, isInvoke: boolean = true): Promise<void> {
     if (isFirst) {
       switch (node.name) {
         case 'self': {
@@ -503,7 +503,7 @@ export class BytecodeGenerator {
     }
   }
 
-  private async processAssignmentStatement(node: ASTAssignmentStatement): Promise<void> {
+  protected async processAssignmentStatement(node: ASTAssignmentStatement): Promise<void> {
     let variable = node.variable;
 
     if (variable instanceof ASTUnaryExpression) {
@@ -547,7 +547,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processLiteral(node: ASTLiteral): Promise<void> {
+  protected async processLiteral(node: ASTLiteral): Promise<void> {
     const value = generateCustomValueFromASTLiteral(node);
 
     this.push({
@@ -557,7 +557,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processEvaluationExpression(node: ASTEvaluationExpression): Promise<void> {
+  protected async processEvaluationExpression(node: ASTEvaluationExpression): Promise<void> {
     await this.processSubNode(node.left);
     await this.processSubNode(node.right);
 
@@ -707,7 +707,7 @@ export class BytecodeGenerator {
     }
   }
 
-  private async processReturn(node: ASTReturnStatement): Promise<void> {
+  protected async processReturn(node: ASTReturnStatement): Promise<void> {
     if (node.argument) {
       await this.processSubNode(node.argument);
     } else {
@@ -724,7 +724,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processBreak(node: ASTBase): Promise<void> {
+  protected async processBreak(node: ASTBase): Promise<void> {
     const [_, end] = this.getLastJumpoint();
 
     this.push({
@@ -734,7 +734,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processContinue(node: ASTBase): Promise<void> {
+  protected async processContinue(node: ASTBase): Promise<void> {
     const [start] = this.getLastJumpoint();
 
     this.push({
@@ -744,7 +744,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processMapConstructorExpression(node: ASTMapConstructorExpression): Promise<void> {
+  protected async processMapConstructorExpression(node: ASTMapConstructorExpression): Promise<void> {
     for (const field of node.fields) {
       await this.processSubNode(field.key);
       await this.processSubNode(field.value);
@@ -757,7 +757,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processListConstructorExpression(node: ASTListConstructorExpression): Promise<void> {
+  protected async processListConstructorExpression(node: ASTListConstructorExpression): Promise<void> {
     for (const field of node.fields) {
       await this.processSubNode(field.value);
     }
@@ -769,7 +769,7 @@ export class BytecodeGenerator {
     });
   }
 
-  private async processFunctionDeclaration(node: ASTFunctionStatement, ignoreOuter: boolean = false): Promise<void> {
+  protected async processFunctionDeclaration(node: ASTFunctionStatement, ignoreOuter: boolean = false): Promise<void> {
     const args:FunctionDefinitionInstructionArgument[] = [];
     
     for (const item of node.parameters) {
@@ -812,7 +812,7 @@ export class BytecodeGenerator {
     });
   }
 
-  async processWhileStatement(node: ASTWhileStatement): Promise<void> {
+  protected async processWhileStatement(node: ASTWhileStatement): Promise<void> {
     const start = {
       op: OpCode.NOOP,
       source: this.getSourceLocation(node.condition)
@@ -846,7 +846,7 @@ export class BytecodeGenerator {
     this.push(end);
   }
 
-  async processUnaryExpression(node: ASTUnaryExpression): Promise<void> {
+  protected async processUnaryExpression(node: ASTUnaryExpression): Promise<void> {
     const arg = node.argument;
 
     switch (node.operator) {
@@ -888,7 +888,7 @@ export class BytecodeGenerator {
     }
   }
 
-  async processCallExpression(node: ASTCallExpression) {
+  protected async processCallExpression(node: ASTCallExpression) {
     const pushArgs = async () => {
       for (const arg of node.arguments) {
         await this.processSubNode(arg);
@@ -961,7 +961,7 @@ export class BytecodeGenerator {
     }
   }
 
-  async processIfStatement(node: ASTIfStatement) {
+  protected async processIfStatement(node: ASTIfStatement) {
     const end = {
       op: OpCode.NOOP,
       source: this.getSourceLocation(node)
@@ -1001,7 +1001,7 @@ export class BytecodeGenerator {
     this.push(end);
   }
 
-  async processForGenericStatement(node: ASTForGenericStatement) {
+  protected async processForGenericStatement(node: ASTForGenericStatement) {
     const variable = node.variable as ASTIdentifier;
     const idxVariable =  new CustomString(`__${variable.name}_idx`);
     const start = {
@@ -1058,7 +1058,7 @@ export class BytecodeGenerator {
     this.push(end);
   }
 
-  async processEnvarExpression(node: ASTFeatureEnvarExpression) {
+  protected async processEnvarExpression(node: ASTFeatureEnvarExpression) {
     this.push({
       op: OpCode.PUSH,
       source: this.getSourceLocation(node),
@@ -1070,7 +1070,7 @@ export class BytecodeGenerator {
     });
   }
 
-  async createImport(node: ASTFeatureImportExpression, path: string, code: string) {
+  protected async createImport(node: ASTFeatureImportExpression, path: string, code: string) {
     try {
       this.target.push(path);
       this.pushContext();
@@ -1141,7 +1141,7 @@ export class BytecodeGenerator {
     }
   }
 
-  async processImportExpression(node: ASTFeatureImportExpression) {
+  protected async processImportExpression(node: ASTFeatureImportExpression) {
     const currentTarget = this.target.peek();
     const importTarget = await this.handler.resourceHandler.getTargetRelativeTo(
       currentTarget,
@@ -1190,7 +1190,7 @@ export class BytecodeGenerator {
     });
   }
 
-  async processIncludeExpression(node: ASTFeatureIncludeExpression) {
+  protected async processIncludeExpression(node: ASTFeatureIncludeExpression) {
     const currentTarget = this.target.peek();
     const importTarget = await this.handler.resourceHandler.getTargetRelativeTo(
       currentTarget,
@@ -1238,7 +1238,7 @@ export class BytecodeGenerator {
     }
   }
 
-  async processDebuggerExpression(node: ASTBase) {
+  protected async processDebuggerExpression(node: ASTBase) {
     this.push({
       op: OpCode.BREAKPOINT_ENABLE,
       source: this.getSourceLocation(node)

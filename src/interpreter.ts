@@ -151,7 +151,7 @@ export class Interpreter extends EventEmitter {
     throw new Error('Unable to inject into last context.');
   }
 
-  private initVM(result: BytecodeCompileResult) {
+  protected initVM(result: BytecodeCompileResult) {
     const apiContext =  new OperationContext({
       isProtected: true,
       code: [],
@@ -201,7 +201,7 @@ export class Interpreter extends EventEmitter {
     this.globalContext = globalContext;
   }
 
-  private async start(): Promise<Interpreter> {
+  protected async start(): Promise<Interpreter> {
     try {
       const process = this.vm.exec();
       this.emit('start', this);
