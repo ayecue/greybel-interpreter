@@ -75,11 +75,11 @@ export interface BytecodeConverterOptions {
 }
 
 export class BytecodeGenerator {
-  private handler: HandlerContainer;
-  private context: Stack<BytecodeGeneratorContext>;
-  private target: Stack<string>;
-  private debugMode: boolean;
-  private imports: Map<string, Instruction[]>;
+  protected handler: HandlerContainer;
+  protected context: Stack<BytecodeGeneratorContext>;
+  protected target: Stack<string>;
+  protected debugMode: boolean;
+  protected imports: Map<string, Instruction[]>;
 
   constructor(options: BytecodeConverterOptions) {
     this.target = new Stack(options.target);
