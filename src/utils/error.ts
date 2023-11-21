@@ -1,31 +1,29 @@
 import { ASTRange } from 'miniscript-core';
 
-import { Operation } from '../operations/operation';
+import { Instruction } from '../byte-compiler/instruction';
 
-interface RuntimeContext {
-  stackTrace?: Operation[];
+interface RuntimeVM {
+  getStacktrace?: () => Instruction[];
   target: string;
 }
 
 export class RuntimeError extends Error {
   target: string;
-  stackTrace: Operation[];
+  stackTrace: Instruction[];
   source?: Error;
 
-  constructor(message: string, context?: RuntimeContext, source?: Error) {
+  constructor(message: string, vm?: RuntimeVM, source?: Error) {
     super(message);
-    this.target = context?.target;
-    this.stackTrace = context?.stackTrace ?? [];
+    this.target = vm?.target;
+    this.stackTrace = vm?.getStacktrace() ?? [];
     this.stack = this.createTrace();
     this.source = source;
   }
 
   private createTrace(): string {
     return this.stackTrace
-      .map((op: Operation) => {
-        return `at ${op.target}:${op.item?.start.line ?? 0}:${
-          op.item?.start.character ?? 0
-        }`;
+      .map((op: Instruction) => {
+        return `at ${op.source ?? 'unknown'}`;
       })
       .join('\n');
   }

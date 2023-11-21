@@ -240,8 +240,6 @@ exports[`interpreter default scripts if-shorthand.src 9`] = `"\\"was\\""`;
 
 exports[`interpreter default scripts if-shorthand.src 10`] = `"\\"foo\\""`;
 
-exports[`interpreter default scripts if-shorthand.src 11`] = `"null"`;
-
 exports[`interpreter default scripts implicit-properties.src 1`] = `"0"`;
 
 exports[`interpreter default scripts implicit-properties.src 2`] = `"0"`;
@@ -404,9 +402,9 @@ exports[`interpreter default scripts logical-expressions.src 9`] = `"1"`;
 
 exports[`interpreter default scripts logical-expressions.src 10`] = `"0.5"`;
 
-exports[`interpreter default scripts logical-expressions.src 11`] = `"0.6"`;
+exports[`interpreter default scripts logical-expressions.src 11`] = `"0.72"`;
 
-exports[`interpreter default scripts logical-expressions.src 12`] = `"0.5"`;
+exports[`interpreter default scripts logical-expressions.src 12`] = `"1"`;
 
 exports[`interpreter default scripts logical-expressions.src 13`] = `"0"`;
 
@@ -675,8 +673,6 @@ exports[`interpreter default scripts self-ms-behaviour.src 9`] = `"\\"bar\\""`;
 exports[`interpreter default scripts self-ms-behaviour.src 10`] = `"\\"show me\\""`;
 
 exports[`interpreter default scripts simple-object.src 1`] = `"\\"was\\""`;
-
-exports[`interpreter default scripts simple-object.src 2`] = `"null"`;
 
 exports[`interpreter default scripts slice.src 1`] = `"[\\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"blahh\\", \\"gad\\"]"`;
 

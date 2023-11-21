@@ -1,17 +1,11 @@
 import { EventEmitter } from 'events';
-import { Parser } from 'greybel-core';
 
 import {
   ContextOptions,
-  ContextState,
   ContextType,
-  Debugger,
   OperationContext
 } from './context';
-import { CPS, CPSContext } from './cps';
 import { HandlerContainer } from './handler-container';
-import { Noop } from './operations/noop';
-import { Operation } from './operations/operation';
 import { CustomValue } from './types/base';
 import { DefaultType } from './types/default';
 import { CustomFunction } from './types/function';
@@ -22,6 +16,9 @@ import { CustomString } from './types/string';
 import { PrepareError, RuntimeError } from './utils/error';
 import { ObjectValue } from './utils/object-value';
 import { CustomBoolean } from './types/boolean';
+import { Debugger, VM } from './vm';
+import { Instruction } from './byte-compiler/instruction';
+import { BytecodeCompileResult, BytecodeGenerator } from './bytecode-generator';
 
 export const PARAMS_PROPERTY = new CustomString('params');
 export const IS_GREYBEL_PROPERTY = new CustomString('IS_GREYBEL');
@@ -32,6 +29,7 @@ export interface InterpreterOptions {
   params?: Array<string>;
   handler?: HandlerContainer;
   debugger?: Debugger;
+  debugMode?: boolean;
   environmentVariables?: Map<string, string>;
 }
 
@@ -47,20 +45,23 @@ export class Interpreter extends EventEmitter {
   environmentVariables: Map<string, string>;
   handler: HandlerContainer;
   debugger: Debugger;
+  debugMode: boolean;
   apiContext: OperationContext;
   globalContext: OperationContext;
-  cps: CPS;
+  vm: VM;
 
-  constructor(options: InterpreterOptions) {
+  constructor(options: InterpreterOptions = {}) {
     super();
 
     this.handler = options.handler ?? new HandlerContainer();
     this.debugger = options.debugger ?? new Debugger();
 
+    this.vm = null;
     this.api = options.api ?? new ObjectValue();
     this.params = options.params ?? [];
     this.environmentVariables = options.environmentVariables ?? new Map();
 
+    this.debugMode = options.debugMode ?? false;
     this.apiContext = null;
     this.globalContext = null;
 
@@ -68,7 +69,7 @@ export class Interpreter extends EventEmitter {
   }
 
   setTarget(target: string): Interpreter {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
+    if (this.vm !== null && this.vm.isPending()) {
       throw new Error('You cannot set a target while a process is running.');
     }
 
@@ -78,7 +79,7 @@ export class Interpreter extends EventEmitter {
   }
 
   setDebugger(dbgr: Debugger): Interpreter {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
+    if (this.vm !== null && this.vm.isPending()) {
       throw new Error('You cannot set a debugger while a process is running.');
     }
 
@@ -88,8 +89,8 @@ export class Interpreter extends EventEmitter {
   }
 
   setApi(newApi: ObjectValue): Interpreter {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
-      throw new Error('You cannot set an api object while a process is running.');
+    if (this.vm !== null && this.vm.isPending()) {
+      throw new Error('You cannot set a api while a process is running.');
     }
 
     this.api = newApi;
@@ -98,7 +99,7 @@ export class Interpreter extends EventEmitter {
   }
 
   setHandler(handler: HandlerContainer): Interpreter {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
+    if (this.vm !== null && this.vm.isPending()) {
       throw new Error('You cannot set a handler while a process is running.');
     }
 
@@ -107,47 +108,33 @@ export class Interpreter extends EventEmitter {
     return this;
   }
 
-  parse(code: string) {
-    const parser = new Parser(code);
-    return parser.parseChunk();
-  }
-
-  prepare(code: string): Promise<Operation> {
-    try {
-      const chunk = this.parse(code);
-      return this.cps.visit(chunk);
-    } catch (err: any) {
-      if (err instanceof PrepareError) {
-        this.handler.errorHandler.raise(err);
-      } else {
-        this.handler.errorHandler.raise(
-          new PrepareError(err.message, {
-            range: err.range,
-            target: this.target
-          })
-        );
-      }
-    }
-
-    return Promise.resolve(new Noop(null));
-  }
-
   async inject(code: string, context?: OperationContext): Promise<Interpreter> {
-    try {
-      const top = await this.prepare(code);
-      const injectionCtx = (context ?? this.globalContext).fork({
-        type: ContextType.Call,
-        state: ContextState.Temporary,
-        injected: true
-      });
+    const bytecodeGenerator = new BytecodeGenerator({
+      target: 'injected',
+      handler: this.handler
+    });
+    const result = await bytecodeGenerator.compile(code);
+    const vm = new VM({
+      target: this.target,
+      debugger: this.debugger,
+      handler: this.handler,
+      environmentVariables: this.environmentVariables,
+      contextTypeIntrinsics: this.vm.contextTypeIntrinsics,
+      globals: (context ?? this.globalContext).fork({
+        code: result.code,
+        type: ContextType.Injected
+      }),
+      imports: result.imports
+    });
 
-      await top.handle(injectionCtx);
+    try {
+      await vm.exec();
     } catch (err: any) {
       if (err instanceof PrepareError || err instanceof RuntimeError) {
         this.handler.errorHandler.raise(err);
       } else {
         this.handler.errorHandler.raise(
-          new RuntimeError(err.message, this.apiContext.getLastActive(), err)
+          new RuntimeError(err.message, vm, err)
         );
       }
     }
@@ -156,29 +143,27 @@ export class Interpreter extends EventEmitter {
   }
 
   async injectInLastContext(code: string): Promise<Interpreter> {
-    const last = this.apiContext.getLastActive();
-
-    if (this.apiContext !== null && this.apiContext.isPending()) {
+    if (this.vm !== null && this.vm.isPending()) {
+      const last = this.vm.getFrame();
       return this.inject(code, last);
     }
 
     throw new Error('Unable to inject into last context.');
   }
 
-  createCPS() {
-    const cpsCtx = new CPSContext(this.target, this.handler);
-    return new CPS(cpsCtx);
-  }
-
-  private initScopes(ctxOptions: ContextOptions) {
-    this.cps = this.createCPS();
-
+  private initVM(result: BytecodeCompileResult) {
     const apiContext =  new OperationContext({
-      target: this.target,
       isProtected: true,
+      code: [],
+    });
+    const globalContext = apiContext.fork({
+      type: ContextType.Global,
+      code: result.code
+    });
+    const vm = new VM({
+      target: this.target,
       debugger: this.debugger,
       handler: this.handler,
-      cps: this.cps,
       environmentVariables: this.environmentVariables,
       contextTypeIntrinsics: {
         string: CustomString.getIntrinsics().fork(),
@@ -187,13 +172,15 @@ export class Interpreter extends EventEmitter {
         map: CustomMap.getIntrinsics().fork(),
         function: CustomFunction.intrinsics.fork()
       },
-      ...ctxOptions
+      globals: globalContext,
+      imports: result.imports
     });
-    const stringIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.string);
-    const numberIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.number);
-    const listIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.list);
-    const mapIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.map);
-    const funcRefIntrinsics = CustomMap.createWithInitialValue(apiContext.contextTypeIntrinsics.function);
+
+    const stringIntrinsics = CustomMap.createWithInitialValue(vm.contextTypeIntrinsics.string);
+    const numberIntrinsics = CustomMap.createWithInitialValue(vm.contextTypeIntrinsics.number);
+    const listIntrinsics = CustomMap.createWithInitialValue(vm.contextTypeIntrinsics.list);
+    const mapIntrinsics = CustomMap.createWithInitialValue(vm.contextTypeIntrinsics.map);
+    const funcRefIntrinsics = CustomMap.createWithInitialValue(vm.contextTypeIntrinsics.function);
 
     apiContext.scope.set(new CustomString('string'), stringIntrinsics);
     apiContext.scope.set(new CustomString('number'), numberIntrinsics);
@@ -202,10 +189,6 @@ export class Interpreter extends EventEmitter {
     apiContext.scope.set(new CustomString('funcRef'), funcRefIntrinsics);
     apiContext.scope.extend(this.api);
 
-    const globalContext = apiContext.fork({
-      type: ContextType.Global,
-      state: ContextState.Default
-    });
     const newParams = new CustomList(
       this.params.map((item) => new CustomString(item))
     );
@@ -213,15 +196,14 @@ export class Interpreter extends EventEmitter {
     globalContext.scope.set(IS_GREYBEL_PROPERTY, new CustomBoolean(true));
     globalContext.scope.set(PARAMS_PROPERTY, newParams);
 
+    this.vm = vm;
     this.apiContext = apiContext;
     this.globalContext = globalContext;
   }
 
-  private async start(top: Operation): Promise<Interpreter> {
+  private async start(): Promise<Interpreter> {
     try {
-      this.apiContext.setPending(true);
-
-      const process = top.handle(this.globalContext);
+      const process = this.vm.exec();
       this.emit('start', this);
       await process;
     } catch (err: any) {
@@ -229,11 +211,10 @@ export class Interpreter extends EventEmitter {
         this.handler.errorHandler.raise(err);
       } else {
         this.handler.errorHandler.raise(
-          new RuntimeError(err.message, this.apiContext.getLastActive(), err)
+          new RuntimeError(err.message, this.vm, err)
         );
       }
     } finally {
-      this.apiContext.setPending(false);
       this.emit('exit', this);
     }
 
@@ -241,48 +222,38 @@ export class Interpreter extends EventEmitter {
   }
 
   async run({
-    customCode,
-    ctxOptions
+    customCode
   }: InterpreterRunOptions = {}): Promise<Interpreter> {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
-      throw new Error('Process already running.');
-    }
-
-    this.initScopes(ctxOptions);
-
     const code =
       customCode ?? (await this.handler.resourceHandler.get(this.target));
-    const top = await this.prepare(code);
+    const bytecodeConverter = new BytecodeGenerator({
+      target: this.target,
+      handler: this.handler,
+      debugMode: this.debugMode
+    });
+    const bytecode = await bytecodeConverter.compile(code);
 
-    return this.start(top);
+    this.initVM(bytecode);
+
+    return this.start();
   }
 
   resume(): Interpreter {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
+    if (this.vm !== null && this.vm.isPending()) {
       this.debugger.setBreakpoint(false);
     }
     return this;
   }
 
   pause(): Interpreter {
-    if (this.apiContext !== null && this.apiContext.isPending()) {
+    if (this.vm !== null && this.vm.isPending()) {
       this.debugger.setBreakpoint(true);
     }
     return this;
   }
 
-  exit(): Promise<OperationContext> {
-    try {
-      return this.apiContext.exit();
-    } catch (err: any) {
-      if (err instanceof PrepareError || err instanceof RuntimeError) {
-        this.handler.errorHandler.raise(err);
-      } else {
-        this.handler.errorHandler.raise(
-          new RuntimeError(err.message, this.apiContext.getLastActive(), err)
-        );
-      }
-    }
+  exit(): void {
+    this.vm.exit();
   }
 
   setGlobalVariable(path: string, value: CustomValue): Interpreter {
@@ -294,7 +265,7 @@ export class Interpreter extends EventEmitter {
 
   getGlobalVariable(path: string): CustomValue {
     if (this.globalContext != null) {
-      this.globalContext.get(new CustomString(path));
+      return this.globalContext.get(new CustomString(path), this.vm.contextTypeIntrinsics);
     }
     return DefaultType.Void;
   }

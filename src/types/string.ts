@@ -1,7 +1,6 @@
 import { ContextTypeIntrinsics } from '../context/types';
 import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
-import { Path } from '../utils/path';
 import { CustomValue } from './base';
 import { CustomNumber } from './number';
 import {
@@ -112,14 +111,7 @@ export class CustomString extends CustomValueWithIntrinsics {
     return CustomString.getCharIndex(this, index);
   }
 
-  has(path: Path<CustomValue> | CustomValue): boolean {
-    if (path instanceof CustomValue) {
-      return this.has(new Path<CustomValue>([path]));
-    }
-
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
+  has(current: CustomValue): boolean {
     if (current instanceof CustomNumber) {
       const index = current.toInt();
       return !!this.value[index];
@@ -128,21 +120,14 @@ export class CustomString extends CustomValueWithIntrinsics {
     return false;
   }
 
-  set(_path: Path<CustomValue> | CustomValue, _newValue: CustomValue) {
+  set(_path: CustomValue, _newValue: CustomValue) {
     throw new Error('Mutable operations are not allowed on a string.');
   }
 
   get(
-    path: Path<CustomValue> | CustomValue,
+    current: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValue {
-    if (path instanceof CustomValue) {
-      return this.get(new Path<CustomValue>([path]), typeIntrinsics);
-    }
-
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
     if (current instanceof CustomNumber) {
       const currentIndex = this.getCharIndex(current.toInt());
       const segment = this.value[currentIndex];
@@ -158,19 +143,19 @@ export class CustomString extends CustomValueWithIntrinsics {
 
     const intrinsics = typeIntrinsics.string ?? CustomString.getIntrinsics();
 
-    if (traversalPath.count() === 0 && intrinsics.has(current)) {
+    if (intrinsics.has(current)) {
       return intrinsics.get(current);
     }
 
-    throw new Error(`Unknown path in string ${path.toString()}.`);
+    throw new Error(`Unknown path in string ${current.toString()}.`);
   }
 
   getWithOrigin(
-    path: Path<CustomValue> | CustomValue,
+    current: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult {
     return {
-      value: this.get(path, typeIntrinsics),
+      value: this.get(current, typeIntrinsics),
       origin: null
     };
   }

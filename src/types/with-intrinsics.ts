@@ -1,24 +1,24 @@
 import { ContextTypeIntrinsics } from '../context/types';
 import { ObjectValue } from '../utils/object-value';
-import { Path } from '../utils/path';
 import { CustomValue } from './base';
 import { CustomFunction } from './function';
 
 export type CustomValueWithIntrinsicsResult = {
   value: CustomValue;
+  /* eslint-disable no-use-before-define */
   origin: CustomValueWithIntrinsics;
 };
 
 export abstract class CustomValueWithIntrinsics extends CustomValue {
-  abstract has(path: Path<CustomValue> | CustomValue): boolean;
-  abstract set(path: Path<CustomValue> | CustomValue, value: CustomValue): void;
+  abstract has(path: CustomValue): boolean;
+  abstract set(path: CustomValue, value: CustomValue): void;
   abstract get(
-    path: Path<CustomValue> | CustomValue,
+    path: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValue;
 
   abstract getWithOrigin(
-    path: Path<CustomValue> | CustomValue,
+    path: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult;
 

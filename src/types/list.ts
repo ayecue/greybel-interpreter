@@ -1,13 +1,11 @@
 import { ContextTypeIntrinsics } from '../context/types';
 import { getHashCode, rotateBits } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
-import { Path } from '../utils/path';
 import { uuid } from '../utils/uuid';
 import { CustomValue } from './base';
 import { CustomNumber } from './number';
 import {
   CustomObject,
-  CustomValueWithIntrinsics,
   CustomValueWithIntrinsicsResult
 } from './with-intrinsics';
 
@@ -117,61 +115,22 @@ export class CustomList extends CustomObject {
     return CustomList.getItemIndex(this, index);
   }
 
-  has(path: Path<CustomValue> | CustomValue): boolean {
-    if (path instanceof CustomValue) {
-      return this.has(new Path<CustomValue>([path]));
-    }
-
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
+  has(current: CustomValue): boolean {
     if (current instanceof CustomNumber) {
       const currentIndex = this.getItemIndex(current.toInt());
       const sub = this.value[currentIndex];
 
       if (sub) {
-        if (
-          traversalPath.count() > 0 &&
-          sub instanceof CustomValueWithIntrinsics
-        ) {
-          return sub.has(traversalPath);
-        }
-
-        return traversalPath.count() === 0;
+        return true;
       }
     }
 
     return false;
   }
 
-  set(path: Path<CustomValue> | CustomValue, newValue: CustomValue): void {
-    if (path instanceof CustomValue) {
-      return this.set(new Path<CustomValue>([path]), newValue);
-    }
-
-    const traversalPath = path.clone();
-    const last = traversalPath.last();
-    const current = traversalPath.next();
-
+  set(current: CustomValue, newValue: CustomValue): void {
     if (current instanceof CustomNumber) {
-      const currentIndex = this.getItemIndex(current.toInt());
-      const sub = this.value[currentIndex];
-
-      if (sub) {
-        if (
-          traversalPath.count() > 0 &&
-          sub instanceof CustomValueWithIntrinsics
-        ) {
-          sub.set(traversalPath, newValue);
-          return;
-        }
-      }
-
-      throw new Error(`Cannot set path ${path.toString()}.`);
-    }
-
-    if (last instanceof CustomNumber) {
-      const lastIndex = this.getItemIndex(last.toInt());
+      const lastIndex = this.getItemIndex(current.toInt());
 
       if (lastIndex >= 0 && lastIndex < this.value.length) {
         this.value[lastIndex] = newValue;
@@ -185,29 +144,14 @@ export class CustomList extends CustomObject {
   }
 
   get(
-    path: Path<CustomValue> | CustomValue,
+    current: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValue {
-    if (path instanceof CustomValue) {
-      return this.get(new Path<CustomValue>([path]), typeIntrinsics);
-    }
-
-    const traversalPath = path.clone();
-    const current = traversalPath.next();
-
     if (current instanceof CustomNumber) {
       const currentIndex = this.getItemIndex(current.toInt());
 
       if (currentIndex >= 0 && currentIndex < this.value.length) {
-        const sub = this.value[currentIndex];
-
-        if (traversalPath.count() > 0) {
-          if (sub instanceof CustomValueWithIntrinsics) {
-            return sub.get(traversalPath, typeIntrinsics);
-          }
-        } else if (traversalPath.count() === 0) {
-          return sub;
-        }
+        return this.value[currentIndex];
       }
 
       throw new Error(`Index error (list index ${currentIndex} out of range).`);
@@ -215,19 +159,19 @@ export class CustomList extends CustomObject {
 
     const intrinsics = typeIntrinsics.list ?? CustomList.getIntrinsics();
 
-    if (path.count() === 1 && intrinsics.has(current)) {
+    if (intrinsics.has(current)) {
       return intrinsics.get(current);
     }
 
-    throw new Error(`Unknown path in list ${path.toString()}.`);
+    throw new Error(`Unknown path in list ${current.toString()}.`);
   }
 
   getWithOrigin(
-    path: Path<CustomValue> | CustomValue,
+    current: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult {
     return {
-      value: this.get(path, typeIntrinsics),
+      value: this.get(current, typeIntrinsics),
       origin: null
     };
   }
