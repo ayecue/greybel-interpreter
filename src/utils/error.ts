@@ -23,7 +23,7 @@ export class RuntimeError extends Error {
   private createTrace(): string {
     return this.stackTrace
       .map((op: Instruction) => {
-        return `at ${op.source ?? 'unknown'}`;
+        return `at ${op.source.path}:${op.source.start.line}:${op.source.start.character}`;
       })
       .join('\n');
   }
