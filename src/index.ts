@@ -32,6 +32,6 @@ export { PrepareError, RuntimeError } from './utils/error';
 export { ObjectValue } from './utils/object-value';
 export { deepEqual } from './utils/deep-equal';
 export { deepHash } from './utils/deep-hash';
-export { Debugger, VM } from './vm';
+export { Debugger, VM, VMOptions } from './vm';
 export { Instruction } from './byte-compiler/instruction';
-export { BytecodeGenerator } from './bytecode-generator';
+export { BytecodeGenerator, BytecodeCompileResult, BytecodeConverterOptions, BytecodeGeneratorContext } from './bytecode-generator';

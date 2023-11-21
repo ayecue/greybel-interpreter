@@ -1,62 +1,64 @@
+import { ASTPosition } from 'miniscript-core';
+
 import { CustomValue } from '../types/base';
 import { CustomFunctionCallback } from '../types/function';
 import { CustomString } from '../types/string';
 
 export enum OpCode {
-  NOOP = 'NOOP',
-  HALT = 'HALT',
-  CALL = 'CALL',
-  CALL_INTERNAL = 'CALL_INTERNAL',
-  CALL_WITH_CONTEXT = 'CALL_WITH_CONTEXT',
-  CONSTRUCT_MAP = 'CONSTRUCT_MAP',
-  CONSTRUCT_LIST = 'CONSTRUCT_LIST',
-  GET_VARIABLE = 'GET_VARIABLE',
-  GET_PROPERTY = 'GET_PROPERTY',
-  GET_ENVAR = 'GET_ENVAR',
-  GET_SELF = 'GET_SELF',
-  GET_OUTER = 'GET_OUTER',
-  GET_GLOBALS = 'GET_GLOBALS',
-  GET_LOCALS = 'GET_LOCALS',
-  GET_SUPER = 'GET_SUPER',
-  GET_SUPER_PROPERTY = 'GET_SUPER_PROPERTY',
-  CALL_SUPER_PROPERTY = 'CALL_SUPER_PROPERTY',
-  FALSIFY = 'FALSIFY',
-  NEGATE = 'NEGATE',
-  NEW = 'NEW',
-  SLICE = 'SLICE',
-  ASSIGN = 'ASSIGN',
-  PUSH = 'PUSH',
-  POP = 'POP',
-  ISA = 'ISA',
-  ADD = 'ADD',
-  SUB = 'SUB',
-  MUL = 'MUL',
-  DIV = 'DIV',
-  MOD = 'MOD',
-  POW = 'POW',
-  EQUAL = 'EQUAL',
-  NOT_EQUAL = 'NOT_EQUAL',
-  LESS_THAN = 'LESS_THAN',
-  LESS_THAN_OR_EQUAL = 'LESS_THAN_OR_EQUAL',
-  GREATER_THAN = 'GREATER_THAN',
-  GREATER_THAN_OR_EQUAL = 'GREATER_THAN_OR_EQUAL',
-  AND = 'AND',
-  OR = 'OR',
-  RETURN = 'RETURN',
-  FUNCTION_DEFINITION = 'FUNCTION_DEFINITION',
-  GOTO_A = 'GOTO_A',
-  GOTO_A_IF_FALSE = 'GOTO_IF_FALSE',
-  PUSH_ITERATOR = 'PUSH_ITERATOR',
-  POP_ITERATOR = 'POP_ITERATOR',
-  NEXT = 'NEXT',
-  BITWISE_OR = 'BITWISE_OR',
-  BITWISE_AND = 'BITWISE_AND',
-  BITWISE_LEFT_SHIFT = 'BITWISE_LEFT_SHIFT',
-  BITWISE_RIGHT_SHIFT = 'BITWISE_RIGHT_SHIFT',
-  BITWISE_UNSIGNED_RIGHT_SHIFT = 'BITWISE_UNSIGNED_RIGHT_SHIFT',
-  BREAKPOINT = 'BREAKPOINT',
-  BREAKPOINT_ENABLE = 'BREAKPOINT_ENABLE',
-  IMPORT = 'IMPORT'
+  NOOP,
+  HALT,
+  CALL,
+  CALL_INTERNAL,
+  CALL_WITH_CONTEXT,
+  CONSTRUCT_MAP,
+  CONSTRUCT_LIST,
+  GET_VARIABLE,
+  GET_PROPERTY,
+  GET_ENVAR,
+  GET_SELF,
+  GET_OUTER,
+  GET_GLOBALS,
+  GET_LOCALS,
+  GET_SUPER,
+  GET_SUPER_PROPERTY,
+  CALL_SUPER_PROPERTY,
+  FALSIFY,
+  NEGATE,
+  NEW,
+  SLICE,
+  ASSIGN,
+  PUSH,
+  POP,
+  ISA,
+  ADD,
+  SUB,
+  MUL,
+  DIV,
+  MOD,
+  POW,
+  EQUAL,
+  NOT_EQUAL,
+  LESS_THAN,
+  LESS_THAN_OR_EQUAL,
+  GREATER_THAN,
+  GREATER_THAN_OR_EQUAL,
+  AND,
+  OR,
+  RETURN,
+  FUNCTION_DEFINITION,
+  GOTO_A,
+  GOTO_A_IF_FALSE,
+  PUSH_ITERATOR,
+  POP_ITERATOR,
+  NEXT,
+  BITWISE_OR,
+  BITWISE_AND,
+  BITWISE_LEFT_SHIFT,
+  BITWISE_RIGHT_SHIFT,
+  BITWISE_UNSIGNED_RIGHT_SHIFT,
+  BREAKPOINT,
+  BREAKPOINT_ENABLE,
+  IMPORT
 }
 
 export interface FunctionDefinitionInstructionArgument {
@@ -64,7 +66,11 @@ export interface FunctionDefinitionInstructionArgument {
   defaultValue: CustomValue;
 }
 
-export type SourceLocation = string;
+export type SourceLocation = {
+  path: string;
+  start: ASTPosition;
+  end: ASTPosition;
+};
 
 export interface BaseInstruction {
   op: OpCode;

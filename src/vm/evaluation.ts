@@ -22,7 +22,8 @@ export function evalAdd(a: CustomValue, b: CustomValue) {
     return new CustomString(a.toString() + b.toString());
   } else if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() + b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() + b.toNumber());
   } else if (a instanceof CustomList) {
     if (b instanceof CustomList) {
       return a.fork().extend(b);
@@ -56,7 +57,8 @@ export function evalSub(a: CustomValue, b: CustomValue) {
     return minusString(a, b);
   } else if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() - b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() - b.toNumber());
   }
   return DefaultType.Void;
 }
@@ -101,7 +103,8 @@ export function evalMul(a: CustomValue, b: CustomValue) {
     return multiplyString(a, b);
   } else if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() * b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() * b.toNumber());
   } else if (a instanceof CustomList && b instanceof CustomNumber) {
     return multiplyList(a, b);
   }
@@ -148,7 +151,8 @@ export function evalDiv(a: CustomValue, b: CustomValue) {
     return divideString(a, b);
   } else if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() / b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() / b.toNumber());
   } else if (a instanceof CustomList && b instanceof CustomNumber) {
     return divideList(a, b);
   }
@@ -158,7 +162,8 @@ export function evalDiv(a: CustomValue, b: CustomValue) {
 export function evalBitwiseOr(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() | b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() | b.toNumber());
   }
   return DefaultType.Void;
 }
@@ -166,7 +171,8 @@ export function evalBitwiseOr(a: CustomValue, b: CustomValue) {
 export function evalBitwiseAnd(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() & b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() & b.toNumber());
   }
   return DefaultType.Void;
 }
@@ -174,7 +180,8 @@ export function evalBitwiseAnd(a: CustomValue, b: CustomValue) {
 export function evalBitwiseRightShift(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() >> b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() >> b.toNumber());
   }
   return DefaultType.Void;
 }
@@ -182,7 +189,8 @@ export function evalBitwiseRightShift(a: CustomValue, b: CustomValue) {
 export function evalBitwiseUnsignedRightShift(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() >>> b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() >>> b.toNumber());
   }
   return DefaultType.Void;
 }
@@ -190,7 +198,8 @@ export function evalBitwiseUnsignedRightShift(a: CustomValue, b: CustomValue) {
 export function evalBitwiseLeftShift(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() << b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() << b.toNumber());
   }
   return DefaultType.Void;
 }
@@ -198,7 +207,8 @@ export function evalBitwiseLeftShift(a: CustomValue, b: CustomValue) {
 export function evalLessThan(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomBoolean(a.toNumber() < b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomBoolean(a.toNumber() < b.toNumber());
   } else if (a instanceof CustomString) {
     if (b instanceof CustomNil) b = new CustomString('');
     return new CustomBoolean(a.toString() < b.toString());
@@ -209,7 +219,8 @@ export function evalLessThan(a: CustomValue, b: CustomValue) {
 export function evalLessThanOrEqual(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomBoolean(a.toNumber() <= b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomBoolean(a.toNumber() <= b.toNumber());
   } else if (a instanceof CustomString) {
     if (b instanceof CustomNil) b = new CustomString('');
     return new CustomBoolean(a.toString() <= b.toString());
@@ -220,7 +231,8 @@ export function evalLessThanOrEqual(a: CustomValue, b: CustomValue) {
 export function evalGreaterThan(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomBoolean(a.toNumber() > b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomBoolean(a.toNumber() > b.toNumber());
   } else if (a instanceof CustomString) {
     if (b instanceof CustomNil) b = new CustomString('');
     return new CustomBoolean(a.toString() > b.toString());
@@ -231,7 +243,8 @@ export function evalGreaterThan(a: CustomValue, b: CustomValue) {
 export function evalGreaterThanOrEqual(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomBoolean(a.toNumber() >= b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomBoolean(a.toNumber() >= b.toNumber());
   } else if (a instanceof CustomString && b instanceof CustomString) {
     if (b instanceof CustomNil) b = new CustomString('');
     return new CustomBoolean(a.toString() >= b.toString());
@@ -276,7 +289,8 @@ export function evalNotEqual(a: CustomValue, b: CustomValue) {
 export function evalMod(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(a.toNumber() % b.toNumber());
+    if (b instanceof CustomNumber)
+      return new CustomNumber(a.toNumber() % b.toNumber());
   }
   return DefaultType.Void;
 }
@@ -284,7 +298,8 @@ export function evalMod(a: CustomValue, b: CustomValue) {
 export function evalPow(a: CustomValue, b: CustomValue) {
   if (a instanceof CustomNumber) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
-    if (b instanceof CustomNumber) return new CustomNumber(Math.pow(a.toNumber(), b.toNumber()));
+    if (b instanceof CustomNumber)
+      return new CustomNumber(Math.pow(a.toNumber(), b.toNumber()));
   }
   return DefaultType.Void;
 }

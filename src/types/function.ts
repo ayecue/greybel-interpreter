@@ -23,10 +23,7 @@ export interface CustomFunctionCallback {
 export class CustomFunction extends CustomValue {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
-  static createExternal(
-    name: string,
-    callback: CustomFunctionCallback
-  ) {
+  static createExternal(name: string, callback: CustomFunctionCallback) {
     const args: FunctionDefinitionInstructionArgument[] = [];
 
     return new CustomFunction(

@@ -119,7 +119,19 @@ export class BytecodeGenerator {
 
   private getSourceLocation(node: ASTBase): SourceLocation {
     const target = this.target.peek();
-    return `${target}:${node.start.line}:${node.start.character}`;
+    return {
+      path: target,
+      start: node.start,
+      end: node.end
+    };
+  }
+
+  private getInternalLocation(): SourceLocation {
+    return {
+      path: 'internal',
+      start: { line: 0, character: 0 },
+      end: { line: 0, character: 0 }
+    };
   }
 
   private pushContext() {
@@ -1067,48 +1079,48 @@ export class BytecodeGenerator {
 
       this.push({
         op: OpCode.GET_LOCALS,
-        source: 'internal'
+        source: this.getInternalLocation()
       });
       this.push({
         op: OpCode.PUSH,
-        source: 'internal',
+        source: this.getInternalLocation(),
         value: new CustomString('module')
       });
       this.push({
         op: OpCode.PUSH,
-        source: 'internal',
+        source: this.getInternalLocation(),
         value: new CustomString('exports')
       });
       this.push({
         op: OpCode.CONSTRUCT_MAP,
-        source: 'internal',
+        source: this.getInternalLocation(),
         length: 0
       });
       this.push({
         op: OpCode.CONSTRUCT_MAP,
-        source: 'internal',
+        source: this.getInternalLocation(),
         length: 1
       });
       this.push({
         op: OpCode.ASSIGN,
-        source: 'internal',
+        source: this.getInternalLocation(),
       });
 
       await this.processNode(childNodes);
 
       this.push({
         op: OpCode.GET_VARIABLE,
-        source: 'internal',
+        source: this.getInternalLocation(),
         property: new CustomString('module')
       });
       this.push({
         op: OpCode.PUSH,
-        source: 'internal',
+        source: this.getInternalLocation(),
         value: new CustomString('exports')
       });
       this.push({
         op: OpCode.GET_PROPERTY,
-        source: 'internal',
+        source: this.getInternalLocation(),
       });
       const context = this.popContext();
       this.target.pop();
