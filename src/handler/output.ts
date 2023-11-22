@@ -1,4 +1,4 @@
-import { OperationContext } from '../context';
+import type { VM } from '../vm';
 
 export interface KeyEvent {
   keyCode?: number;
@@ -13,29 +13,29 @@ export interface PrintOptions {
 
 export abstract class OutputHandler {
   abstract print(
-    ctx: OperationContext,
+    vm: VM,
     message: string,
     options?: Partial<PrintOptions>
   ): void;
 
-  abstract progress(ctx: OperationContext, timeout: number): PromiseLike<void>;
+  abstract progress(vm: VM, timeout: number): PromiseLike<void>;
   abstract waitForInput(
-    ctx: OperationContext,
+    vm: VM,
     isPassword: boolean,
     message?: string
   ): PromiseLike<string>;
 
   abstract waitForKeyPress(
-    ctx: OperationContext,
+    vm: VM,
     message?: string
   ): PromiseLike<KeyEvent>;
 
-  abstract clear(ctx: OperationContext): void;
+  abstract clear(vm: VM): void;
 }
 
 export class DefaultOutputHandler extends OutputHandler {
   print(
-    _ctx: OperationContext,
+    _vm: VM,
     message: string,
     { appendNewLine = true }: Partial<PrintOptions> = {}
   ) {
@@ -46,14 +46,14 @@ export class DefaultOutputHandler extends OutputHandler {
     }
   }
 
-  progress(_ctx: OperationContext, timeout: number): PromiseLike<void> {
+  progress(_vm: VM, timeout: number): PromiseLike<void> {
     return new Promise((resolve, _reject) => {
       setTimeout(resolve, timeout);
     });
   }
 
   waitForInput(
-    _ctx: OperationContext,
+    _vm: VM,
     _isPassword: boolean,
     _message?: string
   ): PromiseLike<string> {
@@ -61,7 +61,7 @@ export class DefaultOutputHandler extends OutputHandler {
   }
 
   waitForKeyPress(
-    _ctx: OperationContext,
+    _vm: VM,
     _message?: string
   ): PromiseLike<KeyEvent> {
     return Promise.resolve({
@@ -70,7 +70,7 @@ export class DefaultOutputHandler extends OutputHandler {
     });
   }
 
-  clear(_ctx: OperationContext) {
+  clear(_vm: VM) {
     console.clear();
   }
 }
