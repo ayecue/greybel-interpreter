@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 
 import {
-  ContextOptions,
   ContextType,
   OperationContext
 } from './context';
@@ -17,7 +16,6 @@ import { PrepareError, RuntimeError } from './utils/error';
 import { ObjectValue } from './utils/object-value';
 import { CustomBoolean } from './types/boolean';
 import { Debugger, VM, VMOptions } from './vm';
-import { Instruction } from './byte-compiler/instruction';
 import { BytecodeCompileResult, BytecodeGenerator } from './bytecode-generator';
 
 export const PARAMS_PROPERTY = new CustomString('params');
@@ -151,7 +149,7 @@ export class Interpreter extends EventEmitter {
     throw new Error('Unable to inject into last context.');
   }
 
-  protected initVM(result: BytecodeCompileResult, options?: VMOptions) {
+  protected initVM(result: BytecodeCompileResult, options?: Partial<VMOptions>) {
     const apiContext =  new OperationContext({
       isProtected: true,
       code: [],
