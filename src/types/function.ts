@@ -1,118 +1,108 @@
-import { ContextState, ContextType, OperationContext } from '../context';
+import {
+  FunctionDefinitionInstructionArgument,
+  Instruction,
+  OpCode
+} from '../byte-compiler/instruction';
+import { OperationContext } from '../context';
 import { ContextTypeIntrinsics } from '../context/types';
-import { Literal } from '../operations/literal';
-import { Operation } from '../operations/operation';
-import { Reference } from '../operations/reference';
 import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
 import { uuid } from '../utils/uuid';
+import type { VM } from '../vm';
 import { CustomValue } from './base';
 import { DefaultType } from './default';
 import { CustomNil } from './nil';
 import { CustomString } from './string';
 
-export interface Callback {
-  (
-    ctx: OperationContext,
-    self: CustomValue,
-    args: Map<string, CustomValue>
-  ): Promise<NonNullable<CustomValue>>;
-}
-
-export const DEFAULT_FUNCTION_NAME = 'anonymous';
-export const SELF_NAMESPACE = 'self';
-export const SUPER_NAMESPACE = 'super';
-
-export class Argument {
-  readonly name: string;
-  readonly defaultValue: Operation;
-
-  static createWithCustomValue(
-    name: string,
-    defaultValue: CustomValue
-  ): Argument {
-    return new Argument(name, new Reference(defaultValue));
-  }
-
-  constructor(
-    name: string,
-    defaultValue: Operation | CustomValue = DefaultType.Void
-  ) {
-    this.name = name;
-
-    if (defaultValue instanceof CustomValue) {
-      this.defaultValue = new Reference(defaultValue);
-    } else if (defaultValue instanceof Operation) {
-      this.defaultValue = defaultValue;
-    } else {
-      throw new Error('Invalid defaultValue in argument.');
-    }
-  }
+export interface CustomFunctionCallback {
+  (vm: VM, self: CustomValue, args: Map<string, CustomValue>): Promise<
+    NonNullable<CustomValue>
+  >;
 }
 
 export class CustomFunction extends CustomValue {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
-  readonly scope?: OperationContext;
-  readonly name: string;
-  readonly value: Callback;
-  readonly argumentDefs: Array<Argument>;
-  readonly assignOuter: boolean;
-  readonly id: string;
+  static createExternal(name: string, callback: CustomFunctionCallback) {
+    const args: FunctionDefinitionInstructionArgument[] = [];
 
-  private _nextContext: CustomValue;
-
-  static createExternalAnonymous(callback: Callback): CustomFunction {
-    return new CustomFunction(null, DEFAULT_FUNCTION_NAME, callback);
-  }
-
-  static createExternal(name: string, callback: Callback): CustomFunction {
-    return new CustomFunction(null, name, callback);
+    return new CustomFunction(
+      name,
+      [
+        {
+          op: OpCode.CALL_INTERNAL,
+          source: {
+            name: 'internal',
+            path: 'internal',
+            start: { line: 0, character: 0 },
+            end: { line: 0, character: 0 }
+          },
+          callback,
+          arguments: args
+        },
+        {
+          op: OpCode.RETURN,
+          source: {
+            name: 'internal',
+            path: 'internal',
+            start: { line: 0, character: 0 },
+            end: { line: 0, character: 0 }
+          }
+        }
+      ],
+      args
+    );
   }
 
   static createExternalWithSelf(
     name: string,
-    callback: Callback
-  ): CustomFunction {
-    return new CustomFunction(null, name, callback).addArgument(SELF_NAMESPACE);
+    callback: CustomFunctionCallback
+  ) {
+    return this.createExternal(name, callback).addArgument('self');
   }
 
+  readonly outer?: OperationContext;
+  readonly name: string;
+  readonly id: string;
+  readonly arguments: FunctionDefinitionInstructionArgument[];
+  readonly value: Instruction[];
+
   constructor(
-    scope: OperationContext,
     name: string,
-    callback: Callback,
-    argumentDefs: Array<Argument> = [],
-    assignOuter: boolean = false
+    value: Instruction[],
+    args: FunctionDefinitionInstructionArgument[] = [],
+    outer?: OperationContext
   ) {
     super();
     this.id = uuid();
-    this.scope = scope;
     this.name = name;
-    this.value = callback;
-    this.argumentDefs = argumentDefs;
-    this.assignOuter = assignOuter;
-    this._nextContext = null;
+    this.value = value;
+    this.arguments = args;
+    this.outer = outer;
   }
 
   addArgument(
     name: string,
-    defaultValue: Operation | CustomValue = DefaultType.Void
+    defaultValue: CustomValue = DefaultType.Void
   ): CustomFunction {
-    this.argumentDefs.push(new Argument(name, defaultValue));
+    this.arguments.push({
+      name: new CustomString(name),
+      defaultValue
+    });
     return this;
   }
 
   fork(): CustomFunction {
     return new CustomFunction(
-      this.scope,
       this.name,
       this.value,
-      this.argumentDefs
+      this.arguments,
+      this.outer
     );
   }
 
   forkAs(name: string): CustomFunction {
-    return new CustomFunction(this.scope, name, this.value, this.argumentDefs);
+    return new CustomFunction(name, this.value, this.arguments, this.outer);
   }
 
   getCustomType(): string {
@@ -132,25 +122,16 @@ export class CustomFunction extends CustomValue {
   }
 
   toString(): string {
-    let refs = 1;
-    const args = this.argumentDefs.map((item: Argument) => {
-      if (
-        item.defaultValue instanceof Literal ||
-        item.defaultValue instanceof Reference
-      ) {
-        const value = item.defaultValue.value;
+    const args = this.arguments.map((item) => {
+      const value = item.defaultValue;
 
-        if (value instanceof CustomNil) {
-          return item.name;
-        } else if (value instanceof CustomString) {
-          return `${item.name}="${value.value}"`;
-        }
-
-        return `${item.name}=${value.value}`;
-      } else if (item.defaultValue.item != null) {
-        return `${item.name}=_${refs++}`;
+      if (value instanceof CustomNil) {
+        return item.name;
+      } else if (value instanceof CustomString) {
+        return `${item.name}="${value.value}"`;
       }
-      return item.name;
+
+      return `${item.name}=${value.value}`;
     });
     return `FUNCTION(${args.join(', ')})`;
   }
@@ -161,63 +142,6 @@ export class CustomFunction extends CustomValue {
 
   instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
     return v.value === (typeIntrinsics.function ?? CustomFunction.intrinsics);
-  }
-
-  setNextContext(value: CustomValue) {
-    this._nextContext = value;
-    return this;
-  }
-
-  getNextContext(): CustomValue {
-    return this._nextContext;
-  }
-
-  async run(
-    self: CustomValue,
-    args: Array<CustomValue>,
-    callContext: OperationContext
-  ): Promise<CustomValue> {
-    if (args.length > this.argumentDefs.length) {
-      throw new Error('Too many arguments.');
-    }
-
-    const fnCtx = this.scope?.fork({
-      type: ContextType.Function,
-      state: ContextState.Default,
-      ignoreOuter: !this.assignOuter,
-      processState: callContext.processState
-    });
-    const argMap: Map<string, CustomValue> = new Map();
-    const hasSelf = !(self instanceof CustomNil);
-    let selfWithinArgs: CustomValue = DefaultType.Void;
-
-    let argIndex = this.argumentDefs.length - 1;
-    const selfParam =
-      hasSelf && this.argumentDefs[0]?.name === SELF_NAMESPACE ? 1 : 0;
-
-    for (; argIndex >= selfParam; argIndex--) {
-      const item = this.argumentDefs[argIndex];
-
-      if (item.name === SELF_NAMESPACE) {
-        selfWithinArgs = args[argIndex - selfParam] ?? DefaultType.Void;
-        continue;
-      }
-
-      argMap.set(
-        item.name,
-        args[argIndex - selfParam] ?? (await item.defaultValue.handle(fnCtx))
-      );
-    }
-
-    const selfValue = hasSelf ? self : selfWithinArgs;
-
-    if (selfValue) {
-      argMap.set(SELF_NAMESPACE, selfValue);
-    }
-
-    const result = await this.value(fnCtx ?? callContext, selfValue, argMap);
-    this._nextContext = null;
-    return result;
   }
 
   hash() {

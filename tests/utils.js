@@ -18,42 +18,42 @@ function setupAPI() {
 
   api.set(
     new CustomString('exit'),
-    CustomFunction.createExternal('exit', async (fnCtx, self, args) => {
+    CustomFunction.createExternal('exit', async (vm, self, args) => {
       const message = args.get('message');
       if (message instanceof CustomString) {
-        fnCtx.handler.outputHandler.print(message);
+        vm.handler.outputHandler.print(message);
       }
-      fnCtx.exit();
+      vm.exit();
       return Promise.resolve(DefaultType.Void);
     }).addArgument("message")
   );
 
   api.set(
     new CustomString('print'),
-    CustomFunction.createExternal('print', (fnCtx, self, args) => {
-      fnCtx.handler.outputHandler.print(args.get('value'));
+    CustomFunction.createExternal('print', (vm, self, args) => {
+      vm.handler.outputHandler.print(args.get('value'));
       return Promise.resolve(DefaultType.Void);
     }).addArgument('value')
   );
 
   api.set(
     new CustomString('stringify'),
-    CustomFunction.createExternal('print', (fnCtx, self, args) => {
-      fnCtx.handler.outputHandler.print(args.get('value').toString());
+    CustomFunction.createExternal('print', (vm, self, args) => {
+      vm.handler.outputHandler.print(args.get('value').toString());
       return Promise.resolve(DefaultType.Void);
     }).addArgument('value')
   );
 
   api.set(
     new CustomString('valueOfTest'),
-    CustomFunction.createExternal('valueOfTest', (fnCtx, self, args) => {
+    CustomFunction.createExternal('valueOfTest', (vm, self, args) => {
       return Promise.resolve(args.get('value'));
     }).addArgument('value')
   );
 
   api.set(
     new CustomString('typeof'),
-    CustomFunction.createExternal('typeof', (fnCtx, self, args) => {
+    CustomFunction.createExternal('typeof', (vm, self, args) => {
       const value = args.get('value');
       return Promise.resolve(new CustomString(value.getCustomType()));
     }).addArgument('value')
@@ -61,21 +61,21 @@ function setupAPI() {
 
   api.set(
     new CustomString('returnString'),
-    CustomFunction.createExternal('returnString', (fnCtx, self, args) =>
+    CustomFunction.createExternal('returnString', (vm, self, args) =>
       Promise.resolve(new CustomString('string'))
     )
   );
 
   api.set(
     new CustomString('returnNil'),
-    CustomFunction.createExternal('returnNil', (fnCtx, self, args) =>
+    CustomFunction.createExternal('returnNil', (vm, self, args) =>
       Promise.resolve(DefaultType.Void)
     )
   );
   
   api.set(
     new CustomString('mapToObject'),
-    CustomFunction.createExternal('mapToObject', (fnCtx, self, args) => {
+    CustomFunction.createExternal('mapToObject', (vm, self, args) => {
       const value = args.get('value');
 
       if (value instanceof CustomMap) {
@@ -147,14 +147,14 @@ function setupAPI() {
 
   CustomString.addIntrinsic(
     new CustomString('len'),
-    CustomFunction.createExternalWithSelf('len', (fnCtx, self, args) =>
+    CustomFunction.createExternalWithSelf('len', (vm, self, args) =>
       Promise.resolve(new CustomNumber(args.get('self').value.length))
     )
   );
 
   CustomString.addIntrinsic(
     new CustomString('split'),
-    CustomFunction.createExternalWithSelf('split', (fnCtx, self, args) => {
+    CustomFunction.createExternalWithSelf('split', (vm, self, args) => {
       const delimiter = args.get('delimiter');
       const values = args.get('self').value
         .split(delimiter.toString())
@@ -166,14 +166,14 @@ function setupAPI() {
 
   CustomList.addIntrinsic(
     new CustomString('len'),
-    CustomFunction.createExternalWithSelf('len', (fnCtx, self, args) =>
+    CustomFunction.createExternalWithSelf('len', (vm, self, args) =>
       Promise.resolve(new CustomNumber(args.get('self').value.length))
     )
   );
 
   CustomList.addIntrinsic(
     new CustomString('push'),
-    CustomFunction.createExternalWithSelf('push', (fnCtx, self, args) => {
+    CustomFunction.createExternalWithSelf('push', (vm, self, args) => {
       const value = args.get('value');
       const nextIndex = args.get('self').value.push(value);
       return Promise.resolve(new CustomNumber(nextIndex));
@@ -184,7 +184,7 @@ function setupAPI() {
 
   CustomMap.addIntrinsic(
     new CustomString('hasIndex'),
-    CustomFunction.createExternalWithSelf('hasIndex', (fnCtx, self, args) => {
+    CustomFunction.createExternalWithSelf('hasIndex', (vm, self, args) => {
       const value = args.get('value');
       const result = args.get('self').has(value);
       return Promise.resolve(new CustomBoolean(result));
