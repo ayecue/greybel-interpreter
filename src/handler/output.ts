@@ -25,10 +25,7 @@ export abstract class OutputHandler {
     message?: string
   ): PromiseLike<string>;
 
-  abstract waitForKeyPress(
-    vm: VM,
-    message?: string
-  ): PromiseLike<KeyEvent>;
+  abstract waitForKeyPress(vm: VM, message?: string): PromiseLike<KeyEvent>;
 
   abstract clear(vm: VM): void;
 }
@@ -60,10 +57,7 @@ export class DefaultOutputHandler extends OutputHandler {
     return Promise.resolve('test');
   }
 
-  waitForKeyPress(
-    _vm: VM,
-    _message?: string
-  ): PromiseLike<KeyEvent> {
+  waitForKeyPress(_vm: VM, _message?: string): PromiseLike<KeyEvent> {
     return Promise.resolve({
       keyCode: 13,
       code: 'Enter'

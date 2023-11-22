@@ -9,7 +9,7 @@ import { CustomNumber } from '../types/number';
 import { CustomString } from '../types/string';
 import { deepEqual } from '../utils/deep-equal';
 
-const absClamp01 = (d: number): number => {
+export const absClamp01 = (d: number): number => {
   if (d < 0) d = -d;
   if (d > 1) return 1;
   return d;

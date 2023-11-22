@@ -48,6 +48,8 @@ export enum OpCode {
   FUNCTION_DEFINITION,
   GOTO_A,
   GOTO_A_IF_FALSE,
+  GOTO_A_IF_FALSE_AND_PUSH,
+  GOTO_A_IF_TRUE_AND_PUSH,
   PUSH_ITERATOR,
   POP_ITERATOR,
   NEXT,
@@ -123,7 +125,11 @@ export interface FunctionDefinitionInstruction extends BaseInstruction {
 }
 
 export interface GotoAInstruction extends BaseInstruction {
-  op: OpCode.GOTO_A | OpCode.GOTO_A_IF_FALSE;
+  op:
+    | OpCode.GOTO_A
+    | OpCode.GOTO_A_IF_FALSE
+    | OpCode.GOTO_A_IF_FALSE_AND_PUSH
+    | OpCode.GOTO_A_IF_TRUE_AND_PUSH;
   /* eslint-disable no-use-before-define */
   goto: Instruction;
 }

@@ -10,7 +10,7 @@ import { RuntimeError } from "./utils/error";
 import { CustomValueWithIntrinsics } from "./types/with-intrinsics";
 import { CustomBoolean } from "./types/boolean";
 import { CustomFunction } from "./types/function";
-import { evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, evalBitwiseOr, evalBitwiseRightShift, evalBitwiseUnsignedRightShift, evalDiv, evalEqual, evalGreaterThan, evalGreaterThanOrEqual, evalLessThan, evalLessThanOrEqual, evalMod, evalMul, evalNotEqual, evalOr, evalPow, evalSub } from "./vm/evaluation";
+import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, evalBitwiseOr, evalBitwiseRightShift, evalBitwiseUnsignedRightShift, evalDiv, evalEqual, evalGreaterThan, evalGreaterThanOrEqual, evalLessThan, evalLessThanOrEqual, evalMod, evalMul, evalNotEqual, evalOr, evalPow, evalSub } from "./vm/evaluation";
 import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
@@ -445,6 +445,34 @@ export class VM {
           const condition = this.popStack();
 
           if (condition.toTruthy()) {
+            break;
+          }
+
+          const gotoAInstruction = instruction as GotoAInstruction;
+          frame.ip = gotoAInstruction.goto.ip;
+          break;
+        }
+        case OpCode.GOTO_A_IF_FALSE_AND_PUSH: {
+          const condition = this.popStack();
+          const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
+
+          this.pushStack(new CustomNumber(value));
+
+          if (value >= 1) {
+            break;
+          }
+
+          const gotoAInstruction = instruction as GotoAInstruction;
+          frame.ip = gotoAInstruction.goto.ip;
+          break;
+        }
+        case OpCode.GOTO_A_IF_TRUE_AND_PUSH: {
+          const condition = this.popStack();
+          const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
+
+          this.pushStack(new CustomNumber(value));
+
+          if (value < 1) {
             break;
           }
 

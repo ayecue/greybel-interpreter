@@ -568,17 +568,29 @@ export class BytecodeGenerator {
     });
   }
 
-  protected async processEvaluationExpression(node: ASTEvaluationExpression, isSubEval: boolean = false): Promise<void> {
-    if (node.left instanceof ASTEvaluationExpression) {
-      await this.processEvaluationExpression(node.left, true);
-    } else {
-      await this.processSubNode(node.left);
+  protected async processEvaluationExpression(node: ASTEvaluationExpression): Promise<void> {
+    const skip: Instruction = {
+      op: OpCode.NOOP,
+      source: this.getSourceLocation(node)
+    };
+
+    await this.processSubNode(node.left);
+
+    if (node.operator === Operator.And) {
+      this.push({
+        op: OpCode.GOTO_A_IF_FALSE_AND_PUSH,
+        source: this.getSourceLocation(node),
+        goto: skip
+      });
+    } else if (node.operator === Operator.Or) {
+      this.push({
+        op: OpCode.GOTO_A_IF_TRUE_AND_PUSH,
+        source: this.getSourceLocation(node),
+        goto: skip
+      });
     }
-    if (node.right instanceof ASTEvaluationExpression) {
-      await this.processEvaluationExpression(node.right, true);
-    } else {
-      await this.processSubNode(node.right);
-    }
+
+    await this.processSubNode(node.right);
 
     switch (node.operator) {
       case Operator.Isa: {
@@ -635,6 +647,7 @@ export class BytecodeGenerator {
           op: OpCode.AND,
           source: this.getSourceLocation(node)
         });
+        this.push(skip);
         break;
       }
       case Operator.Or: {
@@ -642,6 +655,7 @@ export class BytecodeGenerator {
           op: OpCode.OR,
           source: this.getSourceLocation(node)
         });
+        this.push(skip);
         break;
       }
       case Operator.Plus: {
