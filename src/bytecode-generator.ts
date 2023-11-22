@@ -154,8 +154,11 @@ export class BytecodeGenerator {
     return this.context.pop();
   }
 
-  protected getLastJumpoint() {
+  protected getLastJumpPoint() {
     const jumpPoints = this.context.peek().jumpPoints;
+    if (jumpPoints.length === 0) {
+      return null;
+    }
     return jumpPoints[jumpPoints.length - 1];
   }
 
@@ -760,7 +763,11 @@ export class BytecodeGenerator {
   }
 
   protected async processBreak(node: ASTBase): Promise<void> {
-    const [_, end] = this.getLastJumpoint();
+    const jumpPoint = this.getLastJumpPoint();
+
+    if (jumpPoint === null) return;
+
+    const [_, end] = jumpPoint;
 
     this.push({
       op: OpCode.GOTO_A,
@@ -770,7 +777,11 @@ export class BytecodeGenerator {
   }
 
   protected async processContinue(node: ASTBase): Promise<void> {
-    const [start] = this.getLastJumpoint();
+    const jumpPoint = this.getLastJumpPoint();
+
+    if (jumpPoint === null) return;
+    
+    const [start] = jumpPoint;
 
     this.push({
       op: OpCode.GOTO_A,
@@ -1063,6 +1074,7 @@ export class BytecodeGenerator {
       source: this.getSourceLocation(node.iterator)
     };
 
+    this.pushJumppoint(start, end);
     this.push({
       op: OpCode.GET_LOCALS,
       source: this.getSourceLocation(node)
@@ -1104,6 +1116,7 @@ export class BytecodeGenerator {
     });
 
     this.push(end);
+    this.popJumppoint();
   }
 
   protected async processEnvarExpression(node: ASTFeatureEnvarExpression) {
