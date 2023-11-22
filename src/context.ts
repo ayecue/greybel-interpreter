@@ -6,6 +6,7 @@ import { ObjectValue } from './utils/object-value';
 import { ContextTypeIntrinsics } from './context/types';
 import { Instruction } from './byte-compiler/instruction';
 import { CustomString } from './types/string';
+import { CustomValueWithIntrinsicsResult } from './types/with-intrinsics';
 
 export enum ContextType {
   Api,
@@ -38,6 +39,29 @@ export class Scope extends CustomMap {
 
     if (intrinsics.has(current)) {
       return intrinsics.get(current);
+    }
+
+    throw new Error(`Unknown path ${current.toString()}.`);
+  }
+
+  getWithOrigin(current: CustomValue, typeIntrinsics: ContextTypeIntrinsics): CustomValueWithIntrinsicsResult {
+    if (this.has(current)) {
+      return super.getWithOrigin(current, typeIntrinsics);
+    } else if (this.context.outer?.scope.has(current)) {
+      return this.context.outer.scope.getWithOrigin(current, typeIntrinsics);
+    } else if (this.context.globals?.scope.has(current)) {
+      return this.context.globals.scope.getWithOrigin(current, typeIntrinsics);
+    } else if (this.context.api?.scope.has(current)) {
+      return this.context.api.scope.getWithOrigin(current, typeIntrinsics);
+    }
+
+    const intrinsics = typeIntrinsics.map ?? CustomMap.getIntrinsics();
+
+    if (intrinsics.has(current)) {
+      return {
+        value: intrinsics.get(current),
+        origin: null
+      };
     }
 
     throw new Error(`Unknown path ${current.toString()}.`);
