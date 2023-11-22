@@ -283,7 +283,7 @@ export function evalNotEqual(a: CustomValue, b: CustomValue) {
   } else if (a instanceof CustomNil) {
     return new CustomBoolean(!(b instanceof CustomNil));
   }
-  return DefaultType.False;
+  return DefaultType.True;
 }
 
 export function evalMod(a: CustomValue, b: CustomValue) {
