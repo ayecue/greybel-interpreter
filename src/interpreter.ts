@@ -33,7 +33,7 @@ export interface InterpreterOptions {
 
 export interface InterpreterRunOptions {
   customCode?: string;
-  vmOptions?: VMOptions;
+  vmOptions?: Partial<VMOptions>;
 }
 
 export class Interpreter extends EventEmitter {
