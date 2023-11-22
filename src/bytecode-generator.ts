@@ -434,7 +434,7 @@ export class BytecodeGenerator {
       await this.processSubNode(node.index);
       this.push({
         op: OpCode.GET_SUPER_PROPERTY,
-        source: this.getSourceLocation(base),
+        source: this.getSourceLocation(node.index),
         invoke: isInvoke
       });
     } else {
@@ -964,7 +964,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_SUPER_PROPERTY,
-          source: this.getSourceLocation(node),
+          source: this.getSourceLocation(node.base),
           length: node.arguments.length
         });
       } else {
@@ -977,7 +977,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_WITH_CONTEXT,
-          source: this.getSourceLocation(node),
+          source: this.getSourceLocation(left.identifier),
           length: node.arguments.length
         });
       }
@@ -988,7 +988,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_SUPER_PROPERTY,
-          source: this.getSourceLocation(node),
+          source: this.getSourceLocation(left.index),
           length: node.arguments.length
         });
       } else {
@@ -997,7 +997,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_WITH_CONTEXT,
-          source: this.getSourceLocation(node),
+          source: this.getSourceLocation(left.index),
           length: node.arguments.length
         });
       }
@@ -1006,7 +1006,7 @@ export class BytecodeGenerator {
       await pushArgs();
       this.push({
         op: OpCode.CALL,
-        source: this.getSourceLocation(node),
+        source: this.getSourceLocation(left),
         length: node.arguments.length
       });
     } else {
@@ -1014,7 +1014,7 @@ export class BytecodeGenerator {
       await pushArgs();
       this.push({
         op: OpCode.CALL,
-        source: this.getSourceLocation(node),
+        source: this.getSourceLocation(left),
         length: node.arguments.length
       });
     }

@@ -3,6 +3,7 @@ import { ASTRange } from 'miniscript-core';
 import { Instruction } from '../byte-compiler/instruction';
 
 interface RuntimeVM {
+  getFrame(): { getCurrentInstruction: () => Instruction };
   getStacktrace?: () => Instruction[];
   target: string;
 }
@@ -14,7 +15,7 @@ export class RuntimeError extends Error {
 
   constructor(message: string, vm?: RuntimeVM, source?: Error) {
     super(message);
-    this.target = vm?.target;
+    this.target = vm?.getFrame().getCurrentInstruction().source.path;
     this.stackTrace = vm?.getStacktrace() ?? [];
     this.stack = this.createTrace();
     this.source = source;

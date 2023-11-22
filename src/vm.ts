@@ -5,7 +5,6 @@ import { CustomValue } from "./types/base";
 import { CallInstruction, CallInternalInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./byte-compiler/instruction";
 import { DefaultType } from "./types/default";
 import { Stack } from "./utils/stack";
-import { CustomNil } from "./types/nil";
 import { RuntimeError } from "./utils/error";
 import { CustomValueWithIntrinsics } from "./types/with-intrinsics";
 import { CustomBoolean } from "./types/boolean";
@@ -188,6 +187,7 @@ export class VM {
   }
 
   private createFrame(options: FrameOptions): OperationContext {
+    this.getFrame().ip--;
     const ctx = this.getFrame().fork({
       code: options.code,
       type: ContextType.Function,
@@ -201,7 +201,9 @@ export class VM {
   }
 
   private popFrame(): OperationContext {
-    return this.frames.pop();
+    const frame = this.frames.pop();
+    this.getFrame().ip++;
+    return frame;
   }
 
   async exec(): Promise<void> {
@@ -227,7 +229,7 @@ export class VM {
 
       switch (instruction.op) {
         case OpCode.NOOP: {
-          continue;
+          break;
         }
         case OpCode.PUSH: {
           const pushInstruction = instruction as PushInstruction;

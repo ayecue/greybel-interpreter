@@ -223,7 +223,7 @@ export class OperationContext {
   }
 
   getCurrentInstruction(): Instruction {
-    return this.code[this.ip - 1];
+    return this.code[this.ip];
   }
 
   fork(options: ContextForkOptions): OperationContext {

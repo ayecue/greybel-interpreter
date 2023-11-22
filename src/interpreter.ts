@@ -17,6 +17,7 @@ import { ObjectValue } from './utils/object-value';
 import { CustomBoolean } from './types/boolean';
 import { Debugger, VM, VMOptions } from './vm';
 import { BytecodeCompileResult, BytecodeGenerator } from './bytecode-generator';
+import { OpCode } from './byte-compiler/instruction';
 
 export const PARAMS_PROPERTY = new CustomString('params');
 export const IS_GREYBEL_PROPERTY = new CustomString('IS_GREYBEL');
