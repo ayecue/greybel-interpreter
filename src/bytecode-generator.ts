@@ -124,10 +124,10 @@ export class BytecodeGenerator {
     return this.context.peek().code.length - 1;
   }
 
-  protected getSourceLocation(node: ASTBase): SourceLocation {
+  protected getSourceLocation(node: ASTBase, name?: string): SourceLocation {
     const target = this.target.peek();
     return {
-      name: node.type,
+      name: name ?? node.type,
       path: target,
       start: node.start,
       end: node.end
@@ -434,7 +434,7 @@ export class BytecodeGenerator {
       await this.processSubNode(node.index);
       this.push({
         op: OpCode.GET_SUPER_PROPERTY,
-        source: this.getSourceLocation(node.index),
+        source: this.getSourceLocation(node.index, node.type),
         invoke: isInvoke
       });
     } else {
@@ -442,7 +442,7 @@ export class BytecodeGenerator {
       await this.processSubNode(node.index);
       this.push({
         op: OpCode.GET_PROPERTY,
-        source: this.getSourceLocation(node.index),
+        source: this.getSourceLocation(node.index, node.type),
         invoke: isInvoke
       });
     }
@@ -964,7 +964,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_SUPER_PROPERTY,
-          source: this.getSourceLocation(node.base),
+          source: this.getSourceLocation(node.base, node.type),
           length: node.arguments.length
         });
       } else {
@@ -977,7 +977,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_WITH_CONTEXT,
-          source: this.getSourceLocation(left.identifier),
+          source: this.getSourceLocation(left.identifier, node.type),
           length: node.arguments.length
         });
       }
@@ -988,7 +988,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_SUPER_PROPERTY,
-          source: this.getSourceLocation(left.index),
+          source: this.getSourceLocation(left.index, node.type),
           length: node.arguments.length
         });
       } else {
@@ -997,7 +997,7 @@ export class BytecodeGenerator {
         await pushArgs();
         this.push({
           op: OpCode.CALL_WITH_CONTEXT,
-          source: this.getSourceLocation(left.index),
+          source: this.getSourceLocation(left.index, node.type),
           length: node.arguments.length
         });
       }
@@ -1006,7 +1006,7 @@ export class BytecodeGenerator {
       await pushArgs();
       this.push({
         op: OpCode.CALL,
-        source: this.getSourceLocation(left),
+        source: this.getSourceLocation(left, node.type),
         length: node.arguments.length
       });
     } else {
@@ -1014,7 +1014,7 @@ export class BytecodeGenerator {
       await pushArgs();
       this.push({
         op: OpCode.CALL,
-        source: this.getSourceLocation(left),
+        source: this.getSourceLocation(left, node.type),
         length: node.arguments.length
       });
     }

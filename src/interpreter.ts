@@ -17,7 +17,6 @@ import { ObjectValue } from './utils/object-value';
 import { CustomBoolean } from './types/boolean';
 import { Debugger, VM, VMOptions } from './vm';
 import { BytecodeCompileResult, BytecodeGenerator } from './bytecode-generator';
-import { OpCode } from './byte-compiler/instruction';
 
 export const PARAMS_PROPERTY = new CustomString('params');
 export const IS_GREYBEL_PROPERTY = new CustomString('IS_GREYBEL');
@@ -203,9 +202,8 @@ export class Interpreter extends EventEmitter {
 
   protected async start(): Promise<Interpreter> {
     try {
-      const process = this.vm.exec();
       this.emit('start', this);
-      await process;
+      await this.vm.exec();
     } catch (err: any) {
       if (err instanceof PrepareError || err instanceof RuntimeError) {
         this.handler.errorHandler.raise(err);

@@ -93,10 +93,12 @@ export interface VMOptions {
   environmentVariables?: Map<string, string>;
   imports?: Map<string, Instruction[]>;
   externalFrames?: Stack<OperationContext>;
+  maxActionsPerLoop?: number;
 }
 
 export class VM {
-  private readonly ACTIONS_PER_LOOP: number = 120;
+  private readonly ACTIONS_PER_LOOP: number = 1200;
+  private maxActionsPerLoop: number;
   private actionCount: number;
 
   private state: VMState;
@@ -120,6 +122,7 @@ export class VM {
   constructor(options: VMOptions) {
     this.signal = new EventEmitter();
     this.state = VMState.PREPARATION;
+    this.maxActionsPerLoop = options.maxActionsPerLoop ?? this.ACTIONS_PER_LOOP;
     this.actionCount = 0;
     this.sp = 0;
     this.time = -1;
@@ -156,6 +159,11 @@ export class VM {
     }
 
     return stacktrace;
+  }
+
+  setMaxActionsPerLoop(actions: number) {
+    this.maxActionsPerLoop = actions;
+    return this
   }
 
   getOpenHandles(): number {
@@ -799,7 +807,7 @@ export class VM {
         }
       }
 
-      if (this.actionCount++ === this.ACTIONS_PER_LOOP) {
+      if (this.actionCount++ === this.maxActionsPerLoop) {
         this.actionCount = 0;
         await nextTick();
       }
