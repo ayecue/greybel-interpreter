@@ -821,8 +821,9 @@ export class VM {
               this.debugger.resume().then(() => {
                 this.resume(done);
               }).catch(done);
+              return;
             }
-            return;
+            break;
           }
           case OpCode.BREAKPOINT_ENABLE: {
             this.debugger.setBreakpoint(true);
