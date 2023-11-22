@@ -93,7 +93,7 @@ export interface VMOptions {
   debugger: Debugger;
   environmentVariables?: Map<string, string>;
   imports?: Map<string, Instruction[]>;
-  frames?: Stack<OperationContext>;
+  externalFrames?: Stack<OperationContext>;
 }
 
 export class VM {
@@ -116,6 +116,7 @@ export class VM {
   readonly handler: HandlerContainer;
   readonly debugger: Debugger;
   readonly imports: Map<string, Instruction[]>;
+  readonly externalFrames: Stack<OperationContext>;
 
   constructor(options: VMOptions) {
     this.signal = new EventEmitter();
@@ -124,13 +125,14 @@ export class VM {
     this.sp = 0;
     this.time = -1;
     this.target = options.target;
-    this.frames = options.frames ?? new Stack(options.globals);
+    this.frames = new Stack(options.globals);
     this.contextTypeIntrinsics = options.contextTypeIntrinsics;
     this.handler = options.handler;
     this.debugger = options.debugger;
     this.environmentVariables = options.environmentVariables ?? new Map();
     this.iterators = new Stack();
     this.imports = options.imports ?? new Map();
+    this.externalFrames = options.externalFrames ?? new Stack();
   }
 
   getTime(): number {
@@ -142,11 +144,16 @@ export class VM {
   }
 
   getStacktrace(): Instruction[] {
+    const externalFrames = this.externalFrames.values();
     const frames = this.frames.values();
     const stacktrace: Instruction[] = [];
 
-    for (let index = frames.length - 1; index >= 0; index--) {
-      stacktrace.push(frames[index].getCurrentInstruction());
+    for (let index = 0; index < externalFrames.length; index++) {
+      stacktrace.push(externalFrames[index].getCurrentInstruction());
+    }
+
+    for (let index = 0; index < frames.length; index++) {
+      stacktrace.unshift(frames[index].getCurrentInstruction());
     }
 
     return stacktrace;
