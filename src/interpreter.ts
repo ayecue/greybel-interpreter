@@ -16,7 +16,7 @@ import { CustomString } from './types/string';
 import { PrepareError, RuntimeError } from './utils/error';
 import { ObjectValue } from './utils/object-value';
 import { CustomBoolean } from './types/boolean';
-import { Debugger, VM } from './vm';
+import { Debugger, VM, VMOptions } from './vm';
 import { Instruction } from './byte-compiler/instruction';
 import { BytecodeCompileResult, BytecodeGenerator } from './bytecode-generator';
 
@@ -35,7 +35,7 @@ export interface InterpreterOptions {
 
 export interface InterpreterRunOptions {
   customCode?: string;
-  ctxOptions?: ContextOptions;
+  vmOptions?: VMOptions;
 }
 
 export class Interpreter extends EventEmitter {
@@ -151,7 +151,7 @@ export class Interpreter extends EventEmitter {
     throw new Error('Unable to inject into last context.');
   }
 
-  protected initVM(result: BytecodeCompileResult) {
+  protected initVM(result: BytecodeCompileResult, options?: VMOptions) {
     const apiContext =  new OperationContext({
       isProtected: true,
       code: [],
@@ -173,7 +173,8 @@ export class Interpreter extends EventEmitter {
         function: CustomFunction.intrinsics.fork()
       },
       globals: globalContext,
-      imports: result.imports
+      imports: result.imports,
+      ...options
     });
 
     const stringIntrinsics = CustomMap.createWithInitialValue(vm.contextTypeIntrinsics.string);
@@ -222,7 +223,8 @@ export class Interpreter extends EventEmitter {
   }
 
   async run({
-    customCode
+    customCode,
+    vmOptions
   }: InterpreterRunOptions = {}): Promise<Interpreter> {
     const code =
       customCode ?? (await this.handler.resourceHandler.get(this.target));
@@ -233,7 +235,7 @@ export class Interpreter extends EventEmitter {
     });
     const bytecode = await bytecodeConverter.compile(code);
 
-    this.initVM(bytecode);
+    this.initVM(bytecode, vmOptions);
 
     return this.start();
   }

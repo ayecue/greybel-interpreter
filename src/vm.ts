@@ -93,6 +93,7 @@ export interface VMOptions {
   debugger: Debugger;
   environmentVariables?: Map<string, string>;
   imports?: Map<string, Instruction[]>;
+  frames?: Stack<OperationContext>;
 }
 
 export class VM {
@@ -123,7 +124,7 @@ export class VM {
     this.sp = 0;
     this.time = -1;
     this.target = options.target;
-    this.frames = new Stack(options.globals);
+    this.frames = options.frames ?? new Stack(options.globals);
     this.contextTypeIntrinsics = options.contextTypeIntrinsics;
     this.handler = options.handler;
     this.debugger = options.debugger;
@@ -155,12 +156,20 @@ export class VM {
     return this.sp;
   }
 
+  getSignal(): EventEmitter {
+    return this.signal;
+  }
+
   exit() {
     this.signal.emit('exit');
   }
 
   getFrame(): OperationContext {
     return this.frames.peek();
+  }
+
+  getFrames(): Stack<OperationContext> {
+    return this.frames;
   }
 
   private pushStack(value: CustomValue) {
