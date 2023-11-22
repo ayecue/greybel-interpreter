@@ -271,8 +271,6 @@ export class VM {
 
           if (!(base instanceof CustomValueWithIntrinsics)) {
             throw new RuntimeError(`Base left side must be a value with intrinsics!`, this);
-          } else if (key instanceof CustomNil) {
-            throw new RuntimeError(`Key left side cannot be null!`, this);
           }
 
           base.set(key, value);
