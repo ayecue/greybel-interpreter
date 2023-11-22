@@ -13,7 +13,7 @@ import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, eva
 import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
-import { nextTick } from "./utils/next-tick";
+import { setImmediate } from "./utils/set-immediate";
 import { CustomString } from "./types/string";
 import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
@@ -81,7 +81,8 @@ export interface FrameOptions {
 export enum VMState {
   PREPARATION,
   PENDING,
-  FINISHED
+  FINISHED,
+  STOPPED
 }
 
 export interface VMOptions {
@@ -96,8 +97,10 @@ export interface VMOptions {
   maxActionsPerLoop?: number;
 }
 
+type VMResumeCallback = (err?: any) => void;
+
 export class VM {
-  private readonly ACTIONS_PER_LOOP: number = 1200;
+  private readonly ACTIONS_PER_LOOP: number = 80000;
   private maxActionsPerLoop: number;
   private actionCount: number;
 
@@ -175,6 +178,7 @@ export class VM {
   }
 
   exit() {
+    this.state = VMState.STOPPED;
     this.signal.emit('exit');
   }
 
@@ -215,602 +219,625 @@ export class VM {
   }
 
   async exec(): Promise<void> {
-    let shouldContinue = true;
-    const exitCallback = () => {
-      shouldContinue = false;
-    };
+    return new Promise((resolve, reject) => {
+      this.state = VMState.PENDING;
+      this.time = Date.now();
 
-    this.time = Date.now();
-    this.state = VMState.PENDING;
+      this.resume((err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
 
-    this.signal.once('exit', exitCallback);
+  private resume(done: VMResumeCallback) {
+    try {
+      while (true) {
+        if (!this.isPending()) {
+          done();
+          return;
+        }
 
-    while (shouldContinue) {
-      const frame = this.getFrame();
+        const frame = this.getFrame();
 
-      if (frame.code.length === frame.ip) {
-        this.popFrame();
-        continue;
-      }
+        if (frame.code.length === frame.ip) {
+          this.popFrame();
+          continue;
+        }
 
-      const instruction = frame.code[frame.ip++];
+        const instruction = frame.code[frame.ip++];
 
-      switch (instruction.op) {
-        case OpCode.NOOP: {
-          break;
-        }
-        case OpCode.PUSH: {
-          const pushInstruction = instruction as PushInstruction;
-          this.pushStack(pushInstruction.value);
-          break;
-        }
-        case OpCode.POP: {
-          this.popStack();
-          break;
-        }
-        case OpCode.GET_GLOBALS: {
-          this.pushStack(frame.globals.scope);
-          break;
-        }
-        case OpCode.GET_OUTER: {
-          this.pushStack((frame.outer ?? frame.globals).scope);
-          break;
-        }
-        case OpCode.GET_LOCALS: {
-          this.pushStack(frame.locals.scope);
-          break;
-        }
-        case OpCode.GET_SELF: {
-          this.pushStack(frame.self ?? DefaultType.Void);
-          break;
-        }
-        case OpCode.GET_SUPER: {
-          this.pushStack(frame.super ?? DefaultType.Void);
-          break;
-        }
-        case OpCode.IMPORT: {
-          const importInstruction = instruction as ImportInstruction;
-          const code = this.imports.get(importInstruction.path);
-          this.createFrame({ code });
-          break;
-        }
-        case OpCode.ASSIGN: {
-          const value = this.popStack();
-          const key = this.popStack();
-          const base = this.popStack();
-
-          if (!(base instanceof CustomValueWithIntrinsics)) {
-            throw new RuntimeError(`Base left side must be a value with intrinsics!`, this);
+        switch (instruction.op) {
+          case OpCode.NOOP: {
+            break;
           }
-
-          base.set(key, value);
-          break;
-        }
-        case OpCode.FUNCTION_DEFINITION: {
-          const functionInstruction = instruction as FunctionDefinitionInstruction;
-          const fn = new CustomFunction('anonymous', functionInstruction.code, functionInstruction.arguments, functionInstruction.ignoreOuter ? frame.globals : frame);
-          this.pushStack(fn);
-          break;
-        }
-        case OpCode.CALL: {
-          const callInstruction = instruction as CallInstruction;
-          const args = new Array(callInstruction.length);
-
-          for (let i = 0; i < callInstruction.length; i++) {
-            args[i] = this.popStack();
+          case OpCode.PUSH: {
+            const pushInstruction = instruction as PushInstruction;
+            this.pushStack(pushInstruction.value);
+            break;
           }
-
-          const fn = this.popStack();
-
-          if (fn instanceof CustomFunction) {
-            if (callInstruction.length > fn.arguments.length) {
-              throw new Error('Too many arguments.');
-            }
-
-            const newFrame = this.createFrame({ code: fn.value, outer: fn.outer });
-            const argsCount = args.length;
-
-            for (let index = 0; index < argsCount; index++) {
-              const argument = args.shift();
-              const paramNum = argsCount - 1 - index;
-
-              if (paramNum >= fn.arguments.length) {
-                throw new Error('Too many arguments.');
-              }
-
-              const param = fn.arguments[paramNum].name;
-
-              if (param.toString() == "self") {
-                newFrame.self = argument;
-                newFrame.super = argument instanceof CustomMap ? (argument.getIsa() ?? new CustomMap()) : null;
-              } else {
-                newFrame.set(param, argument);
-              }
-            }
-            
-            for (let paramNum = argsCount; paramNum < fn.arguments.length; paramNum++) {
-              newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
-            }
-
-            newFrame.injectContext();
+          case OpCode.POP: {
+            this.popStack();
+            break;
           }
-
-          break;
-        }
-        case OpCode.CALL_WITH_CONTEXT: {
-          const callInstruction = instruction as CallInstruction;
-          const args = new Array(callInstruction.length);
-
-          for (let i = 0; i < callInstruction.length; i++) {
-            args[i] = this.popStack();
+          case OpCode.GET_GLOBALS: {
+            this.pushStack(frame.globals.scope);
+            break;
           }
-
-          const propertyName = this.popStack();
-          const context = this.popStack() as CustomValueWithIntrinsics;
-          const fn = context.get(propertyName, this.contextTypeIntrinsics);
-
-          if (fn instanceof CustomFunction) {
-            const newFrame = this.createFrame({
-              code: fn.value,
-              self: context,
-              super: context instanceof CustomMap ? (context.getIsa() ?? new CustomMap()) : null,
-              outer: fn.outer
-            });
-            const argsCount = args.length;
-            let selfParam = fn.arguments.length > 0 && fn.arguments[0].name.toString() == "self" ? 1 : 0;
-
-            for (let index = 0; index < argsCount; index++) {
-              const argument = args.shift();
-              const paramNum = argsCount - 1 - index + selfParam;
-
-              if (paramNum >= fn.arguments.length) {
-                throw new Error('Too many arguments.');
-              }
-
-              const param = fn.arguments[paramNum].name;
-              if (param.toString() !== "self") newFrame.set(param, argument);
-            }
-
-            for (let paramNum = argsCount + selfParam; paramNum < fn.arguments.length; paramNum++) {
-              newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
-            }
-
-            newFrame.injectContext();
+          case OpCode.GET_OUTER: {
+            this.pushStack((frame.outer ?? frame.globals).scope);
+            break;
           }
-
-          break;
-        }
-        case OpCode.CALL_SUPER_PROPERTY: {
-          const callInstruction = instruction as CallInstruction;
-          const args = new Array(callInstruction.length);
-
-          for (let i = 0; i < callInstruction.length; i++) {
-            args[i] = this.popStack();
+          case OpCode.GET_LOCALS: {
+            this.pushStack(frame.locals.scope);
+            break;
           }
-
-          const property = this.popStack();
-          const context = frame.super;
-
-          if (!(context instanceof CustomValueWithIntrinsics)) {
-            throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
+          case OpCode.GET_SELF: {
+            this.pushStack(frame.self ?? DefaultType.Void);
+            break;
           }
-
-          const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
-          const fn = ret.value;
-
-          if (fn instanceof CustomFunction) {
-            const newFrame = this.createFrame({
-              code: fn.value,
-              self: frame.self,
-              super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
-              outer: fn.outer
-            });
-            let selfParam = fn.arguments.length > 0 && fn.arguments[0].name.toString() == "self" ? 1 : 0;
-            const argsCount = args.length;
-
-            for (let index = 0; index < argsCount; index++) {
-              const argument = args.shift();
-              const paramNum = argsCount - 1 - index + selfParam;
-
-              if (paramNum >= fn.arguments.length) {
-                throw new Error('Too many arguments.');
-              }
-
-              const param = fn.arguments[paramNum].name;
-              if (param.toString() !== "self") newFrame.set(param, argument);
-            }
-
-            for (let paramNum = argsCount + selfParam; paramNum < fn.arguments.length; paramNum++) {
-              newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
-            }
-
-            newFrame.injectContext();
+          case OpCode.GET_SUPER: {
+            this.pushStack(frame.super ?? DefaultType.Void);
+            break;
           }
-
-          break;
-        }
-        case OpCode.CONSTRUCT_MAP: {
-          const mapConstructInstruction = instruction as ConstructMapInstruction;
-          const map: [CustomValue, CustomValue][] = [];
-
-          for (let index = 0; index < mapConstructInstruction.length; index++) {
+          case OpCode.IMPORT: {
+            const importInstruction = instruction as ImportInstruction;
+            const code = this.imports.get(importInstruction.path);
+            this.createFrame({ code });
+            break;
+          }
+          case OpCode.ASSIGN: {
             const value = this.popStack();
             const key = this.popStack();
+            const base = this.popStack();
 
-            map.unshift([key, value]);
+            if (!(base instanceof CustomValueWithIntrinsics)) {
+              throw new RuntimeError(`Base left side must be a value with intrinsics!`, this);
+            }
+
+            base.set(key, value);
+            break;
           }
+          case OpCode.FUNCTION_DEFINITION: {
+            const functionInstruction = instruction as FunctionDefinitionInstruction;
+            const fn = new CustomFunction('anonymous', functionInstruction.code, functionInstruction.arguments, functionInstruction.ignoreOuter ? frame.globals : frame);
+            this.pushStack(fn);
+            break;
+          }
+          case OpCode.CALL: {
+            const callInstruction = instruction as CallInstruction;
+            const args = new Array(callInstruction.length);
 
-          this.pushStack(new CustomMap(new ObjectValue(map)));
-          break;
-        }
-        case OpCode.CONSTRUCT_LIST: {
-          const listConstructInstruction = instruction as ConstructListInstruction;
-          const list: CustomValue[] = [];
+            for (let i = 0; i < callInstruction.length; i++) {
+              args[i] = this.popStack();
+            }
 
-          for (let index = 0; index < listConstructInstruction.length; index++) {
+            const fn = this.popStack();
+
+            if (fn instanceof CustomFunction) {
+              if (callInstruction.length > fn.arguments.length) {
+                throw new Error('Too many arguments.');
+              }
+
+              const newFrame = this.createFrame({ code: fn.value, outer: fn.outer });
+              const argsCount = args.length;
+
+              for (let index = 0; index < argsCount; index++) {
+                const argument = args.shift();
+                const paramNum = argsCount - 1 - index;
+
+                if (paramNum >= fn.arguments.length) {
+                  throw new Error('Too many arguments.');
+                }
+
+                const param = fn.arguments[paramNum].name;
+
+                if (param.toString() == "self") {
+                  newFrame.self = argument;
+                  newFrame.super = argument instanceof CustomMap ? (argument.getIsa() ?? new CustomMap()) : null;
+                } else {
+                  newFrame.set(param, argument);
+                }
+              }
+              
+              for (let paramNum = argsCount; paramNum < fn.arguments.length; paramNum++) {
+                newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
+              }
+
+              newFrame.injectContext();
+            }
+
+            break;
+          }
+          case OpCode.CALL_WITH_CONTEXT: {
+            const callInstruction = instruction as CallInstruction;
+            const args = new Array(callInstruction.length);
+
+            for (let i = 0; i < callInstruction.length; i++) {
+              args[i] = this.popStack();
+            }
+
+            const propertyName = this.popStack();
+            const context = this.popStack() as CustomValueWithIntrinsics;
+            const fn = context.get(propertyName, this.contextTypeIntrinsics);
+
+            if (fn instanceof CustomFunction) {
+              const newFrame = this.createFrame({
+                code: fn.value,
+                self: context,
+                super: context instanceof CustomMap ? (context.getIsa() ?? new CustomMap()) : null,
+                outer: fn.outer
+              });
+              const argsCount = args.length;
+              let selfParam = fn.arguments.length > 0 && fn.arguments[0].name.toString() == "self" ? 1 : 0;
+
+              for (let index = 0; index < argsCount; index++) {
+                const argument = args.shift();
+                const paramNum = argsCount - 1 - index + selfParam;
+
+                if (paramNum >= fn.arguments.length) {
+                  throw new Error('Too many arguments.');
+                }
+
+                const param = fn.arguments[paramNum].name;
+                if (param.toString() !== "self") newFrame.set(param, argument);
+              }
+
+              for (let paramNum = argsCount + selfParam; paramNum < fn.arguments.length; paramNum++) {
+                newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
+              }
+
+              newFrame.injectContext();
+            }
+
+            break;
+          }
+          case OpCode.CALL_SUPER_PROPERTY: {
+            const callInstruction = instruction as CallInstruction;
+            const args = new Array(callInstruction.length);
+
+            for (let i = 0; i < callInstruction.length; i++) {
+              args[i] = this.popStack();
+            }
+
+            const property = this.popStack();
+            const context = frame.super;
+
+            if (!(context instanceof CustomValueWithIntrinsics)) {
+              throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
+            }
+
+            const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
+            const fn = ret.value;
+
+            if (fn instanceof CustomFunction) {
+              const newFrame = this.createFrame({
+                code: fn.value,
+                self: frame.self,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
+                outer: fn.outer
+              });
+              let selfParam = fn.arguments.length > 0 && fn.arguments[0].name.toString() == "self" ? 1 : 0;
+              const argsCount = args.length;
+
+              for (let index = 0; index < argsCount; index++) {
+                const argument = args.shift();
+                const paramNum = argsCount - 1 - index + selfParam;
+
+                if (paramNum >= fn.arguments.length) {
+                  throw new Error('Too many arguments.');
+                }
+
+                const param = fn.arguments[paramNum].name;
+                if (param.toString() !== "self") newFrame.set(param, argument);
+              }
+
+              for (let paramNum = argsCount + selfParam; paramNum < fn.arguments.length; paramNum++) {
+                newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
+              }
+
+              newFrame.injectContext();
+            }
+
+            break;
+          }
+          case OpCode.CONSTRUCT_MAP: {
+            const mapConstructInstruction = instruction as ConstructMapInstruction;
+            const map: [CustomValue, CustomValue][] = [];
+
+            for (let index = 0; index < mapConstructInstruction.length; index++) {
+              const value = this.popStack();
+              const key = this.popStack();
+
+              map.unshift([key, value]);
+            }
+
+            this.pushStack(new CustomMap(new ObjectValue(map)));
+            break;
+          }
+          case OpCode.CONSTRUCT_LIST: {
+            const listConstructInstruction = instruction as ConstructListInstruction;
+            const list: CustomValue[] = [];
+
+            for (let index = 0; index < listConstructInstruction.length; index++) {
+              const value = this.popStack();
+
+              list.unshift(value);
+            }
+            
+            this.pushStack(new CustomList(list));
+            break;
+          }
+          case OpCode.GOTO_A_IF_FALSE: {
+            const condition = this.popStack();
+
+            if (condition.toTruthy()) {
+              break;
+            }
+
+            const gotoAInstruction = instruction as GotoAInstruction;
+            frame.ip = gotoAInstruction.goto.ip;
+            break;
+          }
+          case OpCode.GOTO_A_IF_FALSE_AND_PUSH: {
+            const condition = this.popStack();
+            const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
+
+            this.pushStack(new CustomNumber(value));
+
+            if (value >= 1) {
+              break;
+            }
+
+            const gotoAInstruction = instruction as GotoAInstruction;
+            frame.ip = gotoAInstruction.goto.ip;
+            break;
+          }
+          case OpCode.GOTO_A_IF_TRUE_AND_PUSH: {
+            const condition = this.popStack();
+            const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
+
+            this.pushStack(new CustomNumber(value));
+
+            if (value < 1) {
+              break;
+            }
+
+            const gotoAInstruction = instruction as GotoAInstruction;
+            frame.ip = gotoAInstruction.goto.ip;
+            break;
+          }
+          case OpCode.GOTO_A: {
+            const gotoAInstruction = instruction as GotoAInstruction;
+            frame.ip = gotoAInstruction.goto.ip;
+            break;
+          }
+          case OpCode.GOTO_A_IF_FALSE: {
+            const condition = this.popStack();
+
+            if (condition.toTruthy()) {
+              break;
+            }
+
+            const gotoAInstruction = instruction as GotoAInstruction;
+            frame.ip = gotoAInstruction.goto.ip;
+            break;
+          }
+          case OpCode.PUSH_ITERATOR: {
+            const value = this.popStack() as CustomValueWithIntrinsics;
+            const iterator = value[Symbol.iterator]();
+            this.iterators.push(iterator);
+            break;
+          }
+          case OpCode.POP_ITERATOR: {
+            this.iterators.pop();
+            break;
+          }
+          case OpCode.NEXT: {
+            const nextInstruction = instruction as NextInstruction;
+            let idx = frame.get(nextInstruction.idxVariable, this.contextTypeIntrinsics).toNumber();
+            const iterator = this.iterators.peek();
+
+            iterator.index = ++idx;
+
+            const iteratorResult = iterator.next();
+
+            this.pushStack(new CustomBoolean(!iteratorResult.done));
+
+            if (!iteratorResult.done) {
+              frame.set(nextInstruction.variable, iteratorResult.value);
+              frame.set(nextInstruction.idxVariable, new CustomNumber(idx));
+            }
+
+            break;
+          }
+          case OpCode.GET_VARIABLE: {
+            const getVariableInstroduction = instruction as GetVariableInstruction;
+            const ret = frame.locals.get(getVariableInstroduction.property, this.contextTypeIntrinsics);
+
+            if (ret instanceof CustomFunction && getVariableInstroduction.invoke) {
+              const newFrame = this.createFrame({
+                code: ret.value,
+                outer: ret.outer
+              });
+
+              for (let paramNum = 0; paramNum < ret.arguments.length; paramNum++) {
+                newFrame.set(ret.arguments[paramNum].name, ret.arguments[paramNum].defaultValue);
+              }
+
+              newFrame.injectContext();
+              break;
+            }
+
+            this.pushStack(ret);
+            break;
+          }
+          case OpCode.GET_PROPERTY: {
+            const getPropertyInstruction = instruction as GetPropertyInstruction;
+            const property = this.popStack();
+            const context = this.popStack();
+
+            if (!(context instanceof CustomValueWithIntrinsics)) {
+              throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
+            }
+
+            const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
+
+            if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
+              const newFrame = this.createFrame({
+                code: ret.value.value,
+                self: context,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
+                outer: ret.value.outer
+              });
+
+              for (let paramNum = 0; paramNum < ret.value.arguments.length; paramNum++) {
+                newFrame.set(ret.value.arguments[paramNum].name, ret.value.arguments[paramNum].defaultValue);
+              }
+
+              newFrame.injectContext();
+              break;
+            }
+
+            this.pushStack(ret.value);
+            break;
+          }
+          case OpCode.GET_SUPER_PROPERTY: {
+            const getPropertyInstruction = instruction as GetPropertyInstruction;
+            const property = this.popStack();
+            const ret = (frame.super as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
+
+            if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
+              const newFrame = this.createFrame({
+                code: ret.value.value,
+                self: frame.self,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
+                outer: ret.value.outer
+              });
+              
+              for (let paramNum = 0; paramNum < ret.value.arguments.length; paramNum++) {
+                newFrame.set(ret.value.arguments[paramNum].name, ret.value.arguments[paramNum].defaultValue);
+              }
+              
+              newFrame.injectContext();
+              break;
+            }
+
+            this.pushStack(ret.value);
+            break;
+          }
+          case OpCode.CALL_INTERNAL: {
+            const callInstruction = instruction as CallInternalInstruction;
+            const args: Map<string, CustomValue> = new Map();
+            const callback = callInstruction.callback;
+
+            for (const arg of callInstruction.arguments) {
+              const value = frame.scope.value.get(arg.name);
+              args.set(arg.name.toString(), value);
+            }
+            
+            callback(this, frame.self, args).then((result) => {
+              this.pushStack(result);
+              this.resume(done);
+            }).catch(done);
+            return;
+          }
+          case OpCode.SLICE: {
+            const b = this.popStack();
+            const a = this.popStack();
             const value = this.popStack();
-
-            list.unshift(value);
-          }
-          
-          this.pushStack(new CustomList(list));
-          break;
-        }
-        case OpCode.GOTO_A_IF_FALSE: {
-          const condition = this.popStack();
-
-          if (condition.toTruthy()) {
-            break;
-          }
-
-          const gotoAInstruction = instruction as GotoAInstruction;
-          frame.ip = gotoAInstruction.goto.ip;
-          break;
-        }
-        case OpCode.GOTO_A_IF_FALSE_AND_PUSH: {
-          const condition = this.popStack();
-          const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
-
-          this.pushStack(new CustomNumber(value));
-
-          if (value >= 1) {
-            break;
-          }
-
-          const gotoAInstruction = instruction as GotoAInstruction;
-          frame.ip = gotoAInstruction.goto.ip;
-          break;
-        }
-        case OpCode.GOTO_A_IF_TRUE_AND_PUSH: {
-          const condition = this.popStack();
-          const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
-
-          this.pushStack(new CustomNumber(value));
-
-          if (value < 1) {
-            break;
-          }
-
-          const gotoAInstruction = instruction as GotoAInstruction;
-          frame.ip = gotoAInstruction.goto.ip;
-          break;
-        }
-        case OpCode.GOTO_A: {
-          const gotoAInstruction = instruction as GotoAInstruction;
-          frame.ip = gotoAInstruction.goto.ip;
-          break;
-        }
-        case OpCode.GOTO_A_IF_FALSE: {
-          const condition = this.popStack();
-
-          if (condition.toTruthy()) {
-            break;
-          }
-
-          const gotoAInstruction = instruction as GotoAInstruction;
-          frame.ip = gotoAInstruction.goto.ip;
-          break;
-        }
-        case OpCode.PUSH_ITERATOR: {
-          const value = this.popStack() as CustomValueWithIntrinsics;
-          const iterator = value[Symbol.iterator]();
-          this.iterators.push(iterator);
-          break;
-        }
-        case OpCode.POP_ITERATOR: {
-          this.iterators.pop();
-          break;
-        }
-        case OpCode.NEXT: {
-          const nextInstruction = instruction as NextInstruction;
-          let idx = frame.get(nextInstruction.idxVariable, this.contextTypeIntrinsics).toNumber();
-          const iterator = this.iterators.peek();
-
-          iterator.index = ++idx;
-
-          const iteratorResult = iterator.next();
-
-          this.pushStack(new CustomBoolean(!iteratorResult.done));
-
-          if (!iteratorResult.done) {
-            frame.set(nextInstruction.variable, iteratorResult.value);
-            frame.set(nextInstruction.idxVariable, new CustomNumber(idx));
-          }
-
-          break;
-        }
-        case OpCode.GET_VARIABLE: {
-          const getVariableInstroduction = instruction as GetVariableInstruction;
-          const ret = frame.locals.get(getVariableInstroduction.property, this.contextTypeIntrinsics);
-
-          if (ret instanceof CustomFunction && getVariableInstroduction.invoke) {
-            const newFrame = this.createFrame({
-              code: ret.value,
-              outer: ret.outer
-            });
-
-            for (let paramNum = 0; paramNum < ret.arguments.length; paramNum++) {
-              newFrame.set(ret.arguments[paramNum].name, ret.arguments[paramNum].defaultValue);
+            if (value instanceof CustomList || value instanceof CustomString) {
+              this.pushStack(value.slice(a, b));
+            } else {
+              this.pushStack(DefaultType.Void);
             }
-
-            newFrame.injectContext();
             break;
           }
-
-          this.pushStack(ret);
-          break;
-        }
-        case OpCode.GET_PROPERTY: {
-          const getPropertyInstruction = instruction as GetPropertyInstruction;
-          const property = this.popStack();
-          const context = this.popStack();
-
-          if (!(context instanceof CustomValueWithIntrinsics)) {
-            throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
-          }
-
-          const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
-
-          if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
-            const newFrame = this.createFrame({
-              code: ret.value.value,
-              self: context,
-              super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
-              outer: ret.value.outer
-            });
-
-            for (let paramNum = 0; paramNum < ret.value.arguments.length; paramNum++) {
-              newFrame.set(ret.value.arguments[paramNum].name, ret.value.arguments[paramNum].defaultValue);
+          case OpCode.NEW: {
+            const value = this.popStack();
+            if (value instanceof CustomMap) {
+              this.pushStack(value.createInstance());
+            } else {
+              this.pushStack(value);
             }
-
-            newFrame.injectContext();
             break;
           }
-
-          this.pushStack(ret.value);
-          break;
-        }
-        case OpCode.GET_SUPER_PROPERTY: {
-          const getPropertyInstruction = instruction as GetPropertyInstruction;
-          const property = this.popStack();
-          const ret = (frame.super as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
-
-          if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
-            const newFrame = this.createFrame({
-              code: ret.value.value,
-              self: frame.self,
-              super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
-              outer: ret.value.outer
-            });
-            
-            for (let paramNum = 0; paramNum < ret.value.arguments.length; paramNum++) {
-              newFrame.set(ret.value.arguments[paramNum].name, ret.value.arguments[paramNum].defaultValue);
+          case OpCode.NEGATE: {
+            const value = this.popStack();
+            this.pushStack(new CustomNumber(-value.toNumber()));
+            break;
+          }
+          case OpCode.FALSIFY: {
+            const value = this.popStack();
+            this.pushStack(new CustomBoolean(!value.toTruthy()));
+            break;
+          }
+          case OpCode.ISA: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(new CustomBoolean(a.instanceOf(b, this.contextTypeIntrinsics)));
+            break;
+          }
+          case OpCode.BITWISE_AND: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalBitwiseAnd(a, b));
+            break;
+          }
+          case OpCode.BITWISE_OR: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalBitwiseOr(a, b));
+            break;
+          }
+          case OpCode.BITWISE_LEFT_SHIFT: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalBitwiseLeftShift(a, b));
+            break;
+          }
+          case OpCode.BITWISE_RIGHT_SHIFT: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalBitwiseRightShift(a, b));
+            break;
+          }
+          case OpCode.BITWISE_UNSIGNED_RIGHT_SHIFT: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalBitwiseUnsignedRightShift(a, b));
+            break;
+          }
+          case OpCode.ADD: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalAdd(a, b));
+            break;
+          }
+          case OpCode.SUB: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalSub(a, b));
+            break;
+          }
+          case OpCode.MUL: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalMul(a, b));
+            break;
+          }
+          case OpCode.DIV: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalDiv(a, b));
+            break;
+          }
+          case OpCode.MOD: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalMod(a, b));
+            break;
+          }
+          case OpCode.POW: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalPow(a, b));
+            break;
+          }
+          case OpCode.EQUAL: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalEqual(a, b));
+            break;
+          }
+          case OpCode.NOT_EQUAL: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalNotEqual(a, b));
+            break;
+          }
+          case OpCode.GREATER_THAN: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalGreaterThan(a, b));
+            break;
+          }
+          case OpCode.GREATER_THAN_OR_EQUAL: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalGreaterThanOrEqual(a, b));
+            break;
+          }
+          case OpCode.LESS_THAN: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalLessThan(a, b));
+            break;
+          }
+          case OpCode.LESS_THAN_OR_EQUAL: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalLessThanOrEqual(a, b));
+            break;
+          }
+          case OpCode.AND: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalAnd(a, b));
+            break;
+          }
+          case OpCode.OR: {
+            const b = this.popStack();
+            const a = this.popStack();
+            this.pushStack(evalOr(a, b));
+            break;
+          }
+          case OpCode.RETURN: {
+            const value = this.popStack();
+            this.popFrame();
+            this.pushStack(value ?? DefaultType.Void);
+            break;
+          }
+          case OpCode.GET_ENVAR: {
+            const key = this.popStack();
+            const value = this.environmentVariables.get(key.toString());
+            this.pushStack(new CustomString(value));
+            break;
+          }
+          case OpCode.BREAKPOINT: {
+            if (this.debugger.getBreakpoint(this)) {
+              this.debugger.interact(this, instruction.source);
+              this.debugger.resume().then(() => {
+                this.resume(done);
+              }).catch(done);
             }
-            
-            newFrame.injectContext();
+            return;
+          }
+          case OpCode.BREAKPOINT_ENABLE: {
+            this.debugger.setBreakpoint(true);
             break;
           }
+          case OpCode.HALT: {
+            this.state = VMState.FINISHED;
+            this.signal.emit('done');
+            done();
+            return;
+          }
+        }
 
-          this.pushStack(ret.value);
-          break;
-        }
-        case OpCode.CALL_INTERNAL: {
-          const callInstruction = instruction as CallInternalInstruction;
-          const args: Map<string, CustomValue> = new Map();
-          const callback = callInstruction.callback;
-
-          for (const arg of callInstruction.arguments) {
-            const value = frame.scope.value.get(arg.name);
-            args.set(arg.name.toString(), value);
-          }
-
-          this.pushStack(await callback(this, frame.self, args));
-          break;
-        }
-        case OpCode.SLICE: {
-          const b = this.popStack();
-          const a = this.popStack();
-          const value = this.popStack();
-          if (value instanceof CustomList || value instanceof CustomString) {
-            this.pushStack(value.slice(a, b));
-          } else {
-            this.pushStack(DefaultType.Void);
-          }
-          break;
-        }
-        case OpCode.NEW: {
-          const value = this.popStack();
-          if (value instanceof CustomMap) {
-            this.pushStack(value.createInstance());
-          } else {
-            this.pushStack(value);
-          }
-          break;
-        }
-        case OpCode.NEGATE: {
-          const value = this.popStack();
-          this.pushStack(new CustomNumber(-value.toNumber()));
-          break;
-        }
-        case OpCode.FALSIFY: {
-          const value = this.popStack();
-          this.pushStack(new CustomBoolean(!value.toTruthy()));
-          break;
-        }
-        case OpCode.ISA: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(new CustomBoolean(a.instanceOf(b, this.contextTypeIntrinsics)));
-          break;
-        }
-        case OpCode.BITWISE_AND: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalBitwiseAnd(a, b));
-          break;
-        }
-        case OpCode.BITWISE_OR: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalBitwiseOr(a, b));
-          break;
-        }
-        case OpCode.BITWISE_LEFT_SHIFT: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalBitwiseLeftShift(a, b));
-          break;
-        }
-        case OpCode.BITWISE_RIGHT_SHIFT: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalBitwiseRightShift(a, b));
-          break;
-        }
-        case OpCode.BITWISE_UNSIGNED_RIGHT_SHIFT: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalBitwiseUnsignedRightShift(a, b));
-          break;
-        }
-        case OpCode.ADD: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalAdd(a, b));
-          break;
-        }
-        case OpCode.SUB: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalSub(a, b));
-          break;
-        }
-        case OpCode.MUL: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalMul(a, b));
-          break;
-        }
-        case OpCode.DIV: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalDiv(a, b));
-          break;
-        }
-        case OpCode.MOD: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalMod(a, b));
-          break;
-        }
-        case OpCode.POW: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalPow(a, b));
-          break;
-        }
-        case OpCode.EQUAL: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalEqual(a, b));
-          break;
-        }
-        case OpCode.NOT_EQUAL: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalNotEqual(a, b));
-          break;
-        }
-        case OpCode.GREATER_THAN: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalGreaterThan(a, b));
-          break;
-        }
-        case OpCode.GREATER_THAN_OR_EQUAL: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalGreaterThanOrEqual(a, b));
-          break;
-        }
-        case OpCode.LESS_THAN: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalLessThan(a, b));
-          break;
-        }
-        case OpCode.LESS_THAN_OR_EQUAL: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalLessThanOrEqual(a, b));
-          break;
-        }
-        case OpCode.AND: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalAnd(a, b));
-          break;
-        }
-        case OpCode.OR: {
-          const b = this.popStack();
-          const a = this.popStack();
-          this.pushStack(evalOr(a, b));
-          break;
-        }
-        case OpCode.RETURN: {
-          const value = this.popStack();
-          this.popFrame();
-          this.pushStack(value ?? DefaultType.Void);
-          break;
-        }
-        case OpCode.GET_ENVAR: {
-          const key = this.popStack();
-          const value = this.environmentVariables.get(key.toString());
-          this.pushStack(new CustomString(value));
-          break;
-        }
-        case OpCode.BREAKPOINT: {
-          if (this.debugger.getBreakpoint(this)) {
-            this.debugger.interact(this, instruction.source);
-            await this.debugger.resume();
-          }
-          break;
-        }
-        case OpCode.BREAKPOINT_ENABLE: {
-          this.debugger.setBreakpoint(true);
-          break;
-        }
-        case OpCode.HALT: {
-          this.state = VMState.FINISHED;
-          this.signal.off('exit', exitCallback);
+        if (this.actionCount++ === this.maxActionsPerLoop) {
+          this.actionCount = 0;
+          setImmediate(() => {
+            this.resume(done);
+          });
           return;
         }
       }
-
-      if (this.actionCount++ === this.maxActionsPerLoop) {
-        this.actionCount = 0;
-        await nextTick();
-      }
+    } catch (err: any) {
+      done(err);
     }
   }
 }
