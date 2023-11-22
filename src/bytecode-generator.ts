@@ -798,6 +798,17 @@ export class BytecodeGenerator {
       await this.processNode(item);
     }
 
+    this.push({
+      op: OpCode.PUSH,
+      source: this.getInternalLocation(),
+      value: DefaultType.Void
+    })
+
+    this.push({
+      op: OpCode.RETURN,
+      source: this.getInternalLocation()
+    });
+
     const fnCode = this.popContext().code;
 
     this.push({

@@ -728,7 +728,7 @@ export class VM {
         case OpCode.RETURN: {
           const value = this.popStack();
           this.popFrame();
-          this.pushStack(value);
+          this.pushStack(value ?? DefaultType.Void);
           break;
         }
         case OpCode.GET_ENVAR: {
