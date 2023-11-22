@@ -638,12 +638,20 @@ export class VM {
               const value = frame.scope.value.get(arg.name);
               args.set(arg.name.toString(), value);
             }
-            
-            callback(this, frame.self, args).then((result) => {
-              this.pushStack(result);
-              this.resume(done);
-            }).catch(done);
-            return;
+
+            const immediateRet = callback(this, frame.self, args);
+
+            // Due to transformations it can happen that return values may not be PromiseLike
+            if (immediateRet?.then) {
+                immediateRet.then((ret) => {
+                    this.pushStack(ret);
+                    this.resume(done);
+                }).catch(done);
+                return;
+            }
+
+            this.pushStack(immediateRet as unknown as CustomValue);
+            break;
           }
           case OpCode.SLICE: {
             const b = this.popStack();
