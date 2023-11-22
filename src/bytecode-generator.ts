@@ -58,6 +58,13 @@ function generateCustomValueFromASTLiteral(node: ASTLiteral) {
   }
 }
 
+function unwrap(node: ASTBase) {
+  while (node instanceof ASTParenthesisExpression) {
+    node = node.expression;
+  }
+  return node;
+}
+
 export interface BytecodeCompileResult {
   code: Instruction[];
   imports: Map<string, Instruction[]>;
@@ -392,7 +399,9 @@ export class BytecodeGenerator {
   }
 
   protected async processMemberExpression(node: ASTMemberExpression, isInvoke: boolean = true): Promise<void> {
-    if (node.base instanceof ASTIdentifier && node.base.name === 'super') {
+    const base = unwrap(node.base);
+    
+    if (base instanceof ASTIdentifier && base.name === 'super') {
       this.push({
         op: OpCode.PUSH,
         source: this.getSourceLocation(node.identifier),
@@ -404,7 +413,7 @@ export class BytecodeGenerator {
         invoke: isInvoke
       });
     } else {
-      await this.processSubNode(node.base);
+      await this.processSubNode(base);
       if (node.identifier instanceof ASTIdentifier) {
         await this.processIdentifier(node.identifier, false, isInvoke);
       } else {
@@ -414,15 +423,17 @@ export class BytecodeGenerator {
   }
 
   protected async processIndexExpression(node: ASTIndexExpression, isInvoke: boolean = true): Promise<void> {
-    if (node.base instanceof ASTIdentifier && node.base.name === 'super') {
+    const base = unwrap(node.base);
+    
+    if (base instanceof ASTIdentifier && base.name === 'super') {
       await this.processSubNode(node.index);
       this.push({
         op: OpCode.GET_SUPER_PROPERTY,
-        source: this.getSourceLocation(node),
+        source: this.getSourceLocation(base),
         invoke: isInvoke
       });
     } else {
-      await this.processSubNode(node.base);
+      await this.processSubNode(base);
       await this.processSubNode(node.index);
       this.push({
         op: OpCode.GET_PROPERTY,
@@ -504,10 +515,10 @@ export class BytecodeGenerator {
   }
 
   protected async processAssignmentStatement(node: ASTAssignmentStatement): Promise<void> {
-    let variable = node.variable;
+    let variable = unwrap(node.variable);
 
     if (variable instanceof ASTUnaryExpression) {
-      variable = variable.argument;
+      variable = unwrap(variable.argument);
     }
 
     if (variable instanceof ASTMemberExpression) {
@@ -557,9 +568,17 @@ export class BytecodeGenerator {
     });
   }
 
-  protected async processEvaluationExpression(node: ASTEvaluationExpression): Promise<void> {
-    await this.processSubNode(node.left);
-    await this.processSubNode(node.right);
+  protected async processEvaluationExpression(node: ASTEvaluationExpression, isSubEval: boolean = false): Promise<void> {
+    if (node.left instanceof ASTEvaluationExpression) {
+      await this.processEvaluationExpression(node.left, true);
+    } else {
+      await this.processSubNode(node.left);
+    }
+    if (node.right instanceof ASTEvaluationExpression) {
+      await this.processEvaluationExpression(node.right, true);
+    } else {
+      await this.processSubNode(node.right);
+    }
 
     switch (node.operator) {
       case Operator.Isa: {
@@ -858,7 +877,7 @@ export class BytecodeGenerator {
   }
 
   protected async processUnaryExpression(node: ASTUnaryExpression): Promise<void> {
-    const arg = node.argument;
+    const arg = unwrap(node.argument);
 
     switch (node.operator) {
       case Operator.Reference:
@@ -905,10 +924,11 @@ export class BytecodeGenerator {
         await this.processSubNode(arg);
       }
     }
-    const left = node.base;
+    const left = unwrap(node.base);
 
     if (left instanceof ASTMemberExpression) {
-      if (left.base instanceof ASTIdentifier && left.base.name === 'super') {
+      const base = unwrap(left.base);
+      if (base instanceof ASTIdentifier && base.name === 'super') {
         this.push({
           op: OpCode.PUSH,
           source: this.getSourceLocation(left.identifier),
@@ -921,7 +941,7 @@ export class BytecodeGenerator {
           length: node.arguments.length
         });
       } else {
-        await this.processSubNode(left.base);
+        await this.processSubNode(base);
         this.push({
           op: OpCode.PUSH,
           source: this.getSourceLocation(left.identifier),
@@ -935,7 +955,8 @@ export class BytecodeGenerator {
         });
       }
     } else if (left instanceof ASTIndexExpression) {
-      if (left.base instanceof ASTIdentifier && left.base.name === 'super') {
+      const base = unwrap(left.base);
+      if (base instanceof ASTIdentifier && base.name === 'super') {
         await this.processSubNode(left.index);
         await pushArgs();
         this.push({
@@ -944,7 +965,7 @@ export class BytecodeGenerator {
           length: node.arguments.length
         });
       } else {
-        await this.processSubNode(left.base);
+        await this.processSubNode(base);
         await this.processSubNode(left.index);
         await pushArgs();
         this.push({
