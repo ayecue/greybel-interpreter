@@ -127,6 +127,7 @@ export class BytecodeGenerator {
   protected getSourceLocation(node: ASTBase): SourceLocation {
     const target = this.target.peek();
     return {
+      name: node.type,
       path: target,
       start: node.start,
       end: node.end
@@ -135,6 +136,7 @@ export class BytecodeGenerator {
 
   protected getInternalLocation(): SourceLocation {
     return {
+      name: 'internal',
       path: 'internal',
       start: { line: 0, character: 0 },
       end: { line: 0, character: 0 }

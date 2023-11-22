@@ -69,6 +69,7 @@ export interface FunctionDefinitionInstructionArgument {
 }
 
 export type SourceLocation = {
+  name: string;
   path: string;
   start: ASTPosition;
   end: ASTPosition;

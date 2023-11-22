@@ -32,6 +32,7 @@ export class CustomFunction extends CustomValue {
         {
           op: OpCode.CALL_INTERNAL,
           source: {
+            name: 'internal',
             path: 'internal',
             start: { line: 0, character: 0 },
             end: { line: 0, character: 0 }
@@ -42,6 +43,7 @@ export class CustomFunction extends CustomValue {
         {
           op: OpCode.RETURN,
           source: {
+            name: 'internal',
             path: 'internal',
             start: { line: 0, character: 0 },
             end: { line: 0, character: 0 }

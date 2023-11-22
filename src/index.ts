@@ -33,5 +33,6 @@ export { ObjectValue } from './utils/object-value';
 export { deepEqual } from './utils/deep-equal';
 export { deepHash } from './utils/deep-hash';
 export { Debugger, VM, VMOptions } from './vm';
-export { Instruction } from './byte-compiler/instruction';
+export { Instruction, OpCode } from './byte-compiler/instruction';
 export { BytecodeGenerator, BytecodeCompileResult, BytecodeConverterOptions, BytecodeGeneratorContext } from './bytecode-generator';
+export { Stack } from './utils/stack';
