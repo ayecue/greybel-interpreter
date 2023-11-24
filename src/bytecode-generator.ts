@@ -100,8 +100,21 @@ export class BytecodeGenerator {
   }
 
   parse(code: string) {
-    const parser = new Parser(code);
-    return parser.parseChunk();
+    try {
+      const parser = new Parser(code);
+      return parser.parseChunk();
+    } catch (err: any) {
+      if (err instanceof PrepareError) {
+        this.handler.errorHandler.raise(err);
+      } else {
+        this.handler.errorHandler.raise(
+          new PrepareError(err.message, {
+            range: err.range,
+            target: this.target.peek()
+          })
+        );
+      }
+    }
   }
 
   async compile(code: string): Promise<BytecodeCompileResult> {
