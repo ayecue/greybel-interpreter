@@ -30,4 +30,8 @@ export class Stack<T> {
   values(): T[] {
     return this.stack.slice(0);
   }
+
+  get length(): number {
+    return this.stack.length;
+  }
 }

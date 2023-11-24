@@ -213,6 +213,10 @@ export class VM {
   }
 
   private popFrame(): OperationContext {
+    if (this.frames.length === 1) {
+      return null;
+    }
+
     const frame = this.frames.pop();
     this.getFrame().ip++;
     return frame;
