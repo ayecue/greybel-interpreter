@@ -88,7 +88,7 @@ function setupAPI() {
 
   const pop = CustomFunction.createExternalWithSelf(
     'pop',
-    (fnCtx, self, args) => {
+    (vm, self, args) => {
       const origin = args.get('self');
 
       if (origin instanceof CustomMap) {
@@ -109,7 +109,7 @@ function setupAPI() {
   const remove = CustomFunction.createExternalWithSelf(
     'remove',
     (
-      _ctx,
+      _vm,
       _self,
       args
     ) => {
@@ -142,6 +142,32 @@ function setupAPI() {
       throw new Error("Type Error: 'remove' requires map, list, or string");
     }
   ).addArgument('keyValue');
+
+  const values = CustomFunction.createExternalWithSelf(
+    'values',
+    (
+      _vm,
+      _self,
+      args,
+    ) => {
+      const origin = args.get('self');
+  
+      if (origin instanceof CustomMap) {
+        const values = Array.from(origin.value.values());
+        return Promise.resolve(new CustomList(values));
+      } else if (origin instanceof CustomList) {
+        const values = Object.values(origin.value);
+        return Promise.resolve(new CustomList(values));
+      } else if (origin instanceof CustomString) {
+        const values = Object.values(origin.value).map(
+          (item) => new CustomString(item)
+        );
+        return Promise.resolve(new CustomList(values));
+      }
+  
+      return Promise.resolve(DefaultType.Void);
+    }
+  );
 
   api.set(new CustomString('remove'), remove);
 
@@ -189,6 +215,11 @@ function setupAPI() {
       const result = args.get('self').has(value);
       return Promise.resolve(new CustomBoolean(result));
     }).addArgument('value')
+  );
+
+  CustomMap.addIntrinsic(
+    new CustomString('values'),
+    values
   );
 
   CustomMap.addIntrinsic(new CustomString('pop'), pop);

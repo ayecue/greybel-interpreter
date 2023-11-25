@@ -111,7 +111,6 @@ export class VM {
   private readonly STACK_LIMIT: number = 512;
   private sp: number;
   private stack: CustomValue[] = new Array(this.STACK_LIMIT);
-  private iterators: Stack<Iterator<CustomValue> & { index: number }>;
   private time: number;
 
   readonly target: string;
@@ -135,7 +134,6 @@ export class VM {
     this.handler = options.handler;
     this.debugger = options.debugger;
     this.environmentVariables = options.environmentVariables ?? new Map();
-    this.iterators = new Stack();
     this.imports = options.imports ?? new Map();
     this.externalFrames = options.externalFrames ?? new Stack();
   }
@@ -533,17 +531,17 @@ export class VM {
           case OpCode.PUSH_ITERATOR: {
             const value = this.popStack() as CustomValueWithIntrinsics;
             const iterator = value[Symbol.iterator]();
-            this.iterators.push(iterator);
+            frame.iterators.push(iterator);
             break;
           }
           case OpCode.POP_ITERATOR: {
-            this.iterators.pop();
+            frame.iterators.pop();
             break;
           }
           case OpCode.NEXT: {
             const nextInstruction = instruction as NextInstruction;
             let idx = frame.get(nextInstruction.idxVariable, this.contextTypeIntrinsics).toNumber();
-            const iterator = this.iterators.peek();
+            const iterator = frame.iterators.peek();
 
             iterator.index = ++idx;
 
@@ -809,6 +807,7 @@ export class VM {
           }
           case OpCode.RETURN: {
             const value = this.popStack();
+            frame.iterators.clear();
             this.popFrame();
             this.pushStack(value ?? DefaultType.Void);
             break;

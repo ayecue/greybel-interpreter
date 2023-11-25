@@ -7,6 +7,7 @@ import { ContextTypeIntrinsics } from './context/types';
 import { Instruction } from './byte-compiler/instruction';
 import { CustomString } from './types/string';
 import { CustomValueWithIntrinsicsResult } from './types/with-intrinsics';
+import { Stack } from './utils/stack';
 
 export enum ContextType {
   Api,
@@ -93,6 +94,7 @@ export interface ContextForkOptions {
 export class OperationContext {
   /* eslint-disable no-use-before-define */
   previous: OperationContext;
+  iterators: Stack<Iterator<CustomValue> & { index: number }>;
 
   readonly type: ContextType;
   readonly scope: Scope;
@@ -102,7 +104,7 @@ export class OperationContext {
 
   ip: number;
   code: Instruction[];
-
+  
   self: CustomValue | null;
   super: CustomValue | null;
 
@@ -126,6 +128,7 @@ export class OperationContext {
   ];
 
   constructor(options: ContextOptions) {
+    this.iterators = new Stack();
     this.code = options.code;
     this.ip = 0;
     this.previous = options.previous ?? null;

@@ -34,4 +34,9 @@ export class Stack<T> {
   get length(): number {
     return this.stack.length;
   }
+
+  clear() {
+    this.stack = [];
+    this.last = undefined;
+  }
 }
