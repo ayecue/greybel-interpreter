@@ -3,6 +3,7 @@ import {
   Instruction,
   OpCode
 } from '../byte-compiler/instruction';
+import { RuntimeKeyword } from '../byte-compiler/keywords';
 import { OperationContext } from '../context';
 import { ContextTypeIntrinsics } from '../context/types';
 import { getStringHashCode } from '../utils/hash';
@@ -58,7 +59,7 @@ export class CustomFunction extends CustomValue {
     name: string,
     callback: CustomFunctionCallback
   ) {
-    return this.createExternal(name, callback).addArgument('self');
+    return this.createExternal(name, callback).addArgument(RuntimeKeyword.Self);
   }
 
   readonly outer?: OperationContext;

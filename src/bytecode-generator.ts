@@ -42,6 +42,7 @@ import { CustomString } from './types/string';
 import { DefaultType } from './types/default';
 import { Stack } from './utils/stack';
 import { HandlerContainer } from './handler-container';
+import { RuntimeKeyword } from './byte-compiler/keywords';
 
 function generateCustomValueFromASTLiteral(node: ASTLiteral) {
   switch (node.type) {
@@ -419,7 +420,7 @@ export class BytecodeGenerator {
   protected async processMemberExpression(node: ASTMemberExpression, isInvoke: boolean = true): Promise<void> {
     const base = unwrap(node.base);
     
-    if (base instanceof ASTIdentifier && base.name === 'super') {
+    if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
       this.push({
         op: OpCode.PUSH,
         source: this.getSourceLocation(node.identifier),
@@ -443,7 +444,7 @@ export class BytecodeGenerator {
   protected async processIndexExpression(node: ASTIndexExpression, isInvoke: boolean = true): Promise<void> {
     const base = unwrap(node.base);
     
-    if (base instanceof ASTIdentifier && base.name === 'super') {
+    if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
       await this.processSubNode(node.index);
       this.push({
         op: OpCode.GET_SUPER_PROPERTY,
@@ -474,35 +475,35 @@ export class BytecodeGenerator {
   protected async processIdentifier(node: ASTIdentifier, isFirst: boolean = true, isInvoke: boolean = true): Promise<void> {
     if (isFirst) {
       switch (node.name) {
-        case 'self': {
+        case RuntimeKeyword.Self: {
           this.push({
             op: OpCode.GET_SELF,
             source: this.getSourceLocation(node)
           });
           return;
         }
-        case 'super': {
+        case RuntimeKeyword.Super: {
           this.push({
             op: OpCode.GET_SUPER,
             source: this.getSourceLocation(node)
           });
           return;
         }
-        case 'outer': {
+        case RuntimeKeyword.Outer: {
           this.push({
             op: OpCode.GET_OUTER,
             source: this.getSourceLocation(node)
           });
           return;
         }
-        case 'locals': {
+        case RuntimeKeyword.Locals: {
           this.push({
             op: OpCode.GET_LOCALS,
             source: this.getSourceLocation(node)
           });
           return;
         }
-        case 'globals': {
+        case RuntimeKeyword.Globals: {
           this.push({
             op: OpCode.GET_GLOBALS,
             source: this.getSourceLocation(node)
@@ -968,7 +969,7 @@ export class BytecodeGenerator {
 
     if (left instanceof ASTMemberExpression) {
       const base = unwrap(left.base);
-      if (base instanceof ASTIdentifier && base.name === 'super') {
+      if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
         this.push({
           op: OpCode.PUSH,
           source: this.getSourceLocation(left.identifier),
@@ -996,7 +997,7 @@ export class BytecodeGenerator {
       }
     } else if (left instanceof ASTIndexExpression) {
       const base = unwrap(left.base);
-      if (base instanceof ASTIdentifier && base.name === 'super') {
+      if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
         await this.processSubNode(left.index);
         await pushArgs();
         this.push({

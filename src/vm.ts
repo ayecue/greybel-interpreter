@@ -14,9 +14,10 @@ import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
 import { setImmediate } from "./utils/set-immediate";
-import { CustomString } from "./types/string";
+import { CustomString, Self } from "./types/string";
 import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
+import { call, callWithContext } from "./vm/call";
 
 export class Debugger {
   private breakpoint: boolean = false;
@@ -278,7 +279,7 @@ export class VM {
             break;
           }
           case OpCode.GET_SELF: {
-            this.pushStack(frame.self ?? DefaultType.Void);
+            this.pushStack(frame.locals.get(Self, this.contextTypeIntrinsics));
             break;
           }
           case OpCode.GET_SUPER: {
@@ -311,7 +312,7 @@ export class VM {
           }
           case OpCode.CALL: {
             const callInstruction = instruction as CallInstruction;
-            const args = new Array(callInstruction.length);
+            const args: CustomValue[] = new Array(callInstruction.length);
 
             for (let i = 0; i < callInstruction.length; i++) {
               args[i] = this.popStack();
@@ -325,38 +326,15 @@ export class VM {
               }
 
               const newFrame = this.createFrame({ code: fn.value, outer: fn.outer });
-              const argsCount = args.length;
-
-              for (let index = 0; index < argsCount; index++) {
-                const argument = args.shift();
-                const paramNum = argsCount - 1 - index;
-
-                if (paramNum >= fn.arguments.length) {
-                  throw new Error('Too many arguments.');
-                }
-
-                const param = fn.arguments[paramNum].name;
-
-                if (param.toString() == "self") {
-                  newFrame.self = argument;
-                  newFrame.super = argument instanceof CustomMap ? (argument.getIsa() ?? new CustomMap()) : null;
-                } else {
-                  newFrame.set(param, argument);
-                }
-              }
               
-              for (let paramNum = argsCount; paramNum < fn.arguments.length; paramNum++) {
-                newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
-              }
-
-              newFrame.injectContext();
+              call(newFrame, fn, args);
             }
 
             break;
           }
           case OpCode.CALL_WITH_CONTEXT: {
             const callInstruction = instruction as CallInstruction;
-            const args = new Array(callInstruction.length);
+            const args: CustomValue[] = new Array(callInstruction.length);
 
             for (let i = 0; i < callInstruction.length; i++) {
               args[i] = this.popStack();
@@ -373,26 +351,8 @@ export class VM {
                 super: context instanceof CustomMap ? (context.getIsa() ?? new CustomMap()) : null,
                 outer: fn.outer
               });
-              const argsCount = args.length;
-              let selfParam = fn.arguments.length > 0 && fn.arguments[0].name.toString() == "self" ? 1 : 0;
 
-              for (let index = 0; index < argsCount; index++) {
-                const argument = args.shift();
-                const paramNum = argsCount - 1 - index + selfParam;
-
-                if (paramNum >= fn.arguments.length) {
-                  throw new Error('Too many arguments.');
-                }
-
-                const param = fn.arguments[paramNum].name;
-                if (param.toString() !== "self") newFrame.set(param, argument);
-              }
-
-              for (let paramNum = argsCount + selfParam; paramNum < fn.arguments.length; paramNum++) {
-                newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
-              }
-
-              newFrame.injectContext();
+              callWithContext(newFrame, fn, args);
             }
 
             break;
@@ -422,26 +382,8 @@ export class VM {
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
                 outer: fn.outer
               });
-              let selfParam = fn.arguments.length > 0 && fn.arguments[0].name.toString() == "self" ? 1 : 0;
-              const argsCount = args.length;
 
-              for (let index = 0; index < argsCount; index++) {
-                const argument = args.shift();
-                const paramNum = argsCount - 1 - index + selfParam;
-
-                if (paramNum >= fn.arguments.length) {
-                  throw new Error('Too many arguments.');
-                }
-
-                const param = fn.arguments[paramNum].name;
-                if (param.toString() !== "self") newFrame.set(param, argument);
-              }
-
-              for (let paramNum = argsCount + selfParam; paramNum < fn.arguments.length; paramNum++) {
-                newFrame.set(fn.arguments[paramNum].name, fn.arguments[paramNum].defaultValue);
-              }
-
-              newFrame.injectContext();
+              callWithContext(newFrame, fn, args);
             }
 
             break;
@@ -566,11 +508,7 @@ export class VM {
                 outer: ret.outer
               });
 
-              for (let paramNum = 0; paramNum < ret.arguments.length; paramNum++) {
-                newFrame.set(ret.arguments[paramNum].name, ret.arguments[paramNum].defaultValue);
-              }
-
-              newFrame.injectContext();
+              call(newFrame, ret, []);
               break;
             }
 
@@ -596,11 +534,7 @@ export class VM {
                 outer: ret.value.outer
               });
 
-              for (let paramNum = 0; paramNum < ret.value.arguments.length; paramNum++) {
-                newFrame.set(ret.value.arguments[paramNum].name, ret.value.arguments[paramNum].defaultValue);
-              }
-
-              newFrame.injectContext();
+              callWithContext(newFrame, ret.value, []);
               break;
             }
 
@@ -620,11 +554,7 @@ export class VM {
                 outer: ret.value.outer
               });
               
-              for (let paramNum = 0; paramNum < ret.value.arguments.length; paramNum++) {
-                newFrame.set(ret.value.arguments[paramNum].name, ret.value.arguments[paramNum].defaultValue);
-              }
-              
-              newFrame.injectContext();
+              callWithContext(newFrame, ret.value, []);
               break;
             }
 

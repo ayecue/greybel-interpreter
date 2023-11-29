@@ -214,23 +214,6 @@ describe('interpreter', function () {
       ).rejects.toEqual(new Error('Unknown path foo.'));
     });
 
-    test('should throw since property on self cannot be resolved', async function () {
-      await expect(interpreter.run({
-        customCode: `
-          Foo = {"a":123}
-          Foo.a = function
-            locals.self = self
-            b = function
-              print self.a
-            end function
-            b
-          end function
-          Foo.a
-          `
-        })
-      ).rejects.toEqual(new Error('Unknown path a.'));
-    });
-
     test('should throw since anonymous function do not have an outer', async function () {
       await expect(interpreter.run({
         customCode: `

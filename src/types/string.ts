@@ -1,3 +1,4 @@
+import { RuntimeKeyword } from '../byte-compiler/keywords';
 import { ContextTypeIntrinsics } from '../context/types';
 import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
@@ -164,3 +165,10 @@ export class CustomString extends CustomValueWithIntrinsics {
     return getStringHashCode(this.value);
   }
 }
+
+export const Self = new CustomString(RuntimeKeyword.Self);
+export const Isa = new CustomString(RuntimeKeyword.Isa);
+export const Super = new CustomString(RuntimeKeyword.Super);
+export const Globals = new CustomString(RuntimeKeyword.Globals);
+export const Locals = new CustomString(RuntimeKeyword.Locals);
+export const Outer = new CustomString(RuntimeKeyword.Outer);

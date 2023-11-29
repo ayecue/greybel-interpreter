@@ -4,13 +4,12 @@ import { ObjectValue } from '../utils/object-value';
 import { uuid } from '../utils/uuid';
 import { CustomValue } from './base';
 import { Void } from './nil';
-import { CustomString } from './string';
+import { CustomString, Isa } from './string';
 import {
   CustomObject,
   CustomValueWithIntrinsicsResult
 } from './with-intrinsics';
 
-export const ISA_PROPERTY = new CustomString('__isa');
 export const CUSTOM_MAP_MAX_DEPTH = 2;
 export const CUSTOM_MAP_MAX_DEPTH_VALUE = '{...}';
 
@@ -220,13 +219,13 @@ export class CustomMap extends CustomObject {
 
   createInstance(): CustomMap {
     const newInstance = new CustomMap(new ObjectValue());
-    newInstance.value.set(ISA_PROPERTY, this);
+    newInstance.value.set(Isa, this);
     newInstance.isInstance = true;
     return newInstance;
   }
 
   getIsa(): CustomMap | null {
-    const isa = this.value.get(ISA_PROPERTY);
+    const isa = this.value.get(Isa);
     return isa instanceof CustomMap ? isa : null;
   }
 

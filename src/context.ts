@@ -5,7 +5,7 @@ import { CustomMap } from './types/map';
 import { ObjectValue } from './utils/object-value';
 import { ContextTypeIntrinsics } from './context/types';
 import { Instruction } from './byte-compiler/instruction';
-import { CustomString } from './types/string';
+import { CustomString, Self, Super } from './types/string';
 import { CustomValueWithIntrinsicsResult } from './types/with-intrinsics';
 import { Stack } from './utils/stack';
 
@@ -221,8 +221,8 @@ export class OperationContext {
   }
 
   injectContext() {
-    if (this.self) this.set(new CustomString('self'), this.self);
-    if (this.super) this.set(new CustomString('super'), this.super);
+    if (this.self) this.set(Self, this.self);
+    if (this.super) this.set(Super, this.super);
   }
 
   getCurrentInstruction(): Instruction {
