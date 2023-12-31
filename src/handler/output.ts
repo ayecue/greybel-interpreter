@@ -11,11 +11,22 @@ export interface PrintOptions {
   replace: boolean;
 }
 
+export interface UpdateOptions {
+  appendNewLine: boolean;
+  replace: boolean;
+}
+
 export abstract class OutputHandler {
   abstract print(
     vm: VM,
     message: string,
     options?: Partial<PrintOptions>
+  ): void;
+
+  abstract update(
+    vm: VM,
+    message: string,
+    options?: Partial<UpdateOptions>
   ): void;
 
   abstract progress(vm: VM, timeout: number): PromiseLike<void>;
@@ -40,6 +51,18 @@ export class DefaultOutputHandler extends OutputHandler {
       process.stdout.write(message + '\n');
     } else {
       process.stdout.write(message);
+    }
+  }
+
+  update(
+    _vm: VM,
+    message: string,
+    { appendNewLine = false, replace = false }: Partial<UpdateOptions> = {}
+  ) {
+    if (replace) {
+      process.stdout.write(message + (appendNewLine ? '\n' : ''));
+    } else {
+      process.stdout.write('\x1b[2K\r' + message + (appendNewLine ? '\n' : ''));
     }
   }
 
