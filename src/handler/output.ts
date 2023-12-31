@@ -60,9 +60,9 @@ export class DefaultOutputHandler extends OutputHandler {
     { appendNewLine = false, replace = false }: Partial<UpdateOptions> = {}
   ) {
     if (replace) {
-      process.stdout.write(message + (appendNewLine ? '\n' : ''));
-    } else {
       process.stdout.write('\x1b[2K\r' + message + (appendNewLine ? '\n' : ''));
+    } else {
+      process.stdout.write(message + (appendNewLine ? '\n' : ''));
     }
   }
 
