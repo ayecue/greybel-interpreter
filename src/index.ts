@@ -10,7 +10,8 @@ export {
   DefaultOutputHandler,
   KeyEvent,
   OutputHandler,
-  PrintOptions
+  PrintOptions,
+  UpdateOptions
 } from './handler/output';
 export { DefaultResourceHandler, ResourceHandler } from './handler/resource';
 export { HandlerContainer } from './handler-container';
