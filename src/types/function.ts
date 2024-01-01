@@ -39,7 +39,8 @@ export class CustomFunction extends CustomValue {
             end: { line: 0, character: 0 }
           },
           callback,
-          arguments: args
+          arguments: args,
+          ip: 0
         },
         {
           op: OpCode.RETURN,
@@ -48,7 +49,8 @@ export class CustomFunction extends CustomValue {
             path: 'internal',
             start: { line: 0, character: 0 },
             end: { line: 0, character: 0 }
-          }
+          },
+          ip: 1
         }
       ],
       args
