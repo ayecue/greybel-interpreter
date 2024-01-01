@@ -102,6 +102,7 @@ export class OperationContext {
   isProtected: boolean;
   injected: boolean;
 
+  cp: null | number;
   ip: number;
   code: Instruction[];
   
@@ -130,6 +131,7 @@ export class OperationContext {
   constructor(options: ContextOptions) {
     this.iterators = new Stack();
     this.code = options.code;
+    this.cp = null;
     this.ip = 0;
     this.previous = options.previous ?? null;
     this.type = options.type ?? ContextType.Api;
@@ -225,8 +227,9 @@ export class OperationContext {
     if (this.super) this.set(Super, this.super);
   }
 
-  getCurrentInstruction(): Instruction {
-    return this.code[this.ip];
+  getCurrentInstruction(): Instruction | null {
+    if (this.cp === null) return null;
+    return this.code[this.cp];
   }
 
   fork(options: ContextForkOptions): OperationContext {

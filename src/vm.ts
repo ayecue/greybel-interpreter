@@ -198,7 +198,6 @@ export class VM {
   }
 
   private createFrame(options: FrameOptions): OperationContext {
-    this.getFrame().ip--;
     const ctx = this.getFrame().fork({
       code: options.code,
       type: ContextType.Function,
@@ -217,7 +216,7 @@ export class VM {
     }
 
     const frame = this.frames.pop();
-    this.getFrame().ip++;
+    frame.cp = null;
     return frame;
   }
 
@@ -252,6 +251,7 @@ export class VM {
         }
 
         const instruction = frame.code[frame.ip++];
+        frame.cp = instruction.ip;
 
         switch (instruction.op) {
           case OpCode.NOOP: {
@@ -325,9 +325,14 @@ export class VM {
                 throw new Error('Too many arguments.');
               }
 
-              const newFrame = this.createFrame({ code: fn.value, outer: fn.outer });
+              const newFrame = this.getFrame().fork({
+                code: fn.value,
+                type: ContextType.Function,
+                outer: fn.outer
+              });
               
               call(newFrame, fn, args);
+              this.frames.push(newFrame);
             }
 
             break;
@@ -345,7 +350,8 @@ export class VM {
             const fn = context.get(propertyName, this.contextTypeIntrinsics);
 
             if (fn instanceof CustomFunction) {
-              const newFrame = this.createFrame({
+              const newFrame = this.getFrame().fork({
+                type: ContextType.Function,
                 code: fn.value,
                 self: context,
                 super: context instanceof CustomMap ? (context.getIsa() ?? new CustomMap()) : null,
@@ -353,6 +359,7 @@ export class VM {
               });
 
               callWithContext(newFrame, fn, args);
+              this.frames.push(newFrame);
             }
 
             break;
@@ -376,7 +383,8 @@ export class VM {
             const fn = ret.value;
 
             if (fn instanceof CustomFunction) {
-              const newFrame = this.createFrame({
+              const newFrame = this.getFrame().fork({
+                type: ContextType.Function,
                 code: fn.value,
                 self: frame.self,
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
@@ -384,6 +392,7 @@ export class VM {
               });
 
               callWithContext(newFrame, fn, args);
+              this.frames.push(newFrame);
             }
 
             break;
@@ -503,12 +512,14 @@ export class VM {
             const ret = frame.locals.get(getVariableInstroduction.property, this.contextTypeIntrinsics);
 
             if (ret instanceof CustomFunction && getVariableInstroduction.invoke) {
-              const newFrame = this.createFrame({
+              const newFrame = this.getFrame().fork({
                 code: ret.value,
+                type: ContextType.Function,
                 outer: ret.outer
               });
 
               call(newFrame, ret, []);
+              this.frames.push(newFrame);
               break;
             }
 
@@ -527,7 +538,8 @@ export class VM {
             const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
 
             if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
-              const newFrame = this.createFrame({
+              const newFrame = this.getFrame().fork({
+                type: ContextType.Function,
                 code: ret.value.value,
                 self: context,
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
@@ -535,6 +547,7 @@ export class VM {
               });
 
               callWithContext(newFrame, ret.value, []);
+              this.frames.push(newFrame);
               break;
             }
 
@@ -547,7 +560,8 @@ export class VM {
             const ret = (frame.super as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
 
             if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
-              const newFrame = this.createFrame({
+              const newFrame = this.getFrame().fork({
+                type: ContextType.Function,
                 code: ret.value.value,
                 self: frame.self,
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
@@ -555,6 +569,7 @@ export class VM {
               });
               
               callWithContext(newFrame, ret.value, []);
+              this.frames.push(newFrame);
               break;
             }
 

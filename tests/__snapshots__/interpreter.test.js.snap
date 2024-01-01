@@ -753,7 +753,7 @@ exports[`interpreter default scripts use-global-scope.src 1`] = `"\\"global\\""`
 exports[`interpreter default scripts use-local-scope.src 1`] = `"\\"local\\""`;
 
 exports[`interpreter specific cases should contain correct stack 1`] = `
-"at unknown:3:23
+"at unknown:3:15
 at unknown:9:15
 at unknown:12:20"
 `;
