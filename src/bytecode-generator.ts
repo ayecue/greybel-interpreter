@@ -66,6 +66,19 @@ function unwrap(node: ASTBase) {
   return node;
 }
 
+export interface LineContext {
+  isCommand?: boolean;
+  includeOuter?: boolean;
+}
+
+export interface LineCallableContext extends LineContext {
+  isReference?: boolean;
+}
+
+export interface LineIdentifierContext extends LineCallableContext {
+  isDescending?: boolean;
+}
+
 export interface BytecodeCompileResult {
   code: Instruction[];
   imports: Map<string, Instruction[]>;
@@ -199,14 +212,14 @@ export class BytecodeGenerator {
 
     switch (node.type) {
       case ASTType.MemberExpression:
-        await this.processMemberExpression(node as ASTMemberExpression);
+        await this.processMemberExpression(node as ASTMemberExpression, { isCommand: true });
         this.push({
           op: OpCode.POP,
           source: this.getSourceLocation(node)
         });
         return;
       case ASTType.IndexExpression:
-        await this.processIndexExpression(node as ASTIndexExpression);
+        await this.processIndexExpression(node as ASTIndexExpression, { isCommand: true });
         this.push({
           op: OpCode.POP,
           source: this.getSourceLocation(node)
@@ -346,13 +359,13 @@ export class BytecodeGenerator {
     }
   }
 
-  protected async processSubNode(node: ASTBase, ignoreOuter: boolean = true): Promise<void> {
+  protected async processSubNode(node: ASTBase, context?: LineContext): Promise<void> {
     switch (node.type) {
       case ASTType.MemberExpression:
-        await this.processMemberExpression(node as ASTMemberExpression);
+        await this.processMemberExpression(node as ASTMemberExpression, context);
         return;
       case ASTType.IndexExpression:
-        await this.processIndexExpression(node as ASTIndexExpression);
+        await this.processIndexExpression(node as ASTIndexExpression, context);
         return;
       case ASTType.SliceExpression:
         await this.processSliceExpression(node as ASTSliceExpression);
@@ -378,7 +391,7 @@ export class BytecodeGenerator {
         await this.processListConstructorExpression(node as ASTMapConstructorExpression);
         return;
       case ASTType.FunctionDeclaration:
-        await this.processFunctionDeclaration(node as ASTFunctionStatement, ignoreOuter);
+        await this.processFunctionDeclaration(node as ASTFunctionStatement, context);
         return;
       case ASTType.ParenthesisExpression:
         await this.processSubNode((node as ASTParenthesisExpression).expression);
@@ -417,7 +430,7 @@ export class BytecodeGenerator {
     }
   }
 
-  protected async processMemberExpression(node: ASTMemberExpression, isInvoke: boolean = true): Promise<void> {
+  protected async processMemberExpression(node: ASTMemberExpression, context?: LineCallableContext): Promise<void> {
     const base = unwrap(node.base);
     
     if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
@@ -429,19 +442,19 @@ export class BytecodeGenerator {
       this.push({
         op: OpCode.GET_SUPER_PROPERTY,
         source: this.getSourceLocation(node.identifier),
-        invoke: isInvoke
+        invoke: !context?.isReference
       });
     } else {
-      await this.processSubNode(base);
+      await this.processSubNode(base, context);
       if (node.identifier instanceof ASTIdentifier) {
-        await this.processIdentifier(node.identifier, false, isInvoke);
+        await this.processIdentifier(node.identifier, { isDescending: true, isReference: !!context?.isReference });
       } else {
         await this.processSubNode(node.identifier);
       }
     }
   }
 
-  protected async processIndexExpression(node: ASTIndexExpression, isInvoke: boolean = true): Promise<void> {
+  protected async processIndexExpression(node: ASTIndexExpression, context?: LineCallableContext): Promise<void> {
     const base = unwrap(node.base);
     
     if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
@@ -449,15 +462,15 @@ export class BytecodeGenerator {
       this.push({
         op: OpCode.GET_SUPER_PROPERTY,
         source: this.getSourceLocation(node.index, node.type),
-        invoke: isInvoke
+        invoke: !context?.isReference && !!context?.isCommand
       });
     } else {
-      await this.processSubNode(base);
-      await this.processSubNode(node.index);
+      await this.processSubNode(base, { isCommand: !!context?.isCommand });
+      await this.processSubNode(node.index, { isCommand: !!context?.isCommand });
       this.push({
         op: OpCode.GET_PROPERTY,
         source: this.getSourceLocation(node.index, node.type),
-        invoke: isInvoke
+        invoke: !context?.isReference && !!context?.isCommand
       });
     }
   }
@@ -472,8 +485,8 @@ export class BytecodeGenerator {
     });
   }
 
-  protected async processIdentifier(node: ASTIdentifier, isFirst: boolean = true, isInvoke: boolean = true): Promise<void> {
-    if (isFirst) {
+  protected async processIdentifier(node: ASTIdentifier, context?: LineIdentifierContext): Promise<void> {
+    if (!context?.isDescending) {
       switch (node.name) {
         case RuntimeKeyword.Self: {
           this.push({
@@ -515,7 +528,7 @@ export class BytecodeGenerator {
             op: OpCode.GET_VARIABLE,
             source: this.getSourceLocation(node),
             property: new CustomString(node.name),
-            invoke: isInvoke
+            invoke: !context?.isReference
           });
         }
       }
@@ -528,7 +541,7 @@ export class BytecodeGenerator {
       this.push({
         op: OpCode.GET_PROPERTY,
         source: this.getSourceLocation(node),
-        invoke: isInvoke
+        invoke: !context?.isReference
       });
     }
   }
@@ -569,7 +582,7 @@ export class BytecodeGenerator {
       });
     }
 
-    await this.processSubNode(node.init, false);
+    await this.processSubNode(node.init, { includeOuter: true });
 
     this.push({
       op: OpCode.ASSIGN,
@@ -829,7 +842,7 @@ export class BytecodeGenerator {
     });
   }
 
-  protected async processFunctionDeclaration(node: ASTFunctionStatement, ignoreOuter: boolean = false): Promise<void> {
+  protected async processFunctionDeclaration(node: ASTFunctionStatement, context?: LineContext): Promise<void> {
     const args:FunctionDefinitionInstructionArgument[] = [];
     
     for (const item of node.parameters) {
@@ -879,7 +892,7 @@ export class BytecodeGenerator {
       /*
         Can be removed after MiniScript fixed outer context bug.
       */
-      ignoreOuter
+      ignoreOuter: !context?.includeOuter
     });
   }
 
@@ -923,11 +936,11 @@ export class BytecodeGenerator {
     switch (node.operator) {
       case Operator.Reference:
         if (arg instanceof ASTMemberExpression) {
-          await this.processMemberExpression(arg, false);
+          await this.processMemberExpression(arg, { isReference: true });
         } else if (arg instanceof ASTIndexExpression) {
-          await this.processIndexExpression(arg, false);
+          await this.processIndexExpression(arg, { isReference: true });
         } else if (arg instanceof ASTIdentifier) {
-          await this.processIdentifier(arg, true, false);
+          await this.processIdentifier(arg, { isDescending: false, isReference: true });
         } else {
           await this.processSubNode(arg);
         }
@@ -1016,7 +1029,7 @@ export class BytecodeGenerator {
         });
       }
     } else if (left instanceof ASTIdentifier) {
-      await this.processIdentifier(left, true, false);
+      await this.processIdentifier(left, { isDescending: false, isReference: true });
       await pushArgs();
       this.push({
         op: OpCode.CALL,
