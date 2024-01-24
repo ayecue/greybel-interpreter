@@ -1,11 +1,19 @@
-myMap = {}
-myMap.myFunc = function(v)
-	return "test" + v
+myObj = {}
+myObj.testFunc = function
+    print("test func start")
+    test = function
+        print("called inner test func")
+    end function
+    return {"foo":@test}
 end function
 
-print(typeof(myMap["myFunc"]))
-print(typeof(@myMap.myFunc))
+callFunc = function(toCall)
+    print("Call start")
+    toCall
+    print("Call end")
+end function
 
-ref = myMap["myFunc"]
-
-print(ref)
+myObj["testFunc"]
+myObj.testFunc()["foo"]
+callFunc(myObj["testFunc"])
+print typeof(myObj["testFunc"])

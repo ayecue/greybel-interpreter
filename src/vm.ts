@@ -18,6 +18,7 @@ import { CustomString, Self } from "./types/string";
 import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
 import { call, callWithContext } from "./vm/call";
+import { LimitedStack } from "./utils/limited-stack";
 
 export class Debugger {
   private breakpoint: boolean = false;
@@ -102,11 +103,12 @@ type VMResumeCallback = (err?: any) => void;
 
 export class VM {
   private readonly ACTIONS_PER_LOOP: number = 80000;
+  private readonly MAX_FRAMES: number = 10000;
   private maxActionsPerLoop: number;
   private actionCount: number;
 
   private state: VMState;
-  private frames: Stack<OperationContext>;
+  private frames: LimitedStack<OperationContext>;
   private signal: EventEmitter;
 
   private readonly STACK_LIMIT: number = 512;
@@ -130,7 +132,7 @@ export class VM {
     this.sp = 0;
     this.time = -1;
     this.target = options.target;
-    this.frames = new Stack(options.globals);
+    this.frames = new LimitedStack(this.MAX_FRAMES, options.globals);
     this.contextTypeIntrinsics = options.contextTypeIntrinsics;
     this.handler = options.handler;
     this.debugger = options.debugger;

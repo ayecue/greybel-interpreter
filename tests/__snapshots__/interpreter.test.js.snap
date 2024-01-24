@@ -174,11 +174,19 @@ exports[`interpreter default scripts extend-intrinsics.src 6`] = `"[\\"bar\\", \
 
 exports[`interpreter default scripts extend-intrinsics.src 7`] = `"[\\"bar\\", \\"moo\\", \\"another\\"]"`;
 
-exports[`interpreter default scripts gs-bug-index.src 1`] = `"\\"string\\""`;
+exports[`interpreter default scripts gs-bug-index.src 1`] = `"\\"test func start\\""`;
 
-exports[`interpreter default scripts gs-bug-index.src 2`] = `"\\"function\\""`;
+exports[`interpreter default scripts gs-bug-index.src 2`] = `"\\"test func start\\""`;
 
-exports[`interpreter default scripts gs-bug-index.src 3`] = `"\\"test\\""`;
+exports[`interpreter default scripts gs-bug-index.src 3`] = `"\\"called inner test func\\""`;
+
+exports[`interpreter default scripts gs-bug-index.src 4`] = `"\\"Call start\\""`;
+
+exports[`interpreter default scripts gs-bug-index.src 5`] = `"\\"test func start\\""`;
+
+exports[`interpreter default scripts gs-bug-index.src 6`] = `"\\"Call end\\""`;
+
+exports[`interpreter default scripts gs-bug-index.src 7`] = `"\\"function\\""`;
 
 exports[`interpreter default scripts has-index.src 1`] = `"\\"1234\\""`;
 
