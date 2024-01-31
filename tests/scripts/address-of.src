@@ -1,0 +1,9 @@
+number.test = function
+    return self
+end function
+
+string.code = function
+    return 123
+end function
+
+print @"test".code.test

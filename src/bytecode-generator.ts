@@ -445,11 +445,11 @@ export class BytecodeGenerator {
         invoke: !context?.isReference
       });
     } else {
-      await this.processSubNode(base, context);
+      await this.processSubNode(base, { isCommand: !!context?.isCommand });
       if (node.identifier instanceof ASTIdentifier) {
         await this.processIdentifier(node.identifier, { isDescending: true, isReference: !!context?.isReference });
       } else {
-        await this.processSubNode(node.identifier);
+        await this.processSubNode(node.identifier, { isCommand: !!context?.isCommand });
       }
     }
   }

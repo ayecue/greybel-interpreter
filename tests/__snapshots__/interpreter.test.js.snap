@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`interpreter default scripts address-of.src 1`] = `"FUNCTION()"`;
+
 exports[`interpreter default scripts binary-expressions.src 1`] = `"1.5"`;
 
 exports[`interpreter default scripts binary-expressions.src 2`] = `"600"`;
