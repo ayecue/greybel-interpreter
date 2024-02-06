@@ -1,0 +1,6 @@
+abc = {}
+abc.test = function
+  print super
+end function
+
+abc.test

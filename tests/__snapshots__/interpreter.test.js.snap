@@ -770,6 +770,8 @@ exports[`interpreter default scripts super-call-origin.src 14`] = `"\\"ClassA.In
 
 exports[`interpreter default scripts super-call-origin.src 15`] = `"\\"hello class a\\""`;
 
+exports[`interpreter default scripts super-null.src 1`] = `"null"`;
+
 exports[`interpreter default scripts uglified.src 1`] = `"{\\"B\\":{\\"exports\\":{\\"bar\\":123}}}"`;
 
 exports[`interpreter default scripts uglified.src 2`] = `"\\"B\\""`;

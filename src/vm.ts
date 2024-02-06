@@ -357,7 +357,7 @@ export class VM {
                 type: ContextType.Function,
                 code: fn.value,
                 self: context,
-                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
                 outer: fn.outer
               });
 
@@ -385,7 +385,7 @@ export class VM {
                 type: ContextType.Function,
                 code: fn.value,
                 self: frame.self,
-                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
                 outer: fn.outer
               });
 
@@ -540,7 +540,7 @@ export class VM {
                 type: ContextType.Function,
                 code: ret.value.value,
                 self: context,
-                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
                 outer: ret.value.outer
               });
 
@@ -563,7 +563,7 @@ export class VM {
                 type: ContextType.Function,
                 code: ret.value.value,
                 self: frame.self,
-                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
                 outer: ret.value.outer
               });
               
