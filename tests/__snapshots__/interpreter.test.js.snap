@@ -740,6 +740,36 @@ exports[`interpreter default scripts super.src 13`] = `"1"`;
 
 exports[`interpreter default scripts super-alt.src 1`] = `"42"`;
 
+exports[`interpreter default scripts super-call-origin.src 1`] = `"null"`;
+
+exports[`interpreter default scripts super-call-origin.src 2`] = `"\\"ClassD.Init\\""`;
+
+exports[`interpreter default scripts super-call-origin.src 3`] = `"FUNCTION(messageForClassC)"`;
+
+exports[`interpreter default scripts super-call-origin.src 4`] = `"\\"hello class d\\""`;
+
+exports[`interpreter default scripts super-call-origin.src 5`] = `"null"`;
+
+exports[`interpreter default scripts super-call-origin.src 6`] = `"\\"ClassC.Init\\""`;
+
+exports[`interpreter default scripts super-call-origin.src 7`] = `"FUNCTION(messageForClassB)"`;
+
+exports[`interpreter default scripts super-call-origin.src 8`] = `"\\"hello class c\\""`;
+
+exports[`interpreter default scripts super-call-origin.src 9`] = `"null"`;
+
+exports[`interpreter default scripts super-call-origin.src 10`] = `"\\"ClassB.Init\\""`;
+
+exports[`interpreter default scripts super-call-origin.src 11`] = `"FUNCTION(messageForClassA)"`;
+
+exports[`interpreter default scripts super-call-origin.src 12`] = `"\\"hello class b\\""`;
+
+exports[`interpreter default scripts super-call-origin.src 13`] = `"null"`;
+
+exports[`interpreter default scripts super-call-origin.src 14`] = `"\\"ClassA.Init\\""`;
+
+exports[`interpreter default scripts super-call-origin.src 15`] = `"\\"hello class a\\""`;
+
 exports[`interpreter default scripts uglified.src 1`] = `"{\\"B\\":{\\"exports\\":{\\"bar\\":123}}}"`;
 
 exports[`interpreter default scripts uglified.src 2`] = `"\\"B\\""`;

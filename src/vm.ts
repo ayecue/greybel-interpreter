@@ -349,14 +349,15 @@ export class VM {
 
             const propertyName = this.popStack();
             const context = this.popStack() as CustomValueWithIntrinsics;
-            const fn = context.get(propertyName, this.contextTypeIntrinsics);
+            const ret = (context as CustomValueWithIntrinsics).getWithOrigin(propertyName, this.contextTypeIntrinsics);
+            const fn = ret.value;
 
             if (fn instanceof CustomFunction) {
               const newFrame = this.getFrame().fork({
                 type: ContextType.Function,
                 code: fn.value,
                 self: context,
-                super: context instanceof CustomMap ? (context.getIsa() ?? new CustomMap()) : null,
+                super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? new CustomMap()) : null,
                 outer: fn.outer
               });
 

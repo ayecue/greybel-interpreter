@@ -11,7 +11,7 @@ const {
   ObjectValue,
   CustomNil
 } = require('../dist');
-let printMock = console.log//jest.fn();
+let printMock = jest.fn();
 
 function setupAPI() {
   const api = new ObjectValue();

@@ -1,0 +1,35 @@
+ClassA = {}
+ClassA.Init = function(messageForClassA)
+    print
+    print("ClassA.Init")
+    print(messageForClassA)
+end function
+
+ClassB = new ClassA
+ClassB.Init = function(messageForClassB)
+    print
+    print("ClassB.Init")
+    print(@super.Init)
+    print(messageForClassB)
+    super.Init("hello class a")
+end function
+
+ClassC = new ClassB
+ClassC.Init = function(messageForClassC)
+    print
+    print("ClassC.Init")
+    print(@super.Init)
+    print(messageForClassC)
+    super.Init("hello class b")
+end function
+
+ClassD = new ClassC
+ClassD.Init = function(messageForClassD)
+    print
+    print("ClassD.Init")
+    print(@super.Init)
+    print(messageForClassD)
+    super.Init("hello class c")
+end function
+
+(new ClassD).Init("hello class d")
