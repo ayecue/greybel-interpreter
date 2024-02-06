@@ -14,7 +14,7 @@ import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
 import { setImmediate } from "./utils/set-immediate";
-import { CustomString, Self } from "./types/string";
+import { CustomString, Self, Super } from "./types/string";
 import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
 import { call, callWithContext } from "./vm/call";
@@ -285,7 +285,7 @@ export class VM {
             break;
           }
           case OpCode.GET_SUPER: {
-            this.pushStack(frame.super ?? DefaultType.Void);
+            this.pushStack(frame.locals.get(Super, this.contextTypeIntrinsics));
             break;
           }
           case OpCode.IMPORT: {
@@ -300,7 +300,7 @@ export class VM {
             const base = this.popStack();
 
             if (!(base instanceof CustomValueWithIntrinsics)) {
-              throw new RuntimeError(`Base left side must be a value with intrinsics!`, this);
+              throw new RuntimeError('Invalid left value in assignment!', this);
             }
 
             base.set(key, value);
@@ -324,7 +324,7 @@ export class VM {
 
             if (fn instanceof CustomFunction) {
               if (callInstruction.length > fn.arguments.length) {
-                throw new Error('Too many arguments.');
+                throw new RuntimeError('Too many arguments.', this);
               }
 
               const newFrame = this.getFrame().fork({
@@ -375,7 +375,7 @@ export class VM {
             }
 
             const property = this.popStack();
-            const context = frame.super;
+            const context = frame.locals.get(Super, this.contextTypeIntrinsics);
 
             if (!(context instanceof CustomValueWithIntrinsics)) {
               throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
@@ -559,7 +559,8 @@ export class VM {
           case OpCode.GET_SUPER_PROPERTY: {
             const getPropertyInstruction = instruction as GetPropertyInstruction;
             const property = this.popStack();
-            const ret = (frame.super as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
+            const context = frame.locals.get(Super, this.contextTypeIntrinsics);
+            const ret = (context as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
 
             if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
               const newFrame = this.getFrame().fork({
