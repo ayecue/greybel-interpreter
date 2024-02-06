@@ -376,12 +376,7 @@ export class VM {
 
             const property = this.popStack();
             const context = frame.locals.get(Super, this.contextTypeIntrinsics);
-
-            if (!(context instanceof CustomValueWithIntrinsics)) {
-              throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
-            }
-
-            const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
+            const ret = (context as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
             const fn = ret.value;
 
             if (fn instanceof CustomFunction) {
