@@ -1,0 +1,25 @@
+super = "test"
+print super
+
+test = function()
+    super = "test2"
+    print super
+    
+    test2 = function
+        print super
+    end function
+    test2
+end function
+
+test
+
+abc = {}
+abc.x = 123
+
+bcd = new abc
+bcd.test = function()
+    super = "was"
+    print super
+end function
+
+bcd.test
