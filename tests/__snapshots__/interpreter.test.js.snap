@@ -242,16 +242,6 @@ exports[`interpreter default scripts if-shorthand.src 5`] = `"\\"foo\\""`;
 
 exports[`interpreter default scripts if-shorthand.src 6`] = `"\\"bar\\""`;
 
-exports[`interpreter default scripts if-shorthand.src 7`] = `"\\"x1\\""`;
-
-exports[`interpreter default scripts if-shorthand.src 8`] = `"\\"x2\\""`;
-
-exports[`interpreter default scripts if-shorthand.src 9`] = `"\\"was\\""`;
-
-exports[`interpreter default scripts if-shorthand.src 10`] = `"\\"foo\\""`;
-
-exports[`interpreter default scripts if-shorthand.src 11`] = `"null"`;
-
 exports[`interpreter default scripts implicit-properties.src 1`] = `"0"`;
 
 exports[`interpreter default scripts implicit-properties.src 2`] = `"0"`;

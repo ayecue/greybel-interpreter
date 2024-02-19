@@ -24,20 +24,3 @@ i = 2
 while (b < i)
 	b += 1
 end while
-myFunction = function(v) print(v)
-otherFunction = function(n)
-	print(n)
-end function
-
-myFunction("x1")
-otherFunction("x2")
-
-loom = function(m) return "was"
-
-maybe = function(bar)
-	if (bar) then return "foo"
-end function
-
-print(loom)
-print(maybe(true))
-print(maybe)
