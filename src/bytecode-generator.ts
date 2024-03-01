@@ -43,6 +43,7 @@ import { DefaultType } from './types/default';
 import { Stack } from './utils/stack';
 import { HandlerContainer } from './handler-container';
 import { RuntimeKeyword } from './byte-compiler/keywords';
+import { basename } from 'path';
 
 function generateCustomValueFromASTLiteral(node: ASTLiteral) {
   switch (node.type) {
@@ -115,7 +116,7 @@ export class BytecodeGenerator {
 
   parse(code: string) {
     try {
-      const parser = new Parser(code);
+      const parser = new Parser(code, );
       return parser.parseChunk();
     } catch (err: any) {
       if (err instanceof PrepareError) {
@@ -416,6 +417,20 @@ export class BytecodeGenerator {
         return;
       case ASTTypeExtended.FeatureEnvarExpression:
         await this.processEnvarExpression(node as ASTFeatureEnvarExpression);
+        return;
+      case ASTTypeExtended.FeatureLineExpression:
+        this.push({
+          op: OpCode.PUSH,
+          source: this.getSourceLocation(node),
+          value: new CustomNumber(node.start.line)
+        });
+        return;
+      case ASTTypeExtended.FeatureFileExpression:
+        this.push({
+          op: OpCode.PUSH,
+          source: this.getSourceLocation(node),
+          value: new CustomString(basename(this.target.peek()))
+        });
         return;
       case ASTType.Comment:
         return;

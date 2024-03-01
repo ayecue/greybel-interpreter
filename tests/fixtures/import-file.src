@@ -1,3 +1,4 @@
 #import subText from ./sub-import-file.src;
 
+print(#filename + " at line " + #line + " (imported)")
 module.exports = "file imported" + subText

@@ -3,3 +3,4 @@
 
 print(fooImport)
 print(includeFileFoo)
+print(#filename + " at line " + #line + " (main file)")
