@@ -1,2 +1,14 @@
 return
 print("test")
+
+addrs = [1,2,3,4]
+stop = false
+
+for addr in addrs
+    if stop == true then
+        return
+    end if
+
+    stop = true
+    print addr
+end for

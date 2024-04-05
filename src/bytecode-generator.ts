@@ -788,6 +788,10 @@ export class BytecodeGenerator {
   }
 
   protected async processReturn(node: ASTReturnStatement): Promise<void> {
+    if (this.context.length === 1) {
+      return;
+    }
+
     if (node.argument) {
       await this.processSubNode(node.argument);
     } else {
