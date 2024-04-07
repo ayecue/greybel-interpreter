@@ -5,7 +5,7 @@ import { CustomMap } from './types/map';
 import { ObjectValue } from './utils/object-value';
 import { ContextTypeIntrinsics } from './context/types';
 import { Instruction } from './byte-compiler/instruction';
-import { CustomString, Self, Super } from './types/string';
+import { Self, Super } from './types/string';
 import { CustomValueWithIntrinsicsResult } from './types/with-intrinsics';
 import { Stack } from './utils/stack';
 
@@ -77,6 +77,7 @@ export interface ContextOptions {
   self?: CustomValue;
   super?: CustomValue;
   isProtected?: boolean;
+  isCalledByCommand?: boolean;
    /* eslint-disable no-use-before-define */
   outer?: OperationContext;
 }
@@ -87,6 +88,7 @@ export interface ContextForkOptions {
   self?: CustomValue;
   super?: CustomValue;
   target?: string;
+  isCalledByCommand?: boolean;
    /* eslint-disable no-use-before-define */
   outer?: OperationContext;
 }
@@ -100,6 +102,7 @@ export class OperationContext {
   readonly scope: Scope;
 
   isProtected: boolean;
+  isCalledByCommand: boolean;
   injected: boolean;
 
   cp: null | number;
@@ -139,6 +142,7 @@ export class OperationContext {
     this.self = options.self ?? null;
     this.super = options.super ?? null;
     this.isProtected = options.isProtected ?? false;
+    this.isCalledByCommand = options.isCalledByCommand ?? false;
 
     this.api = this.lookupApi();
     this.globals = this.lookupGlobals();
@@ -240,7 +244,8 @@ export class OperationContext {
       code: options.code,
       self: options.self,
       super: options.super,
-      outer: options.outer
+      outer: options.outer,
+      isCalledByCommand: options.isCalledByCommand
     });
   }
 }

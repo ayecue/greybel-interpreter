@@ -23,6 +23,10 @@ export class Stack<T> {
     return this.last;
   }
 
+  some(callback: (value: T) => boolean): boolean {
+    return this.stack.some(callback);
+  }
+
   includes(value: T): boolean {
     return this.stack.includes(value);
   }
