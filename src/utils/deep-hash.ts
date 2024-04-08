@@ -2,19 +2,6 @@ import { CustomValue } from '../types/base';
 import { CustomObject } from '../types/with-intrinsics';
 import { getHashCode, rotateBits } from './hash';
 
-export function hash(value: CustomValue): number {
-  const valueType = typeof value.value;
-
-  switch (valueType) {
-    case 'string':
-    case 'number':
-    case 'boolean':
-      return value.hash();
-  }
-
-  return deepHash(value);
-}
-
 export function deepHash(value: CustomValue): number {
   let result = 0;
   const stack: CustomValue[][] = [];
