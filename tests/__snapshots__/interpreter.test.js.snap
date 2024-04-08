@@ -176,6 +176,8 @@ exports[`interpreter default scripts extend-intrinsics.src 6`] = `"[\\"bar\\", \
 
 exports[`interpreter default scripts extend-intrinsics.src 7`] = `"[\\"bar\\", \\"moo\\", \\"another\\"]"`;
 
+exports[`interpreter default scripts fib.src 1`] = `"832040"`;
+
 exports[`interpreter default scripts gs-bug-index.src 1`] = `"\\"test func start\\""`;
 
 exports[`interpreter default scripts gs-bug-index.src 2`] = `"\\"test func start\\""`;
@@ -713,6 +715,8 @@ exports[`interpreter default scripts self-ms-behaviour.src 8`] = `"\\"do not ign
 exports[`interpreter default scripts self-ms-behaviour.src 9`] = `"\\"bar\\""`;
 
 exports[`interpreter default scripts self-ms-behaviour.src 10`] = `"\\"show me\\""`;
+
+exports[`interpreter default scripts sieve.src 1`] = `"[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]"`;
 
 exports[`interpreter default scripts simple-object.src 1`] = `"\\"was\\""`;
 
