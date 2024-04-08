@@ -144,8 +144,8 @@ export class OperationContext {
     this.isProtected = options.isProtected ?? false;
     this.isCalledByCommand = options.isCalledByCommand ?? false;
 
-    this.api = this.lookupApi();
-    this.globals = this.lookupGlobals();
+    this.api = this.previous?.api ?? this.lookupApi();
+    this.globals = this.previous?.globals ?? this.lookupGlobals();
     this.locals = this.lookupLocals() ?? this;
     this.outer = options.outer ?? this.lookupOuter();
   }
@@ -198,11 +198,11 @@ export class OperationContext {
   }
 
   lookupApi(): OperationContext {
-    return this.previous?.api ?? this.lookupType(OperationContext.lookupApiType);
+    return this.lookupType(OperationContext.lookupApiType);
   }
 
   lookupGlobals(): OperationContext {
-    return this.previous?.globals ?? this.lookupType(OperationContext.lookupGlobalsType);
+    return this.lookupType(OperationContext.lookupGlobalsType);
   }
 
   lookupLocals(): OperationContext {
