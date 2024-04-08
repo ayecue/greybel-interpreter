@@ -23,8 +23,10 @@ export const getStringHashCode = (function () {
       return 0;
     }
 
-    if (cache.has(value)) {
-      return cache.get(value);
+    const cachedHash = cache.get(value);
+    
+    if (cachedHash !== undefined) {
+      return cachedHash;
     }
 
     const hash = generateHash(value);
