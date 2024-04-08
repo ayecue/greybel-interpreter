@@ -4,8 +4,8 @@ import { CustomValue } from './types/base';
 import { CustomMap } from './types/map';
 import { ObjectValue } from './utils/object-value';
 import { ContextTypeIntrinsics } from './context/types';
-import { Instruction } from './byte-compiler/instruction';
-import { CustomString, Self, Super } from './types/string';
+import { Instruction } from './bytecode-generator/instruction';
+import { Self, Super } from './types/string';
 import { CustomValueWithIntrinsicsResult } from './types/with-intrinsics';
 import { Stack } from './utils/stack';
 
@@ -77,6 +77,7 @@ export interface ContextOptions {
   self?: CustomValue;
   super?: CustomValue;
   isProtected?: boolean;
+  isCalledByCommand?: boolean;
    /* eslint-disable no-use-before-define */
   outer?: OperationContext;
 }
@@ -87,6 +88,7 @@ export interface ContextForkOptions {
   self?: CustomValue;
   super?: CustomValue;
   target?: string;
+  isCalledByCommand?: boolean;
    /* eslint-disable no-use-before-define */
   outer?: OperationContext;
 }
@@ -100,6 +102,7 @@ export class OperationContext {
   readonly scope: Scope;
 
   isProtected: boolean;
+  isCalledByCommand: boolean;
   injected: boolean;
 
   cp: null | number;
@@ -118,15 +121,15 @@ export class OperationContext {
   /* eslint-disable no-use-before-define */
   readonly globals: OperationContext;
 
-  private static readonly lookupApiType: Array<ContextType> = [ContextType.Api];
-  private static readonly lookupGlobalsType: Array<ContextType> = [
+  private static readonly lookupApiType: Set<ContextType> = new Set([ContextType.Api]);
+  private static readonly lookupGlobalsType: Set<ContextType> = new Set([
     ContextType.Global
-  ];
+  ]);
 
-  private static readonly lookupLocalsType: Array<ContextType> = [
+  private static readonly lookupLocalsType: Set<ContextType> = new Set([
     ContextType.Global,
     ContextType.Function
-  ];
+  ]);
 
   constructor(options: ContextOptions) {
     this.iterators = new Stack();
@@ -139,9 +142,10 @@ export class OperationContext {
     this.self = options.self ?? null;
     this.super = options.super ?? null;
     this.isProtected = options.isProtected ?? false;
+    this.isCalledByCommand = options.isCalledByCommand ?? false;
 
-    this.api = this.lookupApi();
-    this.globals = this.lookupGlobals();
+    this.api = this.previous?.api ?? this.lookupApi();
+    this.globals = this.previous?.globals ?? this.lookupGlobals();
     this.locals = this.lookupLocals() ?? this;
     this.outer = options.outer ?? this.lookupOuter();
   }
@@ -169,15 +173,15 @@ export class OperationContext {
     return result;
   }
 
-  lookupType(allowedTypes: Array<ContextType>): OperationContext {
-    if (allowedTypes.includes(this.type)) {
+  lookupType(allowedTypes: Set<ContextType>): OperationContext {
+    if (allowedTypes.has(this.type)) {
       return this;
     }
 
     let current = this.previous;
 
     while (current !== null) {
-      if (allowedTypes.includes(current.type)) {
+      if (allowedTypes.has(current.type)) {
         return current;
       }
 
@@ -240,7 +244,8 @@ export class OperationContext {
       code: options.code,
       self: options.self,
       super: options.super,
-      outer: options.outer
+      outer: options.outer,
+      isCalledByCommand: options.isCalledByCommand
     });
   }
 }

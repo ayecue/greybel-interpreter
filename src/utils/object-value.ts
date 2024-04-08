@@ -1,6 +1,5 @@
 import { CustomValue } from '../types/base';
-import { Void } from '../types/nil';
-import { deepHash } from './deep-hash';
+import { valueHash } from './value-hash';
 
 export type ObjectValueKeyPair = [CustomValue, CustomValue];
 
@@ -25,25 +24,26 @@ export class ObjectValue {
     }
   }
 
-  get(mapKey: CustomValue): CustomValue {
-    const hash = deepHash(mapKey);
-    if (!this.data.has(hash)) return Void;
-    return this.data.get(hash)[1];
+  get(mapKey: CustomValue): CustomValue | null {
+    const hash = valueHash(mapKey);
+    const keyPair = this.data.get(hash);
+    if (!keyPair) return null;
+    return keyPair[1];
   }
 
   has(mapKey: CustomValue): boolean {
-    const hash = deepHash(mapKey);
+    const hash = valueHash(mapKey);
     return this.data.has(hash);
   }
 
   set(mapKey: CustomValue, mapValue: CustomValue): this {
-    const hash = deepHash(mapKey);
+    const hash = valueHash(mapKey);
     this.data.set(hash, [mapKey, mapValue]);
     return this;
   }
 
   delete(mapKey: CustomValue) {
-    const hash = deepHash(mapKey);
+    const hash = valueHash(mapKey);
     return this.data.delete(hash);
   }
 

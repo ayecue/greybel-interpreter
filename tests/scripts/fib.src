@@ -1,0 +1,9 @@
+fib = function(n)
+  if n <= 1 then
+    return n
+  else
+    result = fib(n-1) + fib(n-2)
+    return result
+  end if
+end function
+print fib(30)

@@ -1,4 +1,4 @@
-import { RuntimeKeyword } from '../byte-compiler/keywords';
+import { RuntimeKeyword } from '../bytecode-generator/keywords';
 import { ContextTypeIntrinsics } from '../context/types';
 import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';

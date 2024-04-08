@@ -167,12 +167,13 @@ export class CustomMap extends CustomObject {
     current: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValue {
-    const isa = this.getIsa();
-
     if (current !== null) {
-      if (this.value.has(current)) {
-        return this.value.get(current);
-      } else if (isa?.has(current)) {
+      const item = this.value.get(current);
+      if (item) return item;
+
+      const isa = this.getIsa();
+
+      if (isa?.has(current)) {
         return isa.get(current, typeIntrinsics);
       }
 
@@ -190,17 +191,18 @@ export class CustomMap extends CustomObject {
     current: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValueWithIntrinsicsResult {
-    const isa = this.getIsa();
-
     if (current !== null) {
-      if (this.value.has(current)) {
-        const sub = this.value.get(current);
-
+      const item = this.value.get(current);
+      if (item) {
         return {
-          value: sub,
+          value: item,
           origin: this
         };
-      } else if (isa?.has(current)) {
+      }
+
+      const isa = this.getIsa();
+
+      if (isa?.has(current)) {
         return isa.getWithOrigin(current, typeIntrinsics);
       }
 

@@ -49,6 +49,7 @@ export enum OpCode {
   GOTO_A,
   GOTO_A_IF_FALSE,
   GOTO_A_IF_FALSE_AND_PUSH,
+  GOTO_A_IF_TRUE,
   GOTO_A_IF_TRUE_AND_PUSH,
   PUSH_ITERATOR,
   POP_ITERATOR,
@@ -79,6 +80,7 @@ export interface BaseInstruction {
   op: OpCode;
   source: SourceLocation;
   ip?: number;
+  command?: boolean;
 }
 
 export interface GetVariableInstruction extends BaseInstruction {
@@ -108,12 +110,7 @@ export interface ConstructListInstruction extends BaseInstruction {
 }
 
 export interface CallInstruction extends BaseInstruction {
-  op: OpCode.CALL;
-  length: number;
-}
-
-export interface CallWithContextInstruction extends BaseInstruction {
-  op: OpCode.CALL_WITH_CONTEXT | OpCode.CALL_SUPER_PROPERTY;
+  op: OpCode.CALL | OpCode.CALL_WITH_CONTEXT | OpCode.CALL_SUPER_PROPERTY;
   length: number;
 }
 
@@ -130,6 +127,7 @@ export interface GotoAInstruction extends BaseInstruction {
     | OpCode.GOTO_A
     | OpCode.GOTO_A_IF_FALSE
     | OpCode.GOTO_A_IF_FALSE_AND_PUSH
+    | OpCode.GOTO_A_IF_TRUE
     | OpCode.GOTO_A_IF_TRUE_AND_PUSH;
   /* eslint-disable no-use-before-define */
   goto: Instruction;
@@ -164,7 +162,6 @@ export type Instruction =
   | GotoAInstruction
   | GetPropertyInstruction
   | CallInstruction
-  | CallWithContextInstruction
   | NextInstruction
   | CallInternalInstruction
   | ImportInstruction;

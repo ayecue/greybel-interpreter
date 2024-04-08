@@ -2,7 +2,7 @@ import { ContextType, OperationContext } from "./context";
 import { ContextTypeIntrinsics } from "./context/types";
 import { HandlerContainer } from "./handler-container";
 import { CustomValue } from "./types/base";
-import { CallInstruction, CallInternalInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./byte-compiler/instruction";
+import { CallInstruction, CallInternalInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./bytecode-generator/instruction";
 import { DefaultType } from "./types/default";
 import { Stack } from "./utils/stack";
 import { RuntimeError } from "./utils/error";
@@ -330,7 +330,8 @@ export class VM {
               const newFrame = this.getFrame().fork({
                 code: fn.value,
                 type: ContextType.Function,
-                outer: fn.outer
+                outer: fn.outer,
+                isCalledByCommand: !!instruction.command
               });
               
               call(newFrame, fn, args);
@@ -358,7 +359,8 @@ export class VM {
                 code: fn.value,
                 self: context,
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
-                outer: fn.outer
+                outer: fn.outer,
+                isCalledByCommand: !!instruction.command
               });
 
               callWithContext(newFrame, fn, args);
@@ -386,7 +388,8 @@ export class VM {
                 code: fn.value,
                 self: frame.self,
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
-                outer: fn.outer
+                outer: fn.outer,
+                isCalledByCommand: !!instruction.command
               });
 
               callWithContext(newFrame, fn, args);
@@ -406,7 +409,7 @@ export class VM {
               map.unshift([key, value]);
             }
 
-            this.pushStack(new CustomMap(new ObjectValue(map)));
+            if (!instruction.command) this.pushStack(new CustomMap(new ObjectValue(map)));
             break;
           }
           case OpCode.CONSTRUCT_LIST: {
@@ -419,7 +422,7 @@ export class VM {
               list.unshift(value);
             }
             
-            this.pushStack(new CustomList(list));
+            if (!instruction.command) this.pushStack(new CustomList(list));
             break;
           }
           case OpCode.GOTO_A_IF_FALSE: {
@@ -440,6 +443,17 @@ export class VM {
             this.pushStack(new CustomNumber(value));
 
             if (value >= 1) {
+              break;
+            }
+
+            const gotoAInstruction = instruction as GotoAInstruction;
+            frame.ip = gotoAInstruction.goto.ip;
+            break;
+          }
+          case OpCode.GOTO_A_IF_TRUE: {
+            const condition = this.popStack();
+
+            if (!condition.toTruthy()) {
               break;
             }
 
@@ -513,7 +527,8 @@ export class VM {
               const newFrame = this.getFrame().fork({
                 code: ret.value,
                 type: ContextType.Function,
-                outer: ret.outer
+                outer: ret.outer,
+                isCalledByCommand: !!instruction.command
               });
 
               call(newFrame, ret, []);
@@ -541,7 +556,8 @@ export class VM {
                 code: ret.value.value,
                 self: context,
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
-                outer: ret.value.outer
+                outer: ret.value.outer,
+                isCalledByCommand: !!instruction.command
               });
 
               callWithContext(newFrame, ret.value, []);
@@ -564,7 +580,8 @@ export class VM {
                 code: ret.value.value,
                 self: frame.self,
                 super: ret.origin instanceof CustomMap ? (ret.origin.getIsa() ?? DefaultType.Void) : null,
-                outer: ret.value.outer
+                outer: ret.value.outer,
+                isCalledByCommand: !!instruction.command
               });
               
               callWithContext(newFrame, ret.value, []);
@@ -611,22 +628,19 @@ export class VM {
             break;
           }
           case OpCode.NEW: {
-            const value = this.popStack();
-            if (value instanceof CustomMap) {
-              this.pushStack(value.createInstance());
-            } else {
-              this.pushStack(value);
-            }
+            let value = this.popStack();
+            if (value instanceof CustomMap) value = value.createInstance();
+            if (!instruction.command) this.pushStack(value);
             break;
           }
           case OpCode.NEGATE: {
             const value = this.popStack();
-            this.pushStack(new CustomNumber(-value.toNumber()));
+            if (!instruction.command) this.pushStack(new CustomNumber(-value.toNumber()));
             break;
           }
           case OpCode.FALSIFY: {
             const value = this.popStack();
-            this.pushStack(new CustomBoolean(!value.toTruthy()));
+            if (!instruction.command) this.pushStack(new CustomBoolean(!value.toTruthy()));
             break;
           }
           case OpCode.ISA: {
@@ -753,7 +767,7 @@ export class VM {
             const value = this.popStack();
             frame.iterators.clear();
             this.popFrame();
-            this.pushStack(value ?? DefaultType.Void);
+            if (!frame.isCalledByCommand) this.pushStack(value ?? DefaultType.Void);
             break;
           }
           case OpCode.GET_ENVAR: {

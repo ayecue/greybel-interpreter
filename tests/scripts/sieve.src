@@ -1,0 +1,15 @@
+primes = function(limit)
+	isPrime = [true] * (limit+1)
+	for n in range(2, sqrt(limit))
+		if not isPrime[n] then continue
+		for k in range(n*n, limit, n)
+			isPrime[k] =  false
+		end for
+	end for
+	result = []
+	for n in range(2, limit)
+		if isPrime[n] then result.push n
+	end for
+	return result
+end function
+print primes(30)
