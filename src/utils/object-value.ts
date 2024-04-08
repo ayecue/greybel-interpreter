@@ -27,8 +27,9 @@ export class ObjectValue {
 
   get(mapKey: CustomValue): CustomValue {
     const hash = valueHash(mapKey);
-    if (!this.data.has(hash)) return Void;
-    return this.data.get(hash)[1];
+    const keyPair = this.data.get(hash);
+    if (!keyPair) return Void;
+    return keyPair[1];
   }
 
   has(mapKey: CustomValue): boolean {
