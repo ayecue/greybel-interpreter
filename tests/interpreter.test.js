@@ -1,9 +1,6 @@
 const {
   Interpreter,
-  CustomFunction,
-  HandlerContainer,
-  CustomString,
-  DefaultType
+  HandlerContainer
 } = require('../dist');
 const fs = require('fs');
 const path = require('path');

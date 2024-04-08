@@ -48,7 +48,8 @@
         "typescript": "^5.0.4"
     },
     "dependencies": {
-        "greybel-core": "~1.5.13"
+        "greybel-core": "~1.5.13",
+        "hyperid": "^3.2.0"
     },
     "keywords": [
         "miniscript"
