@@ -198,11 +198,11 @@ export class OperationContext {
   }
 
   lookupApi(): OperationContext {
-    return this.lookupType(OperationContext.lookupApiType);
+    return this.previous?.api ?? this.lookupType(OperationContext.lookupApiType);
   }
 
   lookupGlobals(): OperationContext {
-    return this.lookupType(OperationContext.lookupGlobalsType);
+    return this.previous?.globals ?? this.lookupType(OperationContext.lookupGlobalsType);
   }
 
   lookupLocals(): OperationContext {
