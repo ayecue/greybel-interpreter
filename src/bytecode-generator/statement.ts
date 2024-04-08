@@ -47,9 +47,9 @@ import { Module } from './module';
 import { unwrap } from './utils';
 
 export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
-  private context: Context;
-  private exprGenerator: IBytecodeExpressionGenerator;
-  private parseCode: ParseCodeFunction;
+  protected context: Context;
+  protected exprGenerator: IBytecodeExpressionGenerator;
+  protected parseCode: ParseCodeFunction;
 
   constructor(context: Context, parseCodeFunction: ParseCodeFunction) {
     this.context = context;

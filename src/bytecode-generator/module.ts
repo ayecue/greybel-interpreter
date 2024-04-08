@@ -9,8 +9,8 @@ export interface BytecodeGeneratorContext {
 }
 
 export class Module {
-  private _target: string;
-  private _context: Stack<BytecodeGeneratorContext>;
+  protected _target: string;
+  protected _context: Stack<BytecodeGeneratorContext>;
 
   constructor(target: string) {
     this._target = target;

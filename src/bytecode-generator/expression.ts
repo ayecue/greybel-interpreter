@@ -51,9 +51,9 @@ import { generateCustomValueFromASTLiteral, unwrap } from './utils';
 export class BytecodeExpressionGenerator
   implements IBytecodeExpressionGenerator
 {
-  private context: Context;
-  private stmtGenerator: IBytecodeStatementGenerator;
-  private parseCode: ParseCodeFunction;
+  protected context: Context;
+  protected stmtGenerator: IBytecodeStatementGenerator;
+  protected parseCode: ParseCodeFunction;
 
   constructor(
     context: Context,

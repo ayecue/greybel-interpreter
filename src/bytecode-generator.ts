@@ -11,9 +11,9 @@ const parse = function(this: BytecodeGenerator, code: string) {
     return parser.parseChunk();
   } catch (err: any) {
     if (err instanceof PrepareError) {
-      this.handler.errorHandler.raise(err);
+      this.context.handler.errorHandler.raise(err);
     } else {
-      this.handler.errorHandler.raise(
+      this.context.handler.errorHandler.raise(
         new PrepareError(err.message, {
           range: err.range,
           target: this.context.target.peek()
@@ -32,15 +32,14 @@ export interface BytecodeConverterOptions {
   target: string;
   handler: HandlerContainer;
   debugMode?: boolean;
+  context?: Context;
 }
 
 export class BytecodeGenerator {
-  protected handler: HandlerContainer;
   protected context: Context;
 
   constructor(options: BytecodeConverterOptions) {
-    this.handler = options.handler;
-    this.context = new Context({
+    this.context = options.context ?? new Context({
       target: options.target,
       handler: options.handler,
       debugMode: options.debugMode

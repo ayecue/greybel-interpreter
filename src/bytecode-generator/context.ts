@@ -10,11 +10,11 @@ export interface ContextOptions {
 }
 
 export class Context {
-  private _target: Stack<string>;
-  private _handler: HandlerContainer;
-  private _module: Stack<Module>;
-  private _debugMode: boolean;
-  private _imports: Map<string, Instruction[]>;
+  protected _target: Stack<string>;
+  protected _handler: HandlerContainer;
+  protected _module: Stack<Module>;
+  protected _debugMode: boolean;
+  protected _imports: Map<string, Instruction[]>;
 
   constructor(options: ContextOptions) {
     this._target = new Stack(options.target);
