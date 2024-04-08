@@ -29,6 +29,10 @@ import {
   LineIdentifierContext
 } from './line';
 
+export interface ParseCodeFunction {
+  (code: string): ASTBase;
+}
+
 export interface IBytecodeStatementGenerator {
   process(node: ASTBase): Promise<void>;
   processMemberExpression(

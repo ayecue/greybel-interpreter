@@ -1,4 +1,4 @@
-import { RuntimeKeyword } from '../byte-compiler/keywords';
+import { RuntimeKeyword } from '../bytecode-generator/keywords';
 import { OperationContext } from '../context';
 import { CustomValue } from '../types/base';
 import { CustomFunction } from '../types/function';

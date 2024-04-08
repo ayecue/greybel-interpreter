@@ -35,23 +35,30 @@ import { CustomString } from '../types/string';
 import { PrepareError } from '../utils/error';
 import { Context } from './context';
 import { BytecodeExpressionGenerator } from './expression';
-import {
-  IBytecodeExpressionGenerator,
-  IBytecodeStatementGenerator
-} from './generator';
 import { Instruction, OpCode } from './instruction';
 import { RuntimeKeyword } from './keywords';
 import { LineCallableContext, LineIdentifierContext } from './line';
+import {
+  IBytecodeExpressionGenerator,
+  IBytecodeStatementGenerator,
+  ParseCodeFunction
+} from './models';
 import { Module } from './module';
 import { unwrap } from './utils';
 
 export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
   private context: Context;
   private exprGenerator: IBytecodeExpressionGenerator;
+  private parseCode: ParseCodeFunction;
 
-  constructor(context: Context) {
+  constructor(context: Context, parseCodeFunction: ParseCodeFunction) {
     this.context = context;
-    this.exprGenerator = new BytecodeExpressionGenerator(this.context, this);
+    this.exprGenerator = new BytecodeExpressionGenerator(
+      this.context,
+      parseCodeFunction,
+      this
+    );
+    this.parseCode = parseCodeFunction;
   }
 
   async process(node: ASTBase): Promise<void> {
@@ -743,7 +750,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       this.context.target.push(path);
       this.context.module.push(mod);
 
-      const childNodes = this.context.parse(code);
+      const childNodes = this.parseCode(code);
 
       mod.pushCode({
         op: OpCode.GET_LOCALS,
@@ -894,7 +901,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     try {
       this.context.target.push(importTarget);
 
-      const childNodes = this.context.parse(code);
+      const childNodes = this.parseCode(code);
 
       await this.process(childNodes);
       this.context.target.pop();

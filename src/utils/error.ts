@@ -1,6 +1,6 @@
 import { ASTRange } from 'miniscript-core';
 
-import { Instruction } from '../byte-compiler/instruction';
+import { Instruction } from '../bytecode-generator/instruction';
 
 interface RuntimeVM {
   getFrame(): { getCurrentInstruction: () => Instruction };

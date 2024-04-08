@@ -2,7 +2,7 @@ import { ContextType, OperationContext } from "./context";
 import { ContextTypeIntrinsics } from "./context/types";
 import { HandlerContainer } from "./handler-container";
 import { CustomValue } from "./types/base";
-import { CallInstruction, CallInternalInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./byte-compiler/instruction";
+import { CallInstruction, CallInternalInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./bytecode-generator/instruction";
 import { DefaultType } from "./types/default";
 import { Stack } from "./utils/stack";
 import { RuntimeError } from "./utils/error";

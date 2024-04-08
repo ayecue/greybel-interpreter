@@ -31,10 +31,6 @@ import { CustomString } from '../types/string';
 import { PrepareError } from '../utils/error';
 import { Context } from './context';
 import {
-  IBytecodeExpressionGenerator,
-  IBytecodeStatementGenerator
-} from './generator';
-import {
   FunctionDefinitionInstructionArgument,
   Instruction,
   OpCode
@@ -45,6 +41,11 @@ import {
   LineContext,
   LineIdentifierContext
 } from './line';
+import {
+  IBytecodeExpressionGenerator,
+  IBytecodeStatementGenerator,
+  ParseCodeFunction
+} from './models';
 import { generateCustomValueFromASTLiteral, unwrap } from './utils';
 
 export class BytecodeExpressionGenerator
@@ -52,9 +53,15 @@ export class BytecodeExpressionGenerator
 {
   private context: Context;
   private stmtGenerator: IBytecodeStatementGenerator;
+  private parseCode: ParseCodeFunction;
 
-  constructor(context: Context, stmtGenerator: IBytecodeStatementGenerator) {
+  constructor(
+    context: Context,
+    parseCodeFunction: ParseCodeFunction,
+    stmtGenerator: IBytecodeStatementGenerator
+  ) {
     this.context = context;
+    this.parseCode = parseCodeFunction;
     this.stmtGenerator = stmtGenerator;
   }
 

@@ -1,7 +1,4 @@
-import { Parser } from 'greybel-core';
-
 import { HandlerContainer } from '../handler-container';
-import { PrepareError } from '../utils/error';
 import { Stack } from '../utils/stack';
 import { Instruction } from './instruction';
 import { Module } from './module';
@@ -45,23 +42,5 @@ export class Context {
 
   isDebugMode() {
     return this._debugMode;
-  }
-
-  parse(code: string) {
-    try {
-      const parser = new Parser(code);
-      return parser.parseChunk();
-    } catch (err: any) {
-      if (err instanceof PrepareError) {
-        this.handler.errorHandler.raise(err);
-      } else {
-        this.handler.errorHandler.raise(
-          new PrepareError(err.message, {
-            range: err.range,
-            target: this._target.peek()
-          })
-        );
-      }
-    }
   }
 }

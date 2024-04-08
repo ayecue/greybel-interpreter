@@ -1,16 +1,31 @@
-import { Instruction, OpCode } from './byte-compiler/instruction';
+import { Instruction, OpCode } from './bytecode-generator/instruction';
 import { HandlerContainer } from './handler-container';
-import { Context } from './byte-compiler/context';
-import { BytecodeStatementGenerator } from './byte-compiler/statement';
+import { Context } from './bytecode-generator/context';
+import { BytecodeStatementGenerator } from './bytecode-generator/statement';
+import { Parser } from 'greybel-core';
+import { PrepareError } from './utils/error';
+
+const parse = function(this: BytecodeGenerator, code: string) {
+  try {
+    const parser = new Parser(code);
+    return parser.parseChunk();
+  } catch (err: any) {
+    if (err instanceof PrepareError) {
+      this.handler.errorHandler.raise(err);
+    } else {
+      this.handler.errorHandler.raise(
+        new PrepareError(err.message, {
+          range: err.range,
+          target: this.context.target.peek()
+        })
+      );
+    }
+  }
+}
 
 export interface BytecodeCompileResult {
   code: Instruction[];
   imports: Map<string, Instruction[]>;
-}
-
-export interface BytecodeGeneratorContext {
-  code: Instruction[];
-  jumpPoints: [Instruction, Instruction][];
 }
 
 export interface BytecodeConverterOptions {
@@ -33,8 +48,8 @@ export class BytecodeGenerator {
   }
 
   async compile(code: string): Promise<BytecodeCompileResult> {
-    const statementGenerator = new BytecodeStatementGenerator(this.context);
-    const node = this.context.parse(code);
+    const statementGenerator = new BytecodeStatementGenerator(this.context, parse.bind(this));
+    const node = parse.call(this, code);
 
     await statementGenerator.process(node);
 

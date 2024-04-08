@@ -2,8 +2,8 @@ import {
   FunctionDefinitionInstructionArgument,
   Instruction,
   OpCode
-} from '../byte-compiler/instruction';
-import { RuntimeKeyword } from '../byte-compiler/keywords';
+} from '../bytecode-generator/instruction';
+import { RuntimeKeyword } from '../bytecode-generator/keywords';
 import { OperationContext } from '../context';
 import { ContextTypeIntrinsics } from '../context/types';
 import { getStringHashCode } from '../utils/hash';
