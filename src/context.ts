@@ -121,15 +121,15 @@ export class OperationContext {
   /* eslint-disable no-use-before-define */
   readonly globals: OperationContext;
 
-  private static readonly lookupApiType: Array<ContextType> = [ContextType.Api];
-  private static readonly lookupGlobalsType: Array<ContextType> = [
+  private static readonly lookupApiType: Set<ContextType> = new Set([ContextType.Api]);
+  private static readonly lookupGlobalsType: Set<ContextType> = new Set([
     ContextType.Global
-  ];
+  ]);
 
-  private static readonly lookupLocalsType: Array<ContextType> = [
+  private static readonly lookupLocalsType: Set<ContextType> = new Set([
     ContextType.Global,
     ContextType.Function
-  ];
+  ]);
 
   constructor(options: ContextOptions) {
     this.iterators = new Stack();
@@ -173,15 +173,15 @@ export class OperationContext {
     return result;
   }
 
-  lookupType(allowedTypes: Array<ContextType>): OperationContext {
-    if (allowedTypes.includes(this.type)) {
+  lookupType(allowedTypes: Set<ContextType>): OperationContext {
+    if (allowedTypes.has(this.type)) {
       return this;
     }
 
     let current = this.previous;
 
     while (current !== null) {
-      if (allowedTypes.includes(current.type)) {
+      if (allowedTypes.has(current.type)) {
         return current;
       }
 
