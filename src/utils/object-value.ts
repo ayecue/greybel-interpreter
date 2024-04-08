@@ -1,5 +1,4 @@
 import { CustomValue } from '../types/base';
-import { Void } from '../types/nil';
 import { valueHash } from './value-hash';
 
 export type ObjectValueKeyPair = [CustomValue, CustomValue];
@@ -25,7 +24,7 @@ export class ObjectValue {
     }
   }
 
-  get(mapKey: CustomValue): CustomValue {
+  get(mapKey: CustomValue): CustomValue | null {
     const hash = valueHash(mapKey);
     const keyPair = this.data.get(hash);
     if (!keyPair) return null;

@@ -70,10 +70,7 @@ export interface IBytecodeExpressionGenerator {
     node: ASTMemberExpression,
     context?: LineCallableContext
   ): Promise<void>;
-  processIndexExpression(
-    node: ASTIndexExpression,
-    context?: LineCallableContext
-  ): Promise<void>;
+  processIndexExpression(node: ASTIndexExpression): Promise<void>;
   processSliceExpression(node: ASTSliceExpression): Promise<void>;
   processIdentifier(
     node: ASTIdentifier,

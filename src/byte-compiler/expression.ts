@@ -69,7 +69,7 @@ export class BytecodeExpressionGenerator
         );
         return;
       case ASTType.IndexExpression:
-        await this.processIndexExpression(node as ASTIndexExpression, context);
+        await this.processIndexExpression(node as ASTIndexExpression);
         return;
       case ASTType.SliceExpression:
         await this.processSliceExpression(node as ASTSliceExpression);
@@ -179,10 +179,7 @@ export class BytecodeExpressionGenerator
     }
   }
 
-  async processIndexExpression(
-    node: ASTIndexExpression,
-    context?: LineCallableContext
-  ): Promise<void> {
+  async processIndexExpression(node: ASTIndexExpression): Promise<void> {
     const mod = this.context.module.peek();
     const base = unwrap(node.base);
 
@@ -572,7 +569,7 @@ export class BytecodeExpressionGenerator
         if (arg instanceof ASTMemberExpression) {
           await this.processMemberExpression(arg, { isReference: true });
         } else if (arg instanceof ASTIndexExpression) {
-          await this.processIndexExpression(arg, { isReference: true });
+          await this.processIndexExpression(arg);
         } else if (arg instanceof ASTIdentifier) {
           await this.processIdentifier(arg, {
             isDescending: false,

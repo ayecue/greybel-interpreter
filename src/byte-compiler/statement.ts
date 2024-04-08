@@ -79,12 +79,13 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       case ASTType.AssignmentStatement:
         await this.processAssignmentStatement(node as ASTAssignmentStatement);
         return;
-      case ASTType.Chunk:
+      case ASTType.Chunk: {
         const chunk = node as ASTChunk;
         for (const item of chunk.body) {
           await this.process(item);
         }
         return;
+      }
       case ASTType.BooleanLiteral:
       case ASTType.StringLiteral:
       case ASTType.NumericLiteral:
@@ -401,7 +402,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
     if (jumpPoint === null) return;
 
-    const [_, end] = jumpPoint;
+    const end = jumpPoint[1];
 
     mod.pushCode({
       op: OpCode.GOTO_A,
@@ -416,7 +417,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
     if (jumpPoint === null) return;
 
-    const [start] = jumpPoint;
+    const start = jumpPoint[0];
 
     mod.pushCode({
       op: OpCode.GOTO_A,

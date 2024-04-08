@@ -172,7 +172,7 @@ export class CustomMap extends CustomObject {
       if (item) return item;
 
       const isa = this.getIsa();
-      
+
       if (isa?.has(current)) {
         return isa.get(current, typeIntrinsics);
       }
@@ -199,9 +199,9 @@ export class CustomMap extends CustomObject {
           origin: this
         };
       }
-      
+
       const isa = this.getIsa();
-      
+
       if (isa?.has(current)) {
         return isa.getWithOrigin(current, typeIntrinsics);
       }
