@@ -650,19 +650,19 @@ exports[`interpreter default scripts return-in-global-frame.src 4`] = `"3"`;
 
 exports[`interpreter default scripts return-in-global-frame.src 5`] = `"4"`;
 
-exports[`interpreter default scripts return-in-global-frame.src 6`] = `"null"`;
+exports[`interpreter default scripts return-in-global-frame.src 6`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts return-in-global-frame.src 7`] = `"1"`;
 
-exports[`interpreter default scripts return-in-global-frame.src 8`] = `"null"`;
+exports[`interpreter default scripts return-in-global-frame.src 8`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts return-in-global-frame.src 9`] = `"2"`;
 
-exports[`interpreter default scripts return-in-global-frame.src 10`] = `"null"`;
+exports[`interpreter default scripts return-in-global-frame.src 10`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts return-in-global-frame.src 11`] = `"3"`;
 
-exports[`interpreter default scripts return-in-global-frame.src 12`] = `"null"`;
+exports[`interpreter default scripts return-in-global-frame.src 12`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts return-in-global-frame.src 13`] = `"4"`;
 

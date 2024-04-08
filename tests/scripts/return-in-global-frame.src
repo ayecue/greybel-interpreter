@@ -15,7 +15,7 @@ end for
 
 for addr in addrs
   if stop == true then
-      return print "test"
+      return print("test")
   end if
 
   stop = true
