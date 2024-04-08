@@ -48,7 +48,6 @@
         "typescript": "^5.0.4"
     },
     "dependencies": {
-        "lru-cache": "^10.0.1",
         "greybel-core": "~1.5.13"
     },
     "keywords": [

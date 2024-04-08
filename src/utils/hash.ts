@@ -1,5 +1,3 @@
-import { LRUCache } from 'lru-cache';
-
 export function rotateBits(n: number) {
   return (n >> 1) | (n << 31);
 }
@@ -13,19 +11,11 @@ export function getHashCode(value: number, offset: number = 0): number {
 }
 
 export const getStringHashCode = (function () {
-  const cache = new LRUCache<string, number>({
-    ttl: 1000 * 60 * 5,
-    max: 500
-  });
-  const generateHash = (value: string) => {
-    let hash = 0;
-
-    for (let i = 0; i < value.length; i++) {
-      const chr = value.charCodeAt(i);
-      hash = getHashCode(chr, hash);
-    }
-
-    return hash;
+  const cache = new Map<string, number>();
+  const generateHash = (s: string) => {
+    for (var i = 0, h = 0; i < s.length; i++)
+      h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+    return h;
   };
 
   return (value: string): number => {
