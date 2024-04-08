@@ -3,7 +3,7 @@ const {
   OutputHandler
 } = require('../../dist');
 const { setupAPI } = require('./api');
-let printMock = console.log//jest.fn();
+let printMock = jest.fn();
 
 exports.preparePrintMock = () => (printMock = jest.fn());
 exports.getPrintMock = () => printMock;

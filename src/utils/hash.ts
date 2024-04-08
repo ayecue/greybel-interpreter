@@ -24,7 +24,7 @@ export const getStringHashCode = (function () {
     }
 
     const cachedHash = cache.get(value);
-    
+
     if (cachedHash !== undefined) {
       return cachedHash;
     }
