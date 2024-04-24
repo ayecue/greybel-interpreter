@@ -33,9 +33,9 @@ import { DefaultType } from '../types/default';
 import { CustomNumber } from '../types/number';
 import { CustomString } from '../types/string';
 import { PrepareError } from '../utils/error';
-import { Context } from './context';
+import { Context, ContextInstruction } from './context';
 import { BytecodeExpressionGenerator } from './expression';
-import { Instruction, OpCode } from './instruction';
+import { OpCode } from './instruction';
 import { RuntimeKeyword } from './keywords';
 import { LineCallableContext, LineIdentifierContext } from './line';
 import {
@@ -62,13 +62,13 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
   }
 
   async process(node: ASTBase): Promise<void> {
-    const mod = this.context.module.peek();
-
     if (this.context.isDebugMode()) {
-      mod.pushCode({
-        op: OpCode.BREAKPOINT,
-        source: mod.getSourceLocation(node)
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.BREAKPOINT
+        },
+        node
+      );
     }
 
     switch (node.type) {
@@ -179,21 +179,24 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     node: ASTMemberExpression,
     context?: LineCallableContext
   ): Promise<void> {
-    const mod = this.context.module.peek();
     const base = unwrap(node.base);
 
     if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
-      mod.pushCode({
-        op: OpCode.PUSH,
-        source: mod.getSourceLocation(node.identifier),
-        value: new CustomString((node.identifier as ASTIdentifier).name)
-      });
-      mod.pushCode({
-        op: OpCode.GET_SUPER_PROPERTY,
-        source: mod.getSourceLocation(node.identifier),
-        invoke: !context?.isReference,
-        command: true
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.PUSH,
+          value: new CustomString((node.identifier as ASTIdentifier).name)
+        },
+        node.identifier
+      );
+      this.context.pushCode(
+        {
+          op: OpCode.GET_SUPER_PROPERTY,
+          invoke: !context?.isReference,
+          command: true
+        },
+        node.identifier
+      );
     } else {
       await this.exprGenerator.process(base);
       await this.processIdentifier(node.identifier as ASTIdentifier, {
@@ -207,26 +210,31 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     node: ASTIndexExpression,
     context?: LineCallableContext
   ): Promise<void> {
-    const mod = this.context.module.peek();
     const base = unwrap(node.base);
 
     if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
       await this.exprGenerator.process(node.index);
-      mod.pushCode({
-        op: OpCode.GET_SUPER_PROPERTY,
-        source: mod.getSourceLocation(node.index, node.type),
-        invoke: !context?.isReference,
-        command: true
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.GET_SUPER_PROPERTY,
+          invoke: !context?.isReference,
+          command: true
+        },
+        node.index,
+        node.type
+      );
     } else {
       await this.exprGenerator.process(base);
       await this.exprGenerator.process(node.index);
-      mod.pushCode({
-        op: OpCode.GET_PROPERTY,
-        source: mod.getSourceLocation(node.index, node.type),
-        invoke: !context?.isReference,
-        command: true
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.GET_PROPERTY,
+          invoke: !context?.isReference,
+          command: true
+        },
+        node.index,
+        node.type
+      );
     }
   }
 
@@ -234,8 +242,6 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     node: ASTIdentifier,
     context?: LineIdentifierContext
   ): Promise<void> {
-    const mod = this.context.module.peek();
-
     if (!context?.isDescending) {
       switch (node.name) {
         case RuntimeKeyword.Self:
@@ -246,34 +252,39 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
           return;
         }
         default: {
-          mod.pushCode({
-            op: OpCode.GET_VARIABLE,
-            source: mod.getSourceLocation(node),
-            property: new CustomString(node.name),
-            invoke: !context?.isReference,
-            command: true
-          });
+          this.context.pushCode(
+            {
+              op: OpCode.GET_VARIABLE,
+              property: new CustomString(node.name),
+              invoke: !context?.isReference,
+              command: true
+            },
+            node
+          );
         }
       }
     } else {
-      mod.pushCode({
-        op: OpCode.PUSH,
-        source: mod.getSourceLocation(node),
-        value: new CustomString(node.name)
-      });
-      mod.pushCode({
-        op: OpCode.GET_PROPERTY,
-        source: mod.getSourceLocation(node),
-        invoke: !context?.isReference,
-        command: true
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.PUSH,
+          value: new CustomString(node.name)
+        },
+        node
+      );
+      this.context.pushCode(
+        {
+          op: OpCode.GET_PROPERTY,
+          invoke: !context?.isReference,
+          command: true
+        },
+        node
+      );
     }
   }
 
   async processAssignmentStatement(
     node: ASTAssignmentStatement
   ): Promise<void> {
-    const mod = this.context.module.peek();
     let variable = unwrap(node.variable);
 
     if (variable instanceof ASTUnaryExpression) {
@@ -282,64 +293,76 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
     if (variable instanceof ASTMemberExpression) {
       await this.exprGenerator.process(variable.base);
-      mod.pushCode({
-        op: OpCode.PUSH,
-        source: mod.getSourceLocation(variable.identifier),
-        value: new CustomString((variable.identifier as ASTIdentifier).name)
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.PUSH,
+          value: new CustomString((variable.identifier as ASTIdentifier).name)
+        },
+        variable.identifier
+      );
     } else if (variable instanceof ASTIndexExpression) {
       await this.exprGenerator.process(variable.base);
       await this.exprGenerator.process(variable.index);
     } else if (variable instanceof ASTIdentifier) {
-      mod.pushCode({
-        op: OpCode.GET_LOCALS,
-        source: mod.getSourceLocation(variable)
-      });
-      mod.pushCode({
-        op: OpCode.PUSH,
-        source: mod.getSourceLocation(variable),
-        value: new CustomString(variable.name)
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.GET_LOCALS
+        },
+        variable
+      );
+      this.context.pushCode(
+        {
+          op: OpCode.PUSH,
+          value: new CustomString(variable.name)
+        },
+        variable
+      );
     } else {
       await this.exprGenerator.process(variable);
-      mod.pushCode({
-        op: OpCode.PUSH,
-        source: mod.getSourceLocation(variable),
-        value: DefaultType.Void
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.PUSH,
+          value: DefaultType.Void
+        },
+        variable
+      );
     }
 
     await this.exprGenerator.process(node.init, { includeOuter: true });
 
-    mod.pushCode({
-      op: OpCode.ASSIGN,
-      source: mod.getSourceLocation(node)
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.ASSIGN
+      },
+      node
+    );
   }
 
   async processEvaluationExpression(
     node: ASTEvaluationExpression
   ): Promise<void> {
-    const mod = this.context.module.peek();
-    const skip: Instruction = {
-      op: OpCode.NOOP,
-      source: mod.getSourceLocation(node)
+    const skip: ContextInstruction = {
+      op: OpCode.NOOP
     };
 
     await this.exprGenerator.process(node.left);
 
     if (node.operator === Operator.And) {
-      mod.pushCode({
-        op: OpCode.GOTO_A_IF_FALSE,
-        source: mod.getSourceLocation(node),
-        goto: skip
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.GOTO_A_IF_FALSE,
+          goto: skip
+        },
+        node
+      );
     } else if (node.operator === Operator.Or) {
-      mod.pushCode({
-        op: OpCode.GOTO_A_IF_TRUE,
-        source: mod.getSourceLocation(node),
-        goto: skip
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.GOTO_A_IF_TRUE,
+          goto: skip
+        },
+        node
+      );
     }
 
     await this.process(node.right);
@@ -347,7 +370,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     switch (node.operator) {
       case Operator.And:
       case Operator.Or: {
-        mod.pushCode(skip);
+        this.context.pushCode(skip, node);
         break;
       }
       case Operator.Isa:
@@ -390,17 +413,21 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     if (node.argument) {
       await this.exprGenerator.process(node.argument);
     } else {
-      mod.pushCode({
-        op: OpCode.PUSH,
-        source: mod.getSourceLocation(node),
-        value: DefaultType.Void
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.PUSH,
+          value: DefaultType.Void
+        },
+        node
+      );
     }
 
-    mod.pushCode({
-      op: OpCode.RETURN,
-      source: mod.getSourceLocation(node)
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.RETURN
+      },
+      node
+    );
   }
 
   async processBreak(node: ASTBase): Promise<void> {
@@ -411,11 +438,13 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
     const end = jumpPoint[1];
 
-    mod.pushCode({
-      op: OpCode.GOTO_A,
-      source: mod.getSourceLocation(node),
-      goto: end
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.GOTO_A,
+        goto: end
+      },
+      node
+    );
   }
 
   async processContinue(node: ASTBase): Promise<void> {
@@ -426,68 +455,70 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
     const start = jumpPoint[0];
 
-    mod.pushCode({
-      op: OpCode.GOTO_A,
-      source: mod.getSourceLocation(node),
-      goto: start
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.GOTO_A,
+        goto: start
+      },
+      node
+    );
   }
 
   async processMapConstructorExpression(
     node: ASTMapConstructorExpression
   ): Promise<void> {
-    const mod = this.context.module.peek();
-
     for (const field of node.fields) {
       await this.exprGenerator.process(field.key);
       await this.exprGenerator.process(field.value);
     }
 
-    mod.pushCode({
-      op: OpCode.CONSTRUCT_MAP,
-      source: mod.getSourceLocation(node),
-      length: node.fields.length,
-      command: true
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.CONSTRUCT_MAP,
+        length: node.fields.length,
+        command: true
+      },
+      node
+    );
   }
 
   async processListConstructorExpression(
     node: ASTListConstructorExpression
   ): Promise<void> {
-    const mod = this.context.module.peek();
-
     for (const field of node.fields) {
       await this.exprGenerator.process(field.value);
     }
 
-    mod.pushCode({
-      op: OpCode.CONSTRUCT_LIST,
-      source: mod.getSourceLocation(node),
-      length: node.fields.length,
-      command: true
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.CONSTRUCT_LIST,
+        length: node.fields.length,
+        command: true
+      },
+      node
+    );
   }
 
   async processWhileStatement(node: ASTWhileStatement): Promise<void> {
     const mod = this.context.module.peek();
-    const start = {
-      op: OpCode.NOOP,
-      source: mod.getSourceLocation(node.condition)
+    const start: ContextInstruction = {
+      op: OpCode.NOOP
     };
-    const end = {
-      op: OpCode.NOOP,
-      source: mod.getSourceLocation(node)
+    const end: ContextInstruction = {
+      op: OpCode.NOOP
     };
 
-    mod.pushCode(start);
+    this.context.pushCode(start, node.condition);
 
     await this.exprGenerator.process(node.condition);
 
-    mod.pushCode({
-      op: OpCode.GOTO_A_IF_FALSE,
-      source: mod.getSourceLocation(node.condition),
-      goto: end
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.GOTO_A_IF_FALSE,
+        goto: end
+      },
+      node.condition
+    );
     mod.pushJumppoint(start, end);
 
     for (const item of node.body) {
@@ -495,16 +526,17 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     }
 
     mod.popJumppoint();
-    mod.pushCode({
-      op: OpCode.GOTO_A,
-      source: mod.getSourceLocation(node.condition),
-      goto: start
-    });
-    mod.pushCode(end);
+    this.context.pushCode(
+      {
+        op: OpCode.GOTO_A,
+        goto: start
+      },
+      node.condition
+    );
+    this.context.pushCode(end, node);
   }
 
   async processUnaryExpression(node: ASTUnaryExpression): Promise<void> {
-    const mod = this.context.module.peek();
     const arg = unwrap(node.argument);
 
     switch (node.operator) {
@@ -524,35 +556,40 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       case Operator.Not: {
         await this.exprGenerator.process(arg);
-        mod.pushCode({
-          op: OpCode.FALSIFY,
-          source: mod.getSourceLocation(node),
-          command: true
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.FALSIFY,
+            command: true
+          },
+          node
+        );
         return;
       }
       case Operator.Minus: {
         await this.exprGenerator.process(arg);
-        mod.pushCode({
-          op: OpCode.NEGATE,
-          source: mod.getSourceLocation(node),
-          command: true
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.NEGATE,
+            command: true
+          },
+          node
+        );
         return;
       }
       case Operator.New: {
         await this.exprGenerator.process(arg);
-        mod.pushCode({
-          op: OpCode.NEW,
-          source: mod.getSourceLocation(node),
-          command: true
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.NEW,
+            command: true
+          },
+          node
+        );
       }
     }
   }
 
   async processCallExpression(node: ASTCallExpression): Promise<void> {
-    const mod = this.context.module.peek();
     const pushArgs = async () => {
       for (const arg of node.arguments) {
         await this.exprGenerator.process(arg);
@@ -563,54 +600,70 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     if (left instanceof ASTMemberExpression) {
       const base = unwrap(left.base);
       if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
-        mod.pushCode({
-          op: OpCode.PUSH,
-          source: mod.getSourceLocation(left.identifier),
-          value: new CustomString((left.identifier as ASTIdentifier).name)
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.PUSH,
+            value: new CustomString((left.identifier as ASTIdentifier).name)
+          },
+          left.identifier
+        );
         await pushArgs();
-        mod.pushCode({
-          op: OpCode.CALL_SUPER_PROPERTY,
-          source: mod.getSourceLocation(node.base, node.type),
-          length: node.arguments.length,
-          command: true
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.CALL_SUPER_PROPERTY,
+            length: node.arguments.length,
+            command: true
+          },
+          node.base,
+          node.type
+        );
       } else {
         await this.exprGenerator.process(base);
-        mod.pushCode({
-          op: OpCode.PUSH,
-          source: mod.getSourceLocation(left.identifier),
-          value: new CustomString((left.identifier as ASTIdentifier).name)
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.PUSH,
+            value: new CustomString((left.identifier as ASTIdentifier).name)
+          },
+          left.identifier
+        );
         await pushArgs();
-        mod.pushCode({
-          op: OpCode.CALL_WITH_CONTEXT,
-          source: mod.getSourceLocation(left.identifier, node.type),
-          length: node.arguments.length,
-          command: true
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.CALL_WITH_CONTEXT,
+            length: node.arguments.length,
+            command: true
+          },
+          left.identifier,
+          node.type
+        );
       }
     } else if (left instanceof ASTIndexExpression) {
       const base = unwrap(left.base);
       if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
         await this.exprGenerator.process(left.index);
         await pushArgs();
-        mod.pushCode({
-          op: OpCode.CALL_SUPER_PROPERTY,
-          source: mod.getSourceLocation(left.index, node.type),
-          length: node.arguments.length,
-          command: true
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.CALL_SUPER_PROPERTY,
+            length: node.arguments.length,
+            command: true
+          },
+          left.index,
+          node.type
+        );
       } else {
         await this.exprGenerator.process(base);
         await this.exprGenerator.process(left.index);
         await pushArgs();
-        mod.pushCode({
-          op: OpCode.CALL_WITH_CONTEXT,
-          source: mod.getSourceLocation(left.index, node.type),
-          length: node.arguments.length,
-          command: true
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.CALL_WITH_CONTEXT,
+            length: node.arguments.length,
+            command: true
+          },
+          left.index,
+          node.type
+        );
       }
     } else if (left instanceof ASTIdentifier) {
       await this.exprGenerator.processIdentifier(left, {
@@ -618,55 +671,62 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         isReference: true
       });
       await pushArgs();
-      mod.pushCode({
-        op: OpCode.CALL,
-        source: mod.getSourceLocation(left, node.type),
-        length: node.arguments.length,
-        command: true
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.CALL,
+          length: node.arguments.length,
+          command: true
+        },
+        left,
+        node.type
+      );
     } else {
       await this.exprGenerator.process(left);
       await pushArgs();
-      mod.pushCode({
-        op: OpCode.CALL,
-        source: mod.getSourceLocation(left, node.type),
-        length: node.arguments.length,
-        command: true
-      });
+      this.context.pushCode(
+        {
+          op: OpCode.CALL,
+          length: node.arguments.length,
+          command: true
+        },
+        left,
+        node.type
+      );
     }
   }
 
   async processIfStatement(node: ASTIfStatement): Promise<void> {
-    const mod = this.context.module.peek();
-    const end = {
-      op: OpCode.NOOP,
-      source: mod.getSourceLocation(node)
+    const end: ContextInstruction = {
+      op: OpCode.NOOP
     };
 
     for (const clause of node.clauses) {
       if (clause instanceof ASTIfClause) {
-        const next = {
-          op: OpCode.NOOP,
-          source: mod.getSourceLocation(clause)
+        const next: ContextInstruction = {
+          op: OpCode.NOOP
         };
 
         await this.exprGenerator.process(clause.condition);
-        mod.pushCode({
-          op: OpCode.GOTO_A_IF_FALSE,
-          source: mod.getSourceLocation(node),
-          goto: next
-        });
+        this.context.pushCode(
+          {
+            op: OpCode.GOTO_A_IF_FALSE,
+            goto: next
+          },
+          node
+        );
 
         for (const item of clause.body) {
           await this.process(item);
         }
 
-        mod.pushCode({
-          op: OpCode.GOTO_A,
-          source: mod.getSourceLocation(node),
-          goto: end
-        });
-        mod.pushCode(next);
+        this.context.pushCode(
+          {
+            op: OpCode.GOTO_A,
+            goto: end
+          },
+          node
+        );
+        this.context.pushCode(next, clause);
       } else if (clause instanceof ASTElseClause) {
         for (const item of clause.body) {
           await this.process(item);
@@ -674,7 +734,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       }
     }
 
-    mod.pushCode(end);
+    this.context.pushCode(end, node);
   }
 
   async processForGenericStatement(
@@ -683,59 +743,71 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     const mod = this.context.module.peek();
     const variable = node.variable as ASTIdentifier;
     const idxVariable = new CustomString(`__${variable.name}_idx`);
-    const start = {
+    const start: ContextInstruction = {
       op: OpCode.NEXT,
-      source: mod.getSourceLocation(node.iterator),
       idxVariable,
       variable: new CustomString(variable.name)
     };
-    const end = {
-      op: OpCode.POP_ITERATOR,
-      source: mod.getSourceLocation(node.iterator)
+    const end: ContextInstruction = {
+      op: OpCode.POP_ITERATOR
     };
 
     mod.pushJumppoint(start, end);
-    mod.pushCode({
-      op: OpCode.GET_LOCALS,
-      source: mod.getSourceLocation(node)
-    });
-    mod.pushCode({
-      op: OpCode.PUSH,
-      source: mod.getSourceLocation(node),
-      value: idxVariable
-    });
-    mod.pushCode({
-      op: OpCode.PUSH,
-      source: mod.getSourceLocation(node),
-      value: new CustomNumber(-1)
-    });
-    mod.pushCode({
-      op: OpCode.ASSIGN,
-      source: mod.getSourceLocation(node)
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.GET_LOCALS
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.PUSH,
+        value: idxVariable
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.PUSH,
+        value: new CustomNumber(-1)
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.ASSIGN
+      },
+      node
+    );
     await this.exprGenerator.process(node.iterator);
-    mod.pushCode({
-      op: OpCode.PUSH_ITERATOR,
-      source: mod.getSourceLocation(node.iterator)
-    });
-    mod.pushCode(start);
-    mod.pushCode({
-      op: OpCode.GOTO_A_IF_FALSE,
-      source: mod.getSourceLocation(node.iterator),
-      goto: end
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.PUSH_ITERATOR
+      },
+      node.iterator
+    );
+    this.context.pushCode(start, node.iterator);
+    this.context.pushCode(
+      {
+        op: OpCode.GOTO_A_IF_FALSE,
+        goto: end
+      },
+      node.iterator
+    );
 
     for (const item of node.body) {
       await this.process(item);
     }
 
-    mod.pushCode({
-      op: OpCode.GOTO_A,
-      source: mod.getSourceLocation(node.iterator),
-      goto: start
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.GOTO_A,
+        goto: start
+      },
+      node.iterator
+    );
 
-    mod.pushCode(end);
+    this.context.pushCode(end, node.iterator);
     mod.popJumppoint();
   }
 
@@ -752,50 +824,41 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
       const childNodes = this.parseCode(code);
 
-      mod.pushCode({
-        op: OpCode.GET_LOCALS,
-        source: mod.getInternalLocation()
+      this.context.pushInternalCode({
+        op: OpCode.GET_LOCALS
       });
-      mod.pushCode({
+      this.context.pushInternalCode({
         op: OpCode.PUSH,
-        source: mod.getInternalLocation(),
         value: new CustomString('module')
       });
-      mod.pushCode({
+      this.context.pushInternalCode({
         op: OpCode.PUSH,
-        source: mod.getInternalLocation(),
         value: new CustomString('exports')
       });
-      mod.pushCode({
+      this.context.pushInternalCode({
         op: OpCode.CONSTRUCT_MAP,
-        source: mod.getInternalLocation(),
         length: 0
       });
-      mod.pushCode({
+      this.context.pushInternalCode({
         op: OpCode.CONSTRUCT_MAP,
-        source: mod.getInternalLocation(),
         length: 1
       });
-      mod.pushCode({
-        op: OpCode.ASSIGN,
-        source: mod.getInternalLocation()
+      this.context.pushInternalCode({
+        op: OpCode.ASSIGN
       });
 
       await this.process(childNodes);
 
-      mod.pushCode({
+      this.context.pushInternalCode({
         op: OpCode.GET_VARIABLE,
-        source: mod.getInternalLocation(),
         property: new CustomString('module')
       });
-      mod.pushCode({
+      this.context.pushInternalCode({
         op: OpCode.PUSH,
-        source: mod.getInternalLocation(),
         value: new CustomString('exports')
       });
-      mod.pushCode({
-        op: OpCode.GET_PROPERTY,
-        source: mod.getInternalLocation()
+      this.context.pushInternalCode({
+        op: OpCode.GET_PROPERTY
       });
 
       this.context.module.pop();
@@ -820,7 +883,6 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
   async processImportExpression(
     node: ASTFeatureImportExpression
   ): Promise<void> {
-    const mod = this.context.module.peek();
     const currentTarget = this.context.target.peek();
     const importTarget =
       await this.context.handler.resourceHandler.getTargetRelativeTo(
@@ -850,24 +912,32 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       await this.createImport(node, importTarget, code);
     }
 
-    mod.pushCode({
-      op: OpCode.GET_LOCALS,
-      source: mod.getSourceLocation(node)
-    });
-    mod.pushCode({
-      op: OpCode.PUSH,
-      source: mod.getSourceLocation(node),
-      value: new CustomString((node.name as ASTIdentifier).name)
-    });
-    mod.pushCode({
-      op: OpCode.IMPORT,
-      source: mod.getSourceLocation(node),
-      path: importTarget
-    });
-    mod.pushCode({
-      op: OpCode.ASSIGN,
-      source: mod.getSourceLocation(node)
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.GET_LOCALS
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.PUSH,
+        value: new CustomString((node.name as ASTIdentifier).name)
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.IMPORT,
+        path: importTarget
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.ASSIGN
+      },
+      node
+    );
   }
 
   async processIncludeExpression(
@@ -922,15 +992,17 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
   }
 
   async processDebuggerExpression(node: ASTBase): Promise<void> {
-    const mod = this.context.module.peek();
-
-    mod.pushCode({
-      op: OpCode.BREAKPOINT_ENABLE,
-      source: mod.getSourceLocation(node)
-    });
-    mod.pushCode({
-      op: OpCode.BREAKPOINT,
-      source: mod.getSourceLocation(node)
-    });
+    this.context.pushCode(
+      {
+        op: OpCode.BREAKPOINT_ENABLE
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.BREAKPOINT
+      },
+      node
+    );
   }
 }

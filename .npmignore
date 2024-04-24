@@ -5,6 +5,7 @@ tsconfig.json
 tests
 test.js
 testing.src
+testing2.src
 test.html
 rollup.config.js
 web-test.js

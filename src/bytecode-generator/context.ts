@@ -1,6 +1,8 @@
+import { ASTBase } from 'miniscript-core';
+
 import { HandlerContainer } from '../handler-container';
 import { Stack } from '../utils/stack';
-import { Instruction } from './instruction';
+import { Instruction, SourceLocation } from './instruction';
 import { Module } from './module';
 
 export interface ContextOptions {
@@ -8,6 +10,11 @@ export interface ContextOptions {
   handler: HandlerContainer;
   debugMode?: boolean;
 }
+
+export type ContextInstruction = Partial<Instruction> &
+  Required<Pick<Instruction, 'op'>> & {
+    goto?: ContextInstruction;
+  };
 
 export class Context {
   protected _target: Stack<string>;
@@ -42,5 +49,34 @@ export class Context {
 
   isDebugMode() {
     return this._debugMode;
+  }
+
+  pushCode(intstruction: ContextInstruction, node: ASTBase, name?: string) {
+    intstruction.source = this.getSourceLocation(node, name);
+    this.module.peek().pushCode(intstruction as Instruction);
+  }
+
+  pushInternalCode(intstruction: ContextInstruction) {
+    intstruction.source = this.getInternalLocation();
+    this.module.peek().pushCode(intstruction as Instruction);
+  }
+
+  getSourceLocation(node: ASTBase, name?: string): SourceLocation {
+    const target = this.target.peek();
+    return {
+      name: name ?? node.type,
+      path: target,
+      start: node.start,
+      end: node.end
+    };
+  }
+
+  getInternalLocation(): SourceLocation {
+    return {
+      name: 'internal',
+      path: 'internal',
+      start: { line: 0, character: 0 },
+      end: { line: 0, character: 0 }
+    };
   }
 }

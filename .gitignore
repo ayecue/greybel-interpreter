@@ -3,6 +3,7 @@ dist
 .DS_Store
 test.js
 testing.src
+testing2.src
 test.html
 rollup.config.js
 web-test.js
