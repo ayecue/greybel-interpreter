@@ -1,11 +1,10 @@
-import { ASTBase } from 'miniscript-core';
-
 import { Stack } from '../utils/stack';
-import { Instruction, SourceLocation } from './instruction';
+import { ContextInstruction } from './context';
+import { Instruction } from './instruction';
 
 export interface BytecodeGeneratorContext {
   code: Instruction[];
-  jumpPoints: [Instruction, Instruction][];
+  jumpPoints: [ContextInstruction, ContextInstruction][];
 }
 
 export class Module {
@@ -64,30 +63,11 @@ export class Module {
     return jumpPoints[jumpPoints.length - 1];
   }
 
-  pushJumppoint(start: Instruction, end: Instruction) {
+  pushJumppoint(start: ContextInstruction, end: ContextInstruction) {
     this._context.peek().jumpPoints.push([start, end]);
   }
 
   popJumppoint() {
     return this._context.peek().jumpPoints.pop();
-  }
-
-  getSourceLocation(node: ASTBase, name?: string): SourceLocation {
-    const target = this.target;
-    return {
-      name: name ?? node.type,
-      path: target,
-      start: node.start,
-      end: node.end
-    };
-  }
-
-  getInternalLocation(): SourceLocation {
-    return {
-      name: 'internal',
-      path: 'internal',
-      start: { line: 0, character: 0 },
-      end: { line: 0, character: 0 }
-    };
   }
 }
