@@ -14,6 +14,18 @@ import { CustomValue } from './base';
 import { DefaultType } from './default';
 import { CustomNil } from './nil';
 import { CustomString } from './string';
+import { CustomValueWithIntrinsics, CustomValueWithIntrinsicsResult } from './with-intrinsics';
+
+export class CustomFunctionIterator implements Iterator<CustomValue> {
+  index: number = 0;
+
+  next(): IteratorResult<CustomValue> {
+    return {
+      value: null,
+      done: true
+    };
+  }
+}
 
 export interface CustomFunctionCallback {
   (vm: VM, self: CustomValue, args: Map<string, CustomValue>): Promise<
@@ -21,7 +33,7 @@ export interface CustomFunctionCallback {
   >;
 }
 
-export class CustomFunction extends CustomValue {
+export class CustomFunction extends CustomValueWithIntrinsics {
   static readonly intrinsics: ObjectValue = new ObjectValue();
 
   static createExternal(name: string, callback: CustomFunctionCallback) {
@@ -108,6 +120,10 @@ export class CustomFunction extends CustomValue {
     return new CustomFunction(name, this.value, this.arguments, this.outer);
   }
 
+  [Symbol.iterator](): CustomFunctionIterator {
+    return new CustomFunctionIterator();
+  }
+
   getCustomType(): string {
     return 'function';
   }
@@ -145,6 +161,37 @@ export class CustomFunction extends CustomValue {
 
   instanceOf(v: CustomValue, typeIntrinsics: ContextTypeIntrinsics): boolean {
     return v.value === (typeIntrinsics.function ?? CustomFunction.intrinsics);
+  }
+
+  has(): boolean {
+    return false;
+  }
+
+  set(_path: CustomValue, _newValue: CustomValue) {
+    throw new Error('Mutable operations are not allowed on a function.');
+  }
+
+  get(
+    current: CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): CustomValue {
+    const intrinsics = typeIntrinsics.function ?? CustomFunction.getIntrinsics();
+
+    if (intrinsics.has(current)) {
+      return intrinsics.get(current);
+    }
+
+    throw new Error(`Unknown path in string ${current.toString()}.`);
+  }
+
+  getWithOrigin(
+    current: CustomValue,
+    typeIntrinsics: ContextTypeIntrinsics
+  ): CustomValueWithIntrinsicsResult {
+    return {
+      value: this.get(current, typeIntrinsics),
+      origin: null
+    };
   }
 
   hash() {

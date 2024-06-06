@@ -178,6 +178,10 @@ exports[`interpreter default scripts extend-intrinsics.src 7`] = `"[\\"bar\\", \
 
 exports[`interpreter default scripts fib.src 1`] = `"832040"`;
 
+exports[`interpreter default scripts func-ref.src 1`] = `"FUNCTION(value)"`;
+
+exports[`interpreter default scripts func-ref.src 2`] = `"null"`;
+
 exports[`interpreter default scripts gs-bug-index.src 1`] = `"\\"test func start\\""`;
 
 exports[`interpreter default scripts gs-bug-index.src 2`] = `"\\"test func start\\""`;

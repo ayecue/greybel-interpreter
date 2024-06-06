@@ -1,57 +1,57 @@
 {
-    "name": "greybel-interpreter",
-    "version": "4.6.5",
-    "description": "Interpreter",
-    "main": "dist/index",
-    "typings": "dist/index",
-    "scripts": {
-        "prepublishOnly": "npm run build",
-        "build": "npm run clean && tsc -p .",
-        "watch": "tsc -w -p .",
-        "clean": "rm -rf dist",
-        "test": "jest ./tests --testTimeout 10000",
-        "lint": "eslint ./src/**/*.ts",
-        "lint:fix": "eslint --fix ./src/**/*.ts"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ayecue/greybel-interpreter.git"
-    },
-    "author": {
-        "name": "ayecue",
-        "email": "soerenwehmeier@googlemail.com"
-    },
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/ayecue/greybel-interpreter/issues"
-    },
-    "homepage": "https://github.com/ayecue/greybel-interpreter#readme",
-    "devDependencies": {
-        "@types/jest": "^27.0.3",
-        "@types/node": "^17.0.0",
-        "@types/uuid": "^8.3.3",
-        "@typescript-eslint/eslint-plugin": "^5.62.0",
-        "@typescript-eslint/parser": "^5.62.0",
-        "eslint": "^8.17.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-config-standard": "^17.0.0",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-jest": "^26.5.3",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-prettier": "^4.0.0",
-        "eslint-plugin-promise": "^6.0.0",
-        "eslint-plugin-security": "^1.5.0",
-        "eslint-plugin-simple-import-sort": "^7.0.0",
-        "jest": "^27.4.5",
-        "nodemon": "^2.0.15",
-        "ts-node": "^10.4.0",
-        "typescript": "^5.0.4"
-    },
-    "dependencies": {
-        "greybel-core": "~1.6.1",
-        "hyperid": "^3.2.0"
-    },
-    "keywords": [
-        "miniscript"
-    ]
+  "name": "greybel-interpreter",
+  "version": "4.6.6",
+  "description": "Interpreter",
+  "main": "dist/index",
+  "typings": "dist/index",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "npm run clean && tsc -p .",
+    "watch": "tsc -w -p .",
+    "clean": "rm -rf dist",
+    "test": "jest ./tests --testTimeout 10000",
+    "lint": "eslint ./src/**/*.ts",
+    "lint:fix": "eslint --fix ./src/**/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayecue/greybel-interpreter.git"
+  },
+  "author": {
+    "name": "ayecue",
+    "email": "soerenwehmeier@googlemail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ayecue/greybel-interpreter/issues"
+  },
+  "homepage": "https://github.com/ayecue/greybel-interpreter#readme",
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.0",
+    "@types/uuid": "^8.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^26.5.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-security": "^1.5.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "jest": "^27.4.5",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "greybel-core": "~1.6.1",
+    "hyperid": "^3.2.0"
+  },
+  "keywords": [
+    "miniscript"
+  ]
 }

@@ -10,7 +10,7 @@ exports.getPrintMock = () => printMock;
 exports.pseudoAPI = setupAPI();
 
 exports.TestDebugger = class extends Debugger {
-  debug() {}
+  debug() { }
 };
 
 exports.TestOutputHandler = class extends OutputHandler {

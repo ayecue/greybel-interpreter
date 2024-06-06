@@ -1,0 +1,5 @@
+funcRef.signature = function
+	return stringify(@self)
+end function
+
+print (@print).signature
