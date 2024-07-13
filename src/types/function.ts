@@ -14,7 +14,10 @@ import { CustomValue } from './base';
 import { DefaultType } from './default';
 import { CustomNil } from './nil';
 import { CustomString } from './string';
-import { CustomValueWithIntrinsics, CustomValueWithIntrinsicsResult } from './with-intrinsics';
+import {
+  CustomValueWithIntrinsics,
+  CustomValueWithIntrinsicsResult
+} from './with-intrinsics';
 
 export class CustomFunctionIterator implements Iterator<CustomValue> {
   index: number = 0;
@@ -175,7 +178,8 @@ export class CustomFunction extends CustomValueWithIntrinsics {
     current: CustomValue,
     typeIntrinsics: ContextTypeIntrinsics
   ): CustomValue {
-    const intrinsics = typeIntrinsics.function ?? CustomFunction.getIntrinsics();
+    const intrinsics =
+      typeIntrinsics.function ?? CustomFunction.getIntrinsics();
 
     if (intrinsics.has(current)) {
       return intrinsics.get(current);

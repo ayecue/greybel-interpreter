@@ -2,8 +2,7 @@ export {
   ContextForkOptions,
   ContextOptions,
   ContextType,
-  OperationContext,
-  Scope
+  OperationContext
 } from './context';
 export { DefaultErrorHandler, ErrorHandler } from './handler/error';
 export {

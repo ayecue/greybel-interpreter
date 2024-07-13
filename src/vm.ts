@@ -281,11 +281,11 @@ export class VM {
             break;
           }
           case OpCode.GET_SELF: {
-            this.pushStack(frame.locals.get(Self, this.contextTypeIntrinsics));
+            this.pushStack(frame.locals.getNamespace(Self));
             break;
           }
           case OpCode.GET_SUPER: {
-            this.pushStack(frame.locals.get(Super, this.contextTypeIntrinsics));
+            this.pushStack(frame.locals.getNamespace(Super));
             break;
           }
           case OpCode.IMPORT: {
@@ -333,7 +333,7 @@ export class VM {
                 outer: fn.outer,
                 isCalledByCommand: !!instruction.command
               });
-              
+
               call(newFrame, fn, args);
               this.frames.push(newFrame);
             }
@@ -421,7 +421,7 @@ export class VM {
 
               list.unshift(value);
             }
-            
+
             if (!instruction.command) this.pushStack(new CustomList(list));
             break;
           }
@@ -521,7 +521,7 @@ export class VM {
           }
           case OpCode.GET_VARIABLE: {
             const getVariableInstroduction = instruction as GetVariableInstruction;
-            const ret = frame.locals.get(getVariableInstroduction.property, this.contextTypeIntrinsics);
+            const ret = frame.locals.getNamespace(getVariableInstroduction.property);
 
             if (ret instanceof CustomFunction && getVariableInstroduction.invoke) {
               const newFrame = this.getFrame().fork({
@@ -583,7 +583,7 @@ export class VM {
                 outer: ret.value.outer,
                 isCalledByCommand: !!instruction.command
               });
-              
+
               callWithContext(newFrame, ret.value, []);
               this.frames.push(newFrame);
               break;
@@ -606,11 +606,11 @@ export class VM {
 
             // Due to transformations it can happen that return values may not be PromiseLike
             if (immediateRet?.then) {
-                immediateRet.then((ret) => {
-                    this.pushStack(ret);
-                    this.resume(done);
-                }).catch(done);
-                return;
+              immediateRet.then((ret) => {
+                this.pushStack(ret);
+                this.resume(done);
+              }).catch(done);
+              return;
             }
 
             this.pushStack(immediateRet as unknown as CustomValue);
