@@ -85,9 +85,9 @@ export class ObjectValue {
   }
 
   extend(objVal: ObjectValue): this {
-    const entries = Array.from(objVal.data);
+    const entries = Array.from(objVal.entries());
     for (let index = 0; index < entries.length; index++) {
-      Map.prototype.set.apply(this.data, entries[index]);
+      ObjectValue.prototype.set.apply(this, entries[index]);
     }
     return this;
   }
