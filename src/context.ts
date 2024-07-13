@@ -16,69 +16,16 @@ export enum ContextType {
   Injected
 }
 
-export class Scope extends CustomMap {
-  /* eslint-disable no-use-before-define */
-  private readonly context: OperationContext;
-
-  constructor(context: OperationContext) {
-    super();
-    this.context = context;
-  }
-
-  get(current: CustomValue, typeIntrinsics: ContextTypeIntrinsics): CustomValue {
-    if (this.has(current)) {
-      return super.get(current, typeIntrinsics);
-    } else if (this.context.outer?.scope.has(current)) {
-      return this.context.outer.scope.get(current, typeIntrinsics);
-    } else if (this.context.globals?.scope.has(current)) {
-      return this.context.globals.scope.get(current, typeIntrinsics);
-    } else if (this.context.api?.scope.has(current)) {
-      return this.context.api.scope.get(current, typeIntrinsics);
-    }
-
-    const intrinsics = typeIntrinsics.map ?? CustomMap.getIntrinsics();
-
-    if (intrinsics.has(current)) {
-      return intrinsics.get(current);
-    }
-
-    throw new Error(`Unknown path ${current.toString()}.`);
-  }
-
-  getWithOrigin(current: CustomValue, typeIntrinsics: ContextTypeIntrinsics): CustomValueWithIntrinsicsResult {
-    if (this.has(current)) {
-      return super.getWithOrigin(current, typeIntrinsics);
-    } else if (this.context.outer?.scope.has(current)) {
-      return this.context.outer.scope.getWithOrigin(current, typeIntrinsics);
-    } else if (this.context.globals?.scope.has(current)) {
-      return this.context.globals.scope.getWithOrigin(current, typeIntrinsics);
-    } else if (this.context.api?.scope.has(current)) {
-      return this.context.api.scope.getWithOrigin(current, typeIntrinsics);
-    }
-
-    const intrinsics = typeIntrinsics.map ?? CustomMap.getIntrinsics();
-
-    if (intrinsics.has(current)) {
-      return {
-        value: intrinsics.get(current),
-        origin: null
-      };
-    }
-
-    throw new Error(`Unknown path ${current.toString()}.`);
-  }
-}
-
 export interface ContextOptions {
   code: Instruction[];
-   /* eslint-disable no-use-before-define */
+  /* eslint-disable no-use-before-define */
   previous?: OperationContext;
   type?: ContextType;
   self?: CustomValue;
   super?: CustomValue;
   isProtected?: boolean;
   isCalledByCommand?: boolean;
-   /* eslint-disable no-use-before-define */
+  /* eslint-disable no-use-before-define */
   outer?: OperationContext;
 }
 
@@ -89,7 +36,7 @@ export interface ContextForkOptions {
   super?: CustomValue;
   target?: string;
   isCalledByCommand?: boolean;
-   /* eslint-disable no-use-before-define */
+  /* eslint-disable no-use-before-define */
   outer?: OperationContext;
 }
 
@@ -99,7 +46,7 @@ export class OperationContext {
   iterators: Stack<Iterator<CustomValue> & { index: number }>;
 
   readonly type: ContextType;
-  readonly scope: Scope;
+  readonly scope: CustomMap;
 
   isProtected: boolean;
   isCalledByCommand: boolean;
@@ -108,7 +55,7 @@ export class OperationContext {
   cp: null | number;
   ip: number;
   code: Instruction[];
-  
+
   self: CustomValue | null;
   super: CustomValue | null;
 
@@ -138,7 +85,7 @@ export class OperationContext {
     this.ip = 0;
     this.previous = options.previous ?? null;
     this.type = options.type ?? ContextType.Api;
-    this.scope = this.type === ContextType.Injected ? options.previous.scope : new Scope(this);
+    this.scope = this.type === ContextType.Injected ? options.previous.scope : new CustomMap();
     this.self = options.self ?? null;
     this.super = options.super ?? null;
     this.isProtected = options.isProtected ?? false;
@@ -224,6 +171,20 @@ export class OperationContext {
 
   get(path: CustomValue, contextTypeIntrinsics: ContextTypeIntrinsics): CustomValue {
     return this.locals.scope.get(path, contextTypeIntrinsics);
+  }
+
+  getNamespace(path: CustomValue): CustomValue {
+    if (this.locals.scope.value.has(path)) {
+      return this.locals.scope.value.get(path);
+    } else if (this.outer?.scope.value.has(path)) {
+      return this.outer.scope.value.get(path);
+    } else if (this.globals?.scope.value.has(path)) {
+      return this.globals.scope.value.get(path);
+    } else if (this.api?.scope.value.has(path)) {
+      return this.api.scope.value.get(path);
+    }
+
+    throw new Error(`Path "${path.toString()}" not found in scope.`);
   }
 
   injectContext() {

@@ -14,8 +14,8 @@ export class ObjectValue {
     } else if (Array.isArray(entries)) {
       this.data = new Map();
 
-      for (const [key, value] of entries) {
-        this.set(key, value);
+      for (let index = 0; index < entries.length; index++) {
+        ObjectValue.prototype.set.apply(this, entries[index]);
       }
     }
 
@@ -48,15 +48,15 @@ export class ObjectValue {
   }
 
   values(): CustomValue[] {
-    return [...this.data.values()].map(([_, v]) => v);
+    return Array.from(this.data.values()).map(([_, v]) => v);
   }
 
   keys(): CustomValue[] {
-    return [...this.data.values()].map(([k]) => k);
+    return Array.from(this.data.values()).map(([k]) => k);
   }
 
   entries(): ObjectValueKeyPair[] {
-    return [...this.data.values()];
+    return Array.from(this.data.values());
   }
 
   get size(): number {
@@ -66,15 +66,18 @@ export class ObjectValue {
   forEach(
     callback: (value: CustomValue, key: CustomValue, map: ObjectValue) => any
   ): void {
-    for (const [key, value] of this.data.values()) {
-      callback(value, key, this);
+    const values = Array.from(this.data.values());
+    for (let index = 0; index < values.length; index++) {
+      callback(...values[index], this);
     }
   }
 
   fork() {
     const newObject = new ObjectValue();
+    const values = Array.from(this.data.values());
 
-    for (const [key, value] of this.entries()) {
+    for (let index = 0; index < values.length; index++) {
+      const [key, value] = values[index];
       newObject.set(key.fork(), value.fork());
     }
 
@@ -82,8 +85,9 @@ export class ObjectValue {
   }
 
   extend(objVal: ObjectValue): this {
-    for (const [key, value] of objVal.entries()) {
-      this.set(key, value);
+    const entries = Array.from(objVal.data);
+    for (let index = 0; index < entries.length; index++) {
+      Map.prototype.set.apply(this.data, entries[index]);
     }
     return this;
   }

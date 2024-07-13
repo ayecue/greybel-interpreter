@@ -27,7 +27,9 @@ export function deepEqual(a: CustomValue, b: CustomValue): boolean {
         }
       } else {
         if (a.value.size !== b.value.size) return false;
-        for (const key of a.value.keys()) {
+        const keys = a.value.keys();
+        for (let index = 0; index < keys.length; index++) {
+          const key = keys[index];
           if (!b.value.has(key)) return false;
           const valueA = a.value.get(key);
           const valueB = b.value.get(key);

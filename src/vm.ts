@@ -281,11 +281,11 @@ export class VM {
             break;
           }
           case OpCode.GET_SELF: {
-            this.pushStack(frame.locals.get(Self, this.contextTypeIntrinsics));
+            this.pushStack(frame.locals.getNamespace(Self));
             break;
           }
           case OpCode.GET_SUPER: {
-            this.pushStack(frame.locals.get(Super, this.contextTypeIntrinsics));
+            this.pushStack(frame.locals.getNamespace(Super));
             break;
           }
           case OpCode.IMPORT: {
@@ -333,7 +333,7 @@ export class VM {
                 outer: fn.outer,
                 isCalledByCommand: !!instruction.command
               });
-              
+
               call(newFrame, fn, args);
               this.frames.push(newFrame);
             }
@@ -421,7 +421,7 @@ export class VM {
 
               list.unshift(value);
             }
-            
+
             if (!instruction.command) this.pushStack(new CustomList(list));
             break;
           }
@@ -521,7 +521,7 @@ export class VM {
           }
           case OpCode.GET_VARIABLE: {
             const getVariableInstroduction = instruction as GetVariableInstruction;
-            const ret = frame.locals.get(getVariableInstroduction.property, this.contextTypeIntrinsics);
+            const ret = frame.locals.getNamespace(getVariableInstroduction.property);
 
             if (ret instanceof CustomFunction && getVariableInstroduction.invoke) {
               const newFrame = this.getFrame().fork({
@@ -545,7 +545,7 @@ export class VM {
             const context = this.popStack();
 
             if (!(context instanceof CustomValueWithIntrinsics)) {
-              throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
+              throw new RuntimeError(`Path "${property.toString()}" not found in "${context.getCustomType()}" intrinsics.`, this);
             }
 
             const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
@@ -583,7 +583,7 @@ export class VM {
                 outer: ret.value.outer,
                 isCalledByCommand: !!instruction.command
               });
-              
+
               callWithContext(newFrame, ret.value, []);
               this.frames.push(newFrame);
               break;
@@ -596,8 +596,10 @@ export class VM {
             const callInstruction = instruction as CallInternalInstruction;
             const args: Map<string, CustomValue> = new Map();
             const callback = callInstruction.callback;
+            const callArgs = callInstruction.arguments;
 
-            for (const arg of callInstruction.arguments) {
+            for (let index = 0; index < callArgs.length; index++) {
+              const arg = callArgs[index];
               const value = frame.scope.value.get(arg.name);
               args.set(arg.name.toString(), value);
             }
@@ -606,11 +608,11 @@ export class VM {
 
             // Due to transformations it can happen that return values may not be PromiseLike
             if (immediateRet?.then) {
-                immediateRet.then((ret) => {
-                    this.pushStack(ret);
-                    this.resume(done);
-                }).catch(done);
-                return;
+              immediateRet.then((ret) => {
+                this.pushStack(ret);
+                this.resume(done);
+              }).catch(done);
+              return;
             }
 
             this.pushStack(immediateRet as unknown as CustomValue);
