@@ -596,8 +596,10 @@ export class VM {
             const callInstruction = instruction as CallInternalInstruction;
             const args: Map<string, CustomValue> = new Map();
             const callback = callInstruction.callback;
+            const callArgs = callInstruction.arguments;
 
-            for (const arg of callInstruction.arguments) {
+            for (let index = 0; index < callArgs.length; index++) {
+              const arg = callArgs[index];
               const value = frame.scope.value.get(arg.name);
               args.set(arg.name.toString(), value);
             }

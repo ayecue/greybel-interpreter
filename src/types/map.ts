@@ -82,7 +82,10 @@ export class CustomMap extends CustomObject {
       return CUSTOM_MAP_MAX_DEPTH_VALUE;
     }
 
-    for (const [key, value] of this.value.entries()) {
+    const entries = this.value.entries();
+
+    for (let index = 0; index < entries.length; index++) {
+      const [key, value] = entries[index];
       fields.push(
         `${
           key instanceof CustomMap ? key.toJSON(depth + 1) : key.toJSON(depth)
