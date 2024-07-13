@@ -184,7 +184,7 @@ export class OperationContext {
       return this.api.scope.value.get(path);
     }
 
-    throw new Error(`Unknown path ${path.toString()}.`);
+    throw new Error(`Path "${path.toString()}" not found in scope.`);
   }
 
   injectContext() {

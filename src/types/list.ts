@@ -163,7 +163,9 @@ export class CustomList extends CustomObject {
       return intrinsics.get(current);
     }
 
-    throw new Error(`Unknown path in list ${current.toString()}.`);
+    throw new Error(
+      `Path "${current.toString()}" not found in list intrinsics.`
+    );
   }
 
   getWithOrigin(

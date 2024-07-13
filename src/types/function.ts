@@ -185,7 +185,9 @@ export class CustomFunction extends CustomValueWithIntrinsics {
       return intrinsics.get(current);
     }
 
-    throw new Error(`Unknown path in string ${current.toString()}.`);
+    throw new Error(
+      `Path "${current.toString()}" not found in function intrinsics.`
+    );
   }
 
   getWithOrigin(

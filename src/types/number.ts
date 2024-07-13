@@ -84,7 +84,9 @@ export class CustomNumber extends CustomValueWithIntrinsics {
       return intrinsics.get(current);
     }
 
-    throw new Error(`Unknown path in number ${current.toString()}.`);
+    throw new Error(
+      `Path "${current.toString()}" not found in number intrinsics.`
+    );
   }
 
   getWithOrigin(

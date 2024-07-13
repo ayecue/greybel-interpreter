@@ -184,7 +184,7 @@ export class CustomMap extends CustomObject {
       }
     }
 
-    throw new Error(`Unknown path in map ${current.toString()}.`);
+    throw new Error(`Path "${current.toString()}" not found in map.`);
   }
 
   getWithOrigin(
@@ -216,7 +216,7 @@ export class CustomMap extends CustomObject {
       }
     }
 
-    throw new Error(`Unknown path in map ${current.toString()}.`);
+    throw new Error(`Path "${current.toString()}" not found in map.`);
   }
 
   createInstance(): CustomMap {

@@ -86,7 +86,7 @@ describe('interpreter', function () {
       interpreter.once('exit', () => {
         expect(getPrintMock()).toBeCalledTimes(1);
         expect(getPrintMock()).toBeCalledWith(expect.objectContaining({
-          value : 'bye'
+          value: 'bye'
         }));
         done();
       });
@@ -104,7 +104,7 @@ describe('interpreter', function () {
       interpreter.once('exit', () => {
         expect(getPrintMock()).toBeCalledTimes(3);
         expect(getPrintMock()).toHaveBeenLastCalledWith(expect.objectContaining({
-          value : 'bye'
+          value: 'bye'
         }));
         done();
       });
@@ -126,7 +126,7 @@ describe('interpreter', function () {
       interpreter.once('exit', () => {
         expect(getPrintMock()).toBeCalledTimes(1);
         expect(getPrintMock()).toBeCalledWith(expect.objectContaining({
-          value : 'bye'
+          value: 'bye'
         }));
         done();
       });
@@ -144,7 +144,7 @@ describe('interpreter', function () {
       interpreter.once('exit', () => {
         expect(getPrintMock()).toBeCalledTimes(1);
         expect(getPrintMock()).toBeCalledWith(expect.objectContaining({
-          value : 'bye'
+          value: 'bye'
         }));
         done();
       });
@@ -208,7 +208,7 @@ describe('interpreter', function () {
           a
         `
       })
-      ).rejects.toEqual(new Error('Unknown path foo.'));
+      ).rejects.toEqual(new Error('Path "foo" not found in scope.'));
     });
 
     test('should throw since anonymous function do not have an outer', async function () {
@@ -238,7 +238,7 @@ describe('interpreter', function () {
 
           main
         `
-      })).rejects.toEqual(new Error('Unknown path x.'));
+      })).rejects.toEqual(new Error('Path "x" not found in scope.'));
     });
   });
 });

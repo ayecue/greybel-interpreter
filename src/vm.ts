@@ -545,7 +545,7 @@ export class VM {
             const context = this.popStack();
 
             if (!(context instanceof CustomValueWithIntrinsics)) {
-              throw new RuntimeError(`Unknown path ${property.toString()}.`, this);
+              throw new RuntimeError(`Path "${property.toString()}" not found in "${context.getCustomType()}" intrinsics.`, this);
             }
 
             const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
