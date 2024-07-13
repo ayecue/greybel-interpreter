@@ -68,7 +68,8 @@ export class ObjectValue {
   ): void {
     const values = Array.from(this.data.values());
     for (let index = 0; index < values.length; index++) {
-      callback(...values[index], this);
+      const [key, value] = values[index];
+      callback(value, key, this);
     }
   }
 
