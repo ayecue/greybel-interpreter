@@ -13,7 +13,7 @@ import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, eva
 import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
-import { runNext } from "./utils/run-next";
+import { schedule } from "./utils/schedule";
 import { CustomString, Self, Super } from "./types/string";
 import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
@@ -57,7 +57,7 @@ export class Debugger {
           this.nextStep = false;
           resolve();
         } else {
-          runNext(check);
+          schedule(check);
         }
       };
 
@@ -802,7 +802,7 @@ export class VM {
 
         if (this.actionCount++ === this.maxActionsPerLoop) {
           this.actionCount = 0;
-          runNext(() => {
+          schedule(() => {
             this.resume(done);
           });
           return;
