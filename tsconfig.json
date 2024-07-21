@@ -3,7 +3,8 @@
     "target": "es6",
     "module": "commonjs",
     "lib": [
-      "es6"
+      "ES2020",
+      "DOM"
     ],
     "allowJs": true,
     "outDir": "dist",

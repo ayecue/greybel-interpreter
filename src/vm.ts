@@ -13,7 +13,7 @@ import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, eva
 import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
-import { schedule } from "./utils/schedule";
+import { schedule } from "non-blocking-schedule";
 import { CustomString, Self, Super } from "./types/string";
 import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
