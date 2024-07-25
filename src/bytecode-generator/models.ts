@@ -1,7 +1,8 @@
 import {
   ASTFeatureEnvarExpression,
   ASTFeatureImportExpression,
-  ASTFeatureIncludeExpression
+  ASTFeatureIncludeExpression,
+  ASTFeatureInjectExpression
 } from 'greybel-core';
 import {
   ASTAssignmentStatement,
@@ -94,5 +95,6 @@ export interface IBytecodeExpressionGenerator {
   ): Promise<void>;
   processUnaryExpression(node: ASTUnaryExpression): Promise<void>;
   processCallExpression(node: ASTCallExpression): Promise<void>;
+  processInjectExpression(node: ASTFeatureInjectExpression): Promise<void>;
   processEnvarExpression(node: ASTFeatureEnvarExpression): Promise<void>;
 }

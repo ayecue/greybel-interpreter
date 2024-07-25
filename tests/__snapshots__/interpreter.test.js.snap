@@ -292,6 +292,13 @@ exports[`interpreter default scripts imports-within-comments.src 2`] = `"\\"file
 
 exports[`interpreter default scripts imports-within-comments.src 3`] = `"\\"foo included code and sub foo included code\\""`;
 
+exports[`interpreter default scripts inject.src 1`] = `
+"\\"print \\"1..\\"
+print \\"2..\\"
+print \\"3..\\"
+print \\"hello world\\"\\""
+`;
+
 exports[`interpreter default scripts instances.src 1`] = `"\\"was\\""`;
 
 exports[`interpreter default scripts instances.src 2`] = `"\\"woo\\""`;

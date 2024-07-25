@@ -1,5 +1,6 @@
 import {
   ASTFeatureEnvarExpression,
+  ASTFeatureInjectExpression,
   ASTType as ASTTypeExtended,
   Operator as GreybelOperator
 } from 'greybel-core';
@@ -124,6 +125,9 @@ export class BytecodeExpressionGenerator
           },
           node
         );
+        return;
+      case ASTTypeExtended.FeatureInjectExpression:
+        await this.processInjectExpression(node as ASTFeatureInjectExpression);
         return;
       case ASTTypeExtended.FeatureEnvarExpression:
         await this.processEnvarExpression(node as ASTFeatureEnvarExpression);
@@ -780,6 +784,40 @@ export class BytecodeExpressionGenerator
         node.type
       );
     }
+  }
+
+  async processInjectExpression(
+    node: ASTFeatureInjectExpression
+  ): Promise<void> {
+    const currentTarget = this.context.target.peek();
+    const importTarget =
+      await this.context.handler.resourceHandler.getTargetRelativeTo(
+        currentTarget,
+        node.path
+      );
+
+    const content = await this.context.handler.resourceHandler.get(
+      importTarget
+    );
+
+    if (content == null) {
+      const range = new ASTRange(node.start, node.end);
+
+      throw new PrepareError(`Cannot find injection "${currentTarget}"`, {
+        target: currentTarget,
+        range
+      });
+    }
+
+    const value = new CustomString(content);
+
+    this.context.pushCode(
+      {
+        op: OpCode.PUSH,
+        value
+      },
+      node
+    );
   }
 
   async processEnvarExpression(node: ASTFeatureEnvarExpression): Promise<void> {

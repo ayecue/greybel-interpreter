@@ -151,6 +151,8 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       case ASTType.EmptyExpression:
       case ASTType.Comment:
         return;
+      case ASTTypeExtended.FeatureInjectExpression:
+        return;
       case ASTTypeExtended.FeatureEnvarExpression:
         return;
       case ASTTypeExtended.FeatureImportExpression:
