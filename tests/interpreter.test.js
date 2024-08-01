@@ -192,6 +192,59 @@ describe('interpreter', function () {
       expect(stack).toMatchSnapshot();
     });
 
+    test('should throw since path cannot be resolved if context does not have intrinsics', async function () {
+      await expect(interpreter.run({
+        customCode: `
+          test = {}
+          test.item = null
+
+          test.item.push(234)
+        `
+      })
+      ).rejects.toEqual(new Error('Path "push" not found in "null" intrinsics.'));
+      await expect(interpreter.run({
+        customCode: `
+          test = {}
+          test.item = null
+
+          test.item.push
+        `
+      })
+      ).rejects.toEqual(new Error('Path "push" not found in "null" intrinsics.'));
+      await expect(interpreter.run({
+        customCode: `
+          null.push(234)
+        `
+      })
+      ).rejects.toEqual(new Error('Path "push" not found in "null" intrinsics.'));
+      await expect(interpreter.run({
+        customCode: `
+          test = {}
+          test.item = null
+          foo = new test
+          foo.bar = function
+            super.item.push(123)
+          end function
+
+          foo.bar
+        `
+      })
+      ).rejects.toEqual(new Error('Path "push" not found in "null" intrinsics.'));
+      await expect(interpreter.run({
+        customCode: `
+          test = {}
+          test.item = null
+          foo = new test
+          foo.bar = function
+            super.item.push
+          end function
+
+          foo.bar
+        `
+      })
+      ).rejects.toEqual(new Error('Path "push" not found in "null" intrinsics.'));
+    });
+
     test('should throw since definition is not within reachable scope', async function () {
       await expect(interpreter.run({
         customCode: `

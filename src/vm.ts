@@ -348,9 +348,14 @@ export class VM {
               args[i] = this.popStack();
             }
 
-            const propertyName = this.popStack();
-            const context = this.popStack() as CustomValueWithIntrinsics;
-            const ret = (context as CustomValueWithIntrinsics).getWithOrigin(propertyName, this.contextTypeIntrinsics);
+            const property = this.popStack();
+            const context = this.popStack();
+
+            if (!(context instanceof CustomValueWithIntrinsics)) {
+              throw new RuntimeError(`Path "${property.toString()}" not found in "${context.getCustomType()}" intrinsics.`, this);
+            }
+
+            const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
             const fn = ret.value;
 
             if (fn instanceof CustomFunction) {
@@ -379,7 +384,12 @@ export class VM {
 
             const property = this.popStack();
             const context = frame.locals.get(Super, this.contextTypeIntrinsics);
-            const ret = (context as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
+
+            if (!(context instanceof CustomValueWithIntrinsics)) {
+              throw new RuntimeError(`Path "${property.toString()}" not found in "${context.getCustomType()}" intrinsics.`, this);
+            }
+
+            const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
             const fn = ret.value;
 
             if (fn instanceof CustomFunction) {
@@ -572,7 +582,12 @@ export class VM {
             const getPropertyInstruction = instruction as GetPropertyInstruction;
             const property = this.popStack();
             const context = frame.locals.get(Super, this.contextTypeIntrinsics);
-            const ret = (context as CustomValueWithIntrinsics).getWithOrigin(property, this.contextTypeIntrinsics);
+
+            if (!(context instanceof CustomValueWithIntrinsics)) {
+              throw new RuntimeError(`Path "${property.toString()}" not found in "${context.getCustomType()}" intrinsics.`, this);
+            }
+
+            const ret = context.getWithOrigin(property, this.contextTypeIntrinsics);
 
             if (ret.value instanceof CustomFunction && getPropertyInstruction.invoke) {
               const newFrame = this.getFrame().fork({
