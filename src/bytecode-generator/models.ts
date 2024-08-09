@@ -7,15 +7,18 @@ import {
 import {
   ASTAssignmentStatement,
   ASTBase,
+  ASTBinaryExpression,
   ASTCallExpression,
-  ASTEvaluationExpression,
+  ASTComparisonGroupExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
   ASTIfStatement,
   ASTIndexExpression,
+  ASTIsaExpression,
   ASTListConstructorExpression,
   ASTLiteral,
+  ASTLogicalExpression,
   ASTMapConstructorExpression,
   ASTMemberExpression,
   ASTReturnStatement,
@@ -49,7 +52,6 @@ export interface IBytecodeStatementGenerator {
     context?: LineIdentifierContext
   ): Promise<void>;
   processAssignmentStatement(node: ASTAssignmentStatement): Promise<void>;
-  processEvaluationExpression(node: ASTEvaluationExpression): Promise<void>;
   processReturn(node: ASTReturnStatement): Promise<void>;
   processBreak(node: ASTBase): Promise<void>;
   processContinue(node: ASTBase): Promise<void>;
@@ -82,7 +84,9 @@ export interface IBytecodeExpressionGenerator {
     context?: LineIdentifierContext
   ): Promise<void>;
   processLiteral(node: ASTLiteral): Promise<void>;
-  processEvaluationExpression(node: ASTEvaluationExpression): Promise<void>;
+  processBinaryExpression(node: ASTBinaryExpression): Promise<void>;
+  processIsaExpression(node: ASTIsaExpression): Promise<void>;
+  processLogicalExpression(node: ASTLogicalExpression): Promise<void>;
   processMapConstructorExpression(
     node: ASTMapConstructorExpression
   ): Promise<void>;
@@ -97,4 +101,7 @@ export interface IBytecodeExpressionGenerator {
   processCallExpression(node: ASTCallExpression): Promise<void>;
   processInjectExpression(node: ASTFeatureInjectExpression): Promise<void>;
   processEnvarExpression(node: ASTFeatureEnvarExpression): Promise<void>;
+  processComparisonGroupExpression(
+    node: ASTComparisonGroupExpression
+  ): Promise<void>;
 }

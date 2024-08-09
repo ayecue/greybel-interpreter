@@ -1,3 +1,5 @@
+import { Operator } from 'miniscript-core';
+
 import { CustomValue } from '../types/base';
 import { CustomBoolean } from '../types/boolean';
 import { DefaultType } from '../types/default';
@@ -314,4 +316,42 @@ export function evalOr(a: CustomValue, b: CustomValue) {
   const left = Number(a instanceof CustomNumber ? a.toNumber() : a.toTruthy());
   const right = Number(b instanceof CustomNumber ? b.toNumber() : b.toTruthy());
   return new CustomNumber(absClamp01(left + right - left * right));
+}
+
+export function evalComparisonGroup(
+  values: CustomValue[],
+  operators: string[]
+): CustomNumber {
+  for (let index = 0; index < operators.length; index++) {
+    const operator = operators[index];
+    const left = values[index];
+    const right = values[index + 1];
+    let result: CustomValue;
+
+    switch (operator) {
+      case Operator.Equal:
+        result = evalEqual(left, right);
+        break;
+      case Operator.NotEqual:
+        result = evalNotEqual(left, right);
+        break;
+      case Operator.GreaterThan:
+        result = evalGreaterThan(left, right);
+        break;
+      case Operator.GreaterThanOrEqual:
+        result = evalGreaterThanOrEqual(left, right);
+        break;
+      case Operator.LessThan:
+        result = evalLessThan(left, right);
+        break;
+      case Operator.LessThanOrEqual:
+        result = evalLessThanOrEqual(left, right);
+        break;
+    }
+
+    if (!result.toTruthy()) {
+      return DefaultType.False;
+    }
+  }
+  return DefaultType.True;
 }

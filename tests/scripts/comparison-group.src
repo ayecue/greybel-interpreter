@@ -1,0 +1,8 @@
+IsNumeric = function(c)
+	return "0" <= c <= "9"
+end function
+
+print(IsNumeric("3"))
+print(IsNumeric("9"))
+print(IsNumeric("A"))
+print(IsNumeric("*"))

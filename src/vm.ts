@@ -2,14 +2,14 @@ import { ContextType, OperationContext } from "./context";
 import { ContextTypeIntrinsics } from "./context/types";
 import { HandlerContainer } from "./handler-container";
 import { CustomValue } from "./types/base";
-import { CallInstruction, CallInternalInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./bytecode-generator/instruction";
+import { CallInstruction, CallInternalInstruction, ComparisonGroupInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./bytecode-generator/instruction";
 import { DefaultType } from "./types/default";
 import { Stack } from "./utils/stack";
 import { RuntimeError } from "./utils/error";
 import { CustomValueWithIntrinsics } from "./types/with-intrinsics";
 import { CustomBoolean } from "./types/boolean";
 import { CustomFunction } from "./types/function";
-import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, evalBitwiseOr, evalBitwiseRightShift, evalBitwiseUnsignedRightShift, evalDiv, evalEqual, evalGreaterThan, evalGreaterThanOrEqual, evalLessThan, evalLessThanOrEqual, evalMod, evalMul, evalNotEqual, evalOr, evalPow, evalSub } from "./vm/evaluation";
+import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, evalBitwiseOr, evalBitwiseRightShift, evalBitwiseUnsignedRightShift, evalComparisonGroup, evalDiv, evalEqual, evalGreaterThan, evalGreaterThanOrEqual, evalLessThan, evalLessThanOrEqual, evalMod, evalMul, evalNotEqual, evalOr, evalPow, evalSub } from "./vm/evaluation";
 import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
@@ -694,6 +694,18 @@ export class VM {
             const b = this.popStack();
             const a = this.popStack();
             this.pushStack(evalBitwiseUnsignedRightShift(a, b));
+            break;
+          }
+          case OpCode.COMPARISON_GROUP: {
+            const comparisonGroupInstruction = instruction as ComparisonGroupInstruction;
+            const values: CustomValue[] = [];
+
+            for (let index = 0; index <= comparisonGroupInstruction.operators.length; index++) {
+              values.push(this.popStack());
+            }
+
+            this.pushStack(evalComparisonGroup(values, comparisonGroupInstruction.operators));
+
             break;
           }
           case OpCode.ADD: {

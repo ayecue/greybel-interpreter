@@ -11,13 +11,13 @@ import {
   ASTCallStatement,
   ASTChunk,
   ASTElseClause,
-  ASTEvaluationExpression,
   ASTForGenericStatement,
   ASTIdentifier,
   ASTIfClause,
   ASTIfStatement,
   ASTIndexExpression,
   ASTListConstructorExpression,
+  ASTLogicalExpression,
   ASTMapConstructorExpression,
   ASTMemberExpression,
   ASTParenthesisExpression,
@@ -100,8 +100,11 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       case ASTType.IsaExpression:
       case ASTType.BinaryExpression:
+        return;
       case ASTType.LogicalExpression:
-        await this.processEvaluationExpression(node as ASTEvaluationExpression);
+        await this.exprGenerator.processLogicalExpression(
+          node as ASTLogicalExpression
+        );
         return;
       case ASTType.ReturnStatement:
         await this.processReturn(node as ASTReturnStatement);
@@ -136,7 +139,9 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         await this.processUnaryExpression(node as ASTUnaryExpression);
         return;
       case ASTType.CallStatement:
-        await this.process((node as ASTCallStatement).expression);
+        await this.processCallExpression(
+          (node as ASTCallStatement).expression as ASTCallExpression
+        );
         return;
       case ASTType.CallExpression:
         await this.processCallExpression(node as ASTCallExpression);
@@ -338,68 +343,6 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       },
       node
     );
-  }
-
-  async processEvaluationExpression(
-    node: ASTEvaluationExpression
-  ): Promise<void> {
-    const skip: ContextInstruction = {
-      op: OpCode.NOOP
-    };
-
-    await this.exprGenerator.process(node.left);
-
-    if (node.operator === Operator.And) {
-      this.context.pushCode(
-        {
-          op: OpCode.GOTO_A_IF_FALSE,
-          goto: skip
-        },
-        node
-      );
-    } else if (node.operator === Operator.Or) {
-      this.context.pushCode(
-        {
-          op: OpCode.GOTO_A_IF_TRUE,
-          goto: skip
-        },
-        node
-      );
-    }
-
-    await this.process(node.right);
-
-    switch (node.operator) {
-      case Operator.And:
-      case Operator.Or: {
-        this.context.pushCode(skip, node);
-        break;
-      }
-      case Operator.Isa:
-      case Operator.Equal:
-      case Operator.NotEqual:
-      case Operator.LessThan:
-      case Operator.LessThanOrEqual:
-      case Operator.GreaterThan:
-      case Operator.GreaterThanOrEqual:
-      case Operator.Plus:
-      case Operator.Minus:
-      case Operator.Asterik:
-      case Operator.Slash:
-      case Operator.Modulo:
-      case Operator.Power:
-      case GreybelOperator.BitwiseAnd:
-      case GreybelOperator.BitwiseOr:
-      case GreybelOperator.LeftShift:
-      case GreybelOperator.RightShift:
-      case GreybelOperator.UnsignedRightShift: {
-        break;
-      }
-      default:
-        throw new Error(
-          `Unexpected evaluation expression operator. ("${node.operator}")`
-        );
-    }
   }
 
   async processReturn(node: ASTReturnStatement): Promise<void> {
