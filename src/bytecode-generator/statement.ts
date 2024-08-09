@@ -87,9 +87,11 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       case ASTType.Chunk: {
         const chunk = node as ASTChunk;
-        for (const item of chunk.body) {
-          await this.process(item);
-        }
+        for (
+          let index = 0;
+          index < chunk.body.length;
+          await this.process(chunk.body[index++])
+        );
         return;
       }
       case ASTType.BooleanLiteral:
@@ -411,7 +413,8 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
   async processMapConstructorExpression(
     node: ASTMapConstructorExpression
   ): Promise<void> {
-    for (const field of node.fields) {
+    for (let index = 0; index < node.fields.length; index++) {
+      const field = node.fields[index];
       await this.exprGenerator.process(field.key);
       await this.exprGenerator.process(field.value);
     }
@@ -429,7 +432,8 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
   async processListConstructorExpression(
     node: ASTListConstructorExpression
   ): Promise<void> {
-    for (const field of node.fields) {
+    for (let index = 0; index < node.fields.length; index++) {
+      const field = node.fields[index];
       await this.exprGenerator.process(field.value);
     }
 
@@ -465,9 +469,11 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     );
     mod.pushJumppoint(start, end);
 
-    for (const item of node.body) {
-      await this.process(item);
-    }
+    for (
+      let index = 0;
+      index < node.body.length;
+      await this.process(node.body[index++])
+    );
 
     mod.popJumppoint();
     this.context.pushCode(
@@ -535,7 +541,8 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
   async processCallExpression(node: ASTCallExpression): Promise<void> {
     const pushArgs = async () => {
-      for (const arg of node.arguments) {
+      for (let index = 0; index < node.arguments.length; index++) {
+        const arg = node.arguments[index];
         await this.exprGenerator.process(arg);
       }
     };
@@ -644,7 +651,8 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       op: OpCode.NOOP
     };
 
-    for (const clause of node.clauses) {
+    for (let index = 0; index < node.clauses.length; index++) {
+      const clause = node.clauses[index];
       if (clause instanceof ASTIfClause) {
         const next: ContextInstruction = {
           op: OpCode.NOOP
@@ -659,9 +667,11 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
           node
         );
 
-        for (const item of clause.body) {
-          await this.process(item);
-        }
+        for (
+          let index = 0;
+          index < clause.body.length;
+          await this.process(clause.body[index++])
+        );
 
         this.context.pushCode(
           {
@@ -672,9 +682,11 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         );
         this.context.pushCode(next, clause);
       } else if (clause instanceof ASTElseClause) {
-        for (const item of clause.body) {
-          await this.process(item);
-        }
+        for (
+          let index = 0;
+          index < clause.body.length;
+          await this.process(clause.body[index++])
+        );
       }
     }
 
@@ -739,9 +751,11 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       node.iterator
     );
 
-    for (const item of node.body) {
-      await this.process(item);
-    }
+    for (
+      let index = 0;
+      index < node.body.length;
+      await this.process(node.body[index++])
+    );
 
     this.context.pushCode(
       {
