@@ -437,13 +437,13 @@ export class VM {
           }
           case OpCode.GOTO_A_IF_FALSE: {
             const condition = this.popStack();
+            const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
 
-            if (condition.toTruthy()) {
-              break;
+            if (value === 0) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A_IF_FALSE_AND_PUSH: {
@@ -452,23 +452,22 @@ export class VM {
 
             this.pushStack(new CustomNumber(value));
 
-            if (value >= 1) {
-              break;
+            if (value === 0) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A_IF_TRUE: {
             const condition = this.popStack();
+            const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
 
-            if (!condition.toTruthy()) {
-              break;
+            if (value === 1) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A_IF_TRUE_AND_PUSH: {
@@ -477,12 +476,11 @@ export class VM {
 
             this.pushStack(new CustomNumber(value));
 
-            if (value < 1) {
-              break;
+            if (value === 1) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A: {

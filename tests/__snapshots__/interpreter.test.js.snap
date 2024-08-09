@@ -421,7 +421,7 @@ exports[`interpreter default scripts logical-expressions.src 4`] = `"0"`;
 
 exports[`interpreter default scripts logical-expressions.src 5`] = `"0.5"`;
 
-exports[`interpreter default scripts logical-expressions.src 6`] = `"0.6"`;
+exports[`interpreter default scripts logical-expressions.src 6`] = `"0.3"`;
 
 exports[`interpreter default scripts logical-expressions.src 7`] = `"1"`;
 

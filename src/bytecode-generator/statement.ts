@@ -1,8 +1,7 @@
 import {
   ASTFeatureImportExpression,
   ASTFeatureIncludeExpression,
-  ASTType as ASTTypeExtended,
-  Operator as GreybelOperator
+  ASTType as ASTTypeExtended
 } from 'greybel-core';
 import {
   ASTAssignmentStatement,
