@@ -1,7 +1,7 @@
 import { CustomNumber } from './number';
 
 export class CustomBoolean extends CustomNumber {
-  constructor(value: boolean) {
+  constructor(value: boolean | number) {
     super(+value);
   }
 

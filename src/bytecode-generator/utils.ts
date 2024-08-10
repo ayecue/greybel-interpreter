@@ -1,6 +1,8 @@
 import {
   ASTBase,
+  ASTBooleanLiteral,
   ASTLiteral,
+  ASTNumericLiteral,
   ASTParenthesisExpression,
   ASTType
 } from 'miniscript-core';
@@ -12,12 +14,24 @@ import { CustomString } from '../types/string';
 
 export function generateCustomValueFromASTLiteral(node: ASTLiteral) {
   switch (node.type) {
-    case ASTType.BooleanLiteral:
-      return new CustomBoolean(node.value as boolean);
+    case ASTType.BooleanLiteral: {
+      const booleanLiteralNode = node as ASTBooleanLiteral;
+      return new CustomBoolean(
+        booleanLiteralNode.negated
+          ? -booleanLiteralNode.value
+          : booleanLiteralNode.value
+      );
+    }
     case ASTType.StringLiteral:
       return new CustomString(node.value as string);
-    case ASTType.NumericLiteral:
-      return new CustomNumber(node.value as number);
+    case ASTType.NumericLiteral: {
+      const numericLiteralNode = node as ASTNumericLiteral;
+      return new CustomNumber(
+        numericLiteralNode.negated
+          ? -numericLiteralNode.value
+          : numericLiteralNode.value
+      );
+    }
     case ASTType.NilLiteral:
       return DefaultType.Void;
     default:
