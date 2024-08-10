@@ -211,8 +211,7 @@ export function evalLessThan(a: CustomValue, b: CustomValue) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
     if (b instanceof CustomNumber)
       return new CustomBoolean(a.toNumber() < b.toNumber());
-  } else if (a instanceof CustomString) {
-    if (b instanceof CustomNil) b = new CustomString('');
+  } else if (a instanceof CustomString && b instanceof CustomString) {
     return new CustomBoolean(a.toString() < b.toString());
   }
   return DefaultType.Void;
@@ -223,8 +222,7 @@ export function evalLessThanOrEqual(a: CustomValue, b: CustomValue) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
     if (b instanceof CustomNumber)
       return new CustomBoolean(a.toNumber() <= b.toNumber());
-  } else if (a instanceof CustomString) {
-    if (b instanceof CustomNil) b = new CustomString('');
+  } else if (a instanceof CustomString && b instanceof CustomString) {
     return new CustomBoolean(a.toString() <= b.toString());
   }
   return DefaultType.Void;
@@ -235,8 +233,7 @@ export function evalGreaterThan(a: CustomValue, b: CustomValue) {
     if (b instanceof CustomNil) b = new CustomNumber(0);
     if (b instanceof CustomNumber)
       return new CustomBoolean(a.toNumber() > b.toNumber());
-  } else if (a instanceof CustomString) {
-    if (b instanceof CustomNil) b = new CustomString('');
+  } else if (a instanceof CustomString && b instanceof CustomString) {
     return new CustomBoolean(a.toString() > b.toString());
   }
   return DefaultType.Void;
@@ -248,7 +245,6 @@ export function evalGreaterThanOrEqual(a: CustomValue, b: CustomValue) {
     if (b instanceof CustomNumber)
       return new CustomBoolean(a.toNumber() >= b.toNumber());
   } else if (a instanceof CustomString && b instanceof CustomString) {
-    if (b instanceof CustomNil) b = new CustomString('');
     return new CustomBoolean(a.toString() >= b.toString());
   }
   return DefaultType.Void;
