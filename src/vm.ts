@@ -2,14 +2,14 @@ import { ContextType, OperationContext } from "./context";
 import { ContextTypeIntrinsics } from "./context/types";
 import { HandlerContainer } from "./handler-container";
 import { CustomValue } from "./types/base";
-import { CallInstruction, CallInternalInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./bytecode-generator/instruction";
+import { CallInstruction, CallInternalInstruction, ComparisonGroupInstruction, ConstructListInstruction, ConstructMapInstruction, FunctionDefinitionInstruction, GetPropertyInstruction, GetVariableInstruction, GotoAInstruction, ImportInstruction, Instruction, NextInstruction, OpCode, PushInstruction, SourceLocation } from "./bytecode-generator/instruction";
 import { DefaultType } from "./types/default";
 import { Stack } from "./utils/stack";
 import { RuntimeError } from "./utils/error";
 import { CustomValueWithIntrinsics } from "./types/with-intrinsics";
 import { CustomBoolean } from "./types/boolean";
 import { CustomFunction } from "./types/function";
-import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, evalBitwiseOr, evalBitwiseRightShift, evalBitwiseUnsignedRightShift, evalDiv, evalEqual, evalGreaterThan, evalGreaterThanOrEqual, evalLessThan, evalLessThanOrEqual, evalMod, evalMul, evalNotEqual, evalOr, evalPow, evalSub } from "./vm/evaluation";
+import { absClamp01, evalAdd, evalAnd, evalBitwiseAnd, evalBitwiseLeftShift, evalBitwiseOr, evalBitwiseRightShift, evalBitwiseUnsignedRightShift, evalComparisonGroup, evalDiv, evalEqual, evalGreaterThan, evalGreaterThanOrEqual, evalLessThan, evalLessThanOrEqual, evalMod, evalMul, evalNotEqual, evalOr, evalPow, evalSub } from "./vm/evaluation";
 import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
@@ -98,8 +98,6 @@ export interface VMOptions {
   externalFrames?: Stack<OperationContext>;
   maxActionsPerLoop?: number;
 }
-
-type VMResumeCallback = (err?: any) => void;
 
 export class VM {
   private readonly ACTIONS_PER_LOOP: number = 80000;
@@ -226,22 +224,28 @@ export class VM {
     return new Promise((resolve, reject) => {
       this.state = VMState.PENDING;
       this.time = Date.now();
+      this.signal.on('done', (err) => {
+        this.signal.removeAllListeners('cycle');
+        this.signal.removeAllListeners('resume');
+        this.signal.removeAllListeners('done');
 
-      this.resume((err) => {
         if (err) {
           reject(err);
           return;
         }
         resolve();
       });
+      this.signal.on('cycle', () => schedule(() => this.resume()));
+      this.signal.on('resume', () => this.resume());
+      this.resume();
     });
   }
 
-  private resume(done: VMResumeCallback) {
+  private resume() {
     try {
       while (true) {
         if (!this.isPending()) {
-          done();
+          this.signal.emit('done');
           return;
         }
 
@@ -437,13 +441,13 @@ export class VM {
           }
           case OpCode.GOTO_A_IF_FALSE: {
             const condition = this.popStack();
+            const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
 
-            if (condition.toTruthy()) {
-              break;
+            if (value === 0) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A_IF_FALSE_AND_PUSH: {
@@ -452,23 +456,22 @@ export class VM {
 
             this.pushStack(new CustomNumber(value));
 
-            if (value >= 1) {
-              break;
+            if (value === 0) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A_IF_TRUE: {
             const condition = this.popStack();
+            const value: number = condition instanceof CustomNumber ? absClamp01(condition.value) : +condition.toTruthy();
 
-            if (!condition.toTruthy()) {
-              break;
+            if (value === 1) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A_IF_TRUE_AND_PUSH: {
@@ -477,12 +480,11 @@ export class VM {
 
             this.pushStack(new CustomNumber(value));
 
-            if (value < 1) {
-              break;
+            if (value === 1) {
+              const gotoAInstruction = instruction as GotoAInstruction;
+              frame.ip = gotoAInstruction.goto.ip;
             }
 
-            const gotoAInstruction = instruction as GotoAInstruction;
-            frame.ip = gotoAInstruction.goto.ip;
             break;
           }
           case OpCode.GOTO_A: {
@@ -625,8 +627,10 @@ export class VM {
             if (immediateRet?.then) {
               immediateRet.then((ret) => {
                 this.pushStack(ret);
-                this.resume(done);
-              }).catch(done);
+                this.signal.emit('resume');
+              }).catch((err) => {
+                this.signal.emit('done', err);
+              });
               return;
             }
 
@@ -694,6 +698,18 @@ export class VM {
             const b = this.popStack();
             const a = this.popStack();
             this.pushStack(evalBitwiseUnsignedRightShift(a, b));
+            break;
+          }
+          case OpCode.COMPARISON_GROUP: {
+            const comparisonGroupInstruction = instruction as ComparisonGroupInstruction;
+            const values: CustomValue[] = [];
+
+            for (let index = 0; index <= comparisonGroupInstruction.operators.length; index++) {
+              values.push(this.popStack());
+            }
+
+            this.pushStack(evalComparisonGroup(values, comparisonGroupInstruction.operators));
+
             break;
           }
           case OpCode.ADD: {
@@ -797,8 +813,10 @@ export class VM {
             if (this.debugger.getBreakpoint(this)) {
               this.debugger.interact(this, instruction.source);
               this.debugger.resume().then(() => {
-                this.resume(done);
-              }).catch(done);
+                this.signal.emit('resume');
+              }).catch((err) => {
+                this.signal.emit('done', err);
+              });
               return;
             }
             break;
@@ -810,21 +828,18 @@ export class VM {
           case OpCode.HALT: {
             this.state = VMState.FINISHED;
             this.signal.emit('done');
-            done();
             return;
           }
         }
 
         if (this.actionCount++ === this.maxActionsPerLoop) {
           this.actionCount = 0;
-          schedule(() => {
-            this.resume(done);
-          });
+          this.signal.emit('cycle');
           return;
         }
       }
     } catch (err: any) {
-      done(err);
+      this.signal.emit('done', err);
     }
   }
 }

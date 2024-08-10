@@ -42,6 +42,7 @@ export enum OpCode {
   LESS_THAN_OR_EQUAL,
   GREATER_THAN,
   GREATER_THAN_OR_EQUAL,
+  COMPARISON_GROUP,
   AND,
   OR,
   RETURN,
@@ -152,6 +153,11 @@ export interface ImportInstruction extends BaseInstruction {
   path: string;
 }
 
+export interface ComparisonGroupInstruction extends BaseInstruction {
+  op: OpCode.COMPARISON_GROUP;
+  operators: string[];
+}
+
 export type Instruction =
   | BaseInstruction
   | GetVariableInstruction
@@ -164,4 +170,5 @@ export type Instruction =
   | CallInstruction
   | NextInstruction
   | CallInternalInstruction
-  | ImportInstruction;
+  | ImportInstruction
+  | ComparisonGroupInstruction;
