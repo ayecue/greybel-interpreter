@@ -490,6 +490,15 @@ export class BytecodeExpressionGenerator
 
         if (item.init instanceof ASTLiteral) {
           defaultValue = generateCustomValueFromASTLiteral(item.init);
+        } else if (
+          item.init instanceof ASTUnaryExpression &&
+          item.init.argument instanceof ASTLiteral
+        ) {
+          defaultValue = generateCustomValueFromASTLiteral(item.init.argument);
+
+          if (item.init.operator === Operator.Minus) {
+            defaultValue = new CustomNumber(-defaultValue.toNumber());
+          }
         }
 
         args.push({

@@ -1,0 +1,11 @@
+list.pop = function(__index = -1)
+	return self[__index]
+end function
+
+test = [
+	1,
+	2,
+	3,
+]
+
+print(test.pop)
