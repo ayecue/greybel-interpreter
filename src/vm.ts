@@ -99,8 +99,6 @@ export interface VMOptions {
   maxActionsPerLoop?: number;
 }
 
-type VMResumeCallback = (err?: any) => void;
-
 export class VM {
   private readonly ACTIONS_PER_LOOP: number = 80000;
   private readonly MAX_FRAMES: number = 10000;
@@ -226,22 +224,28 @@ export class VM {
     return new Promise((resolve, reject) => {
       this.state = VMState.PENDING;
       this.time = Date.now();
+      this.signal.on('done', (err) => {
+        this.signal.removeAllListeners('cycle');
+        this.signal.removeAllListeners('resume');
+        this.signal.removeAllListeners('done');
 
-      this.resume((err) => {
         if (err) {
           reject(err);
           return;
         }
         resolve();
       });
+      this.signal.on('cycle', () => schedule(() => this.resume()));
+      this.signal.on('resume', () => this.resume());
+      this.resume();
     });
   }
 
-  private resume(done: VMResumeCallback) {
+  private resume() {
     try {
       while (true) {
         if (!this.isPending()) {
-          done();
+          this.signal.emit('done');
           return;
         }
 
@@ -623,8 +627,10 @@ export class VM {
             if (immediateRet?.then) {
               immediateRet.then((ret) => {
                 this.pushStack(ret);
-                this.resume(done);
-              }).catch(done);
+                this.signal.emit('resume');
+              }).catch((err) => {
+                this.signal.emit('done', err);
+              });
               return;
             }
 
@@ -807,8 +813,10 @@ export class VM {
             if (this.debugger.getBreakpoint(this)) {
               this.debugger.interact(this, instruction.source);
               this.debugger.resume().then(() => {
-                this.resume(done);
-              }).catch(done);
+                this.signal.emit('resume');
+              }).catch((err) => {
+                this.signal.emit('done', err);
+              });
               return;
             }
             break;
@@ -820,21 +828,18 @@ export class VM {
           case OpCode.HALT: {
             this.state = VMState.FINISHED;
             this.signal.emit('done');
-            done();
             return;
           }
         }
 
         if (this.actionCount++ === this.maxActionsPerLoop) {
           this.actionCount = 0;
-          schedule(() => {
-            this.resume(done);
-          });
+          this.signal.emit('cycle');
           return;
         }
       }
     } catch (err: any) {
-      done(err);
+      this.signal.emit('done', err);
     }
   }
 }
