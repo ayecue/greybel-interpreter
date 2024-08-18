@@ -24,6 +24,7 @@ import {
   ASTReturnStatement,
   ASTType,
   ASTUnaryExpression,
+  ASTBinaryExpression,
   ASTWhileStatement,
   Operator
 } from 'miniscript-core';
@@ -101,6 +102,9 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       case ASTType.IsaExpression:
       case ASTType.BinaryExpression:
+        await this.exprGenerator.processBinaryExpression(
+          node as ASTBinaryExpression
+        );
         return;
       case ASTType.LogicalExpression:
         await this.exprGenerator.processLogicalExpression(

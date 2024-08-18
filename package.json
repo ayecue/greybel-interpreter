@@ -1,6 +1,6 @@
 {
   "name": "greybel-interpreter",
-  "version": "5.0.4",
+  "version": "5.0.5",
   "description": "Interpreter",
   "main": "dist/index",
   "typings": "dist/index",
@@ -51,7 +51,7 @@
   "dependencies": {
     "greybel-core": "~2.0.4",
     "hyperid": "^3.2.0",
-    "non-blocking-schedule": "^0.1.0"
+    "non-blocking-schedule": "^0.2.0"
   },
   "keywords": [
     "miniscript"
