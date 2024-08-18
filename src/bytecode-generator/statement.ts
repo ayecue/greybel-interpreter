@@ -102,12 +102,12 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       case ASTType.IsaExpression:
       case ASTType.BinaryExpression:
-        await this.exprGenerator.processBinaryExpression(
+        await this.processBinaryExpression(
           node as ASTBinaryExpression
         );
         return;
       case ASTType.LogicalExpression:
-        await this.exprGenerator.processLogicalExpression(
+        await this.processLogicalExpression(
           node as ASTLogicalExpression
         );
         return;
@@ -185,6 +185,34 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         });
       }
     }
+  }
+
+  async processBinaryExpression(
+    node: ASTBinaryExpression
+  ): Promise<void> {
+    await this.exprGenerator.processBinaryExpression(
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.POP
+      },
+      node
+    );
+  }
+
+  async processLogicalExpression(
+    node: ASTLogicalExpression
+  ): Promise<void> {
+    await this.exprGenerator.processLogicalExpression(
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.POP
+      },
+      node
+    );
   }
 
   async processMemberExpression(
