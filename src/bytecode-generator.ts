@@ -5,7 +5,7 @@ import { BytecodeStatementGenerator } from './bytecode-generator/statement';
 import { Parser } from 'greybel-core';
 import { PrepareError } from './utils/error';
 
-const parse = function(this: BytecodeGenerator, code: string) {
+const parse = function (this: BytecodeGenerator, code: string) {
   try {
     const parser = new Parser(code);
     return parser.parseChunk();

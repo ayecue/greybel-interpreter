@@ -288,6 +288,8 @@ exports[`interpreter default scripts implicit-properties.src 14`] = `"0"`;
 
 exports[`interpreter default scripts implicit-properties.src 15`] = `"0"`;
 
+exports[`interpreter default scripts import-isa.src 1`] = `"1"`;
+
 exports[`interpreter default scripts imports.src 1`] = `"\\"import-file.src at line 3 (imported)\\""`;
 
 exports[`interpreter default scripts imports.src 2`] = `"\\"file imported and sub file imported\\""`;

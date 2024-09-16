@@ -39,11 +39,11 @@ const typeofFunc = CustomFunction.createExternal('typeof', (vm, self, args) => {
 }).addArgument('value');
 
 const returnString = CustomFunction.createExternal('returnString', (vm, self, args) =>
-Promise.resolve(new CustomString('string'))
+  Promise.resolve(new CustomString('string'))
 );
 
 const returnNil = CustomFunction.createExternal('returnNil', (vm, self, args) =>
-Promise.resolve(DefaultType.Void)
+  Promise.resolve(DefaultType.Void)
 );
 
 const mapToObject = CustomFunction.createExternal('mapToObject', (vm, self, args) => {
@@ -188,7 +188,7 @@ const values = CustomFunction.createExternalWithSelf(
 );
 
 const len = CustomFunction.createExternalWithSelf('len', (vm, self, args) =>
-Promise.resolve(new CustomNumber(args.get('self').value.length))
+  Promise.resolve(new CustomNumber(args.get('self').value.length))
 );
 
 const split = CustomFunction.createExternalWithSelf('split', (vm, self, args) => {
@@ -212,7 +212,7 @@ const hasIndex = CustomFunction.createExternalWithSelf('hasIndex', (vm, self, ar
   return Promise.resolve(new CustomBoolean(result));
 }).addArgument('value');
 
-exports.setupAPI = function() {
+exports.setupAPI = function () {
   const api = new ObjectValue();
 
   api.set(new CustomString('exit'), exit);

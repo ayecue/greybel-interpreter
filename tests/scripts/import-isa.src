@@ -1,0 +1,4 @@
+#import Lib from "../fixtures/import-isa-lib.src";
+#import liba from "../fixtures/import-isa-lib-instance.src";
+
+print((liba isa Lib))

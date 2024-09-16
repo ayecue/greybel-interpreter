@@ -39,12 +39,8 @@ export interface ParseCodeFunction {
 
 export interface IBytecodeStatementGenerator {
   process(node: ASTBase): Promise<void>;
-  processBinaryExpression(
-    node: ASTBinaryExpression
-  ): Promise<void>;
-  processLogicalExpression(
-    node: ASTLogicalExpression
-  ): Promise<void>;
+  processBinaryExpression(node: ASTBinaryExpression): Promise<void>;
+  processLogicalExpression(node: ASTLogicalExpression): Promise<void>;
   processMemberExpression(
     node: ASTMemberExpression,
     context?: LineCallableContext

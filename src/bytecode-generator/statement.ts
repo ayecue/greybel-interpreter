@@ -6,6 +6,7 @@ import {
 import {
   ASTAssignmentStatement,
   ASTBase,
+  ASTBinaryExpression,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
@@ -24,7 +25,6 @@ import {
   ASTReturnStatement,
   ASTType,
   ASTUnaryExpression,
-  ASTBinaryExpression,
   ASTWhileStatement,
   Operator
 } from 'miniscript-core';
@@ -102,14 +102,10 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       case ASTType.IsaExpression:
       case ASTType.BinaryExpression:
-        await this.processBinaryExpression(
-          node as ASTBinaryExpression
-        );
+        await this.processBinaryExpression(node as ASTBinaryExpression);
         return;
       case ASTType.LogicalExpression:
-        await this.processLogicalExpression(
-          node as ASTLogicalExpression
-        );
+        await this.processLogicalExpression(node as ASTLogicalExpression);
         return;
       case ASTType.ReturnStatement:
         await this.processReturn(node as ASTReturnStatement);
@@ -187,12 +183,8 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     }
   }
 
-  async processBinaryExpression(
-    node: ASTBinaryExpression
-  ): Promise<void> {
-    await this.exprGenerator.processBinaryExpression(
-      node
-    );
+  async processBinaryExpression(node: ASTBinaryExpression): Promise<void> {
+    await this.exprGenerator.processBinaryExpression(node);
     this.context.pushCode(
       {
         op: OpCode.POP
@@ -201,12 +193,8 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     );
   }
 
-  async processLogicalExpression(
-    node: ASTLogicalExpression
-  ): Promise<void> {
-    await this.exprGenerator.processLogicalExpression(
-      node
-    );
+  async processLogicalExpression(node: ASTLogicalExpression): Promise<void> {
+    await this.exprGenerator.processLogicalExpression(node);
     this.context.pushCode(
       {
         op: OpCode.POP
@@ -918,6 +906,13 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     this.context.pushCode(
       {
         op: OpCode.IMPORT,
+        path: importTarget
+      },
+      node
+    );
+    this.context.pushCode(
+      {
+        op: OpCode.EXPORT,
         path: importTarget
       },
       node

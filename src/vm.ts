@@ -120,6 +120,7 @@ export class VM {
   readonly handler: HandlerContainer;
   readonly debugger: Debugger;
   readonly imports: Map<string, Instruction[]>;
+  readonly exports: Map<string, CustomValue>;
   readonly externalFrames: Stack<OperationContext>;
 
   constructor(options: VMOptions) {
@@ -136,6 +137,7 @@ export class VM {
     this.debugger = options.debugger;
     this.environmentVariables = options.environmentVariables ?? new Map();
     this.imports = options.imports ?? new Map();
+    this.exports = new Map();
     this.externalFrames = options.externalFrames ?? new Stack();
   }
 
@@ -294,8 +296,26 @@ export class VM {
           }
           case OpCode.IMPORT: {
             const importInstruction = instruction as ImportInstruction;
+            const exportValue = this.exports.get(importInstruction.path);
+
+            if (exportValue) {
+              this.pushStack(exportValue);
+              break;
+            }
+
             const code = this.imports.get(importInstruction.path);
             this.createFrame({ code });
+            break;
+          }
+          case OpCode.EXPORT: {
+            const persistImportInstruction = instruction as ImportInstruction;
+            const exportValue = this.exports.get(persistImportInstruction.path);
+
+            if (!exportValue) {
+              const value = this.popStack();
+              this.exports.set(persistImportInstruction.path, value);
+              this.pushStack(value);
+            }
             break;
           }
           case OpCode.ASSIGN: {

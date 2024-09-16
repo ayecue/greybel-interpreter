@@ -525,8 +525,8 @@ export class BytecodeExpressionGenerator
         arguments: args,
         code: fnCode,
         /*
-        Can be removed after MiniScript fixed outer context bug.
-      */
+          Can be removed after MiniScript fixed outer context bug.
+        */
         ignoreOuter: !context?.includeOuter
       },
       node

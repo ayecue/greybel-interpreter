@@ -62,7 +62,8 @@ export enum OpCode {
   BITWISE_UNSIGNED_RIGHT_SHIFT,
   BREAKPOINT,
   BREAKPOINT_ENABLE,
-  IMPORT
+  IMPORT,
+  EXPORT
 }
 
 export interface FunctionDefinitionInstructionArgument {
@@ -149,7 +150,7 @@ export interface CallInternalInstruction extends BaseInstruction {
 }
 
 export interface ImportInstruction extends BaseInstruction {
-  op: OpCode.IMPORT;
+  op: OpCode.IMPORT | OpCode.EXPORT;
   path: string;
 }
 

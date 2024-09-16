@@ -1,0 +1,5 @@
+#import Lib from "import-isa-lib.src";
+
+liba = new Lib
+
+module.exports = liba
