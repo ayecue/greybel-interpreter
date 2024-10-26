@@ -293,5 +293,15 @@ describe('interpreter', function () {
         `
       })).rejects.toEqual(new Error('Path "x" not found in scope.'));
     });
+
+    test('should throw since null cannot be iterated through', async function () {
+      await expect(interpreter.run({
+        customCode: `
+          for x in null
+            print x
+          end for
+        `
+      })).rejects.toEqual(new Error('"null" does not have an iterator.'));
+    });
   });
 });

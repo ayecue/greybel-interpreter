@@ -19,6 +19,7 @@ import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
 import { call, callWithContext } from "./vm/call";
 import { LimitedStack } from "./utils/limited-stack";
+import { hasIterator } from "./utils/has-iterator";
 
 export class Debugger {
   private breakpoint: boolean = false;
@@ -525,6 +526,11 @@ export class VM {
           }
           case OpCode.PUSH_ITERATOR: {
             const value = this.popStack() as CustomValueWithIntrinsics;
+
+            if (!hasIterator(value)) {
+              throw new RuntimeError(`"${value.getCustomType()}" does not have an iterator.`, this);
+            }
+
             const iterator = value[Symbol.iterator]();
             frame.iterators.push(iterator);
             break;
