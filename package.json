@@ -1,6 +1,6 @@
 {
   "name": "greybel-interpreter",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Interpreter",
   "main": "dist/index",
   "typings": "dist/index",
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/ayecue/greybel-interpreter#readme",
   "devDependencies": {
+    "@types/imurmurhash": "^0.1.4",
     "@types/jest": "^27.0.3",
     "@types/node": "^20.14.11",
     "@types/uuid": "^8.3.3",
@@ -51,6 +52,7 @@
   "dependencies": {
     "greybel-core": "~2.2.0",
     "hyperid": "^3.2.0",
+    "imurmurhash": "^0.1.4",
     "non-blocking-schedule": "^0.2.0"
   },
   "keywords": [
