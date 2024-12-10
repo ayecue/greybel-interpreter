@@ -6,8 +6,8 @@ import {
 import { RuntimeKeyword } from '../bytecode-generator/keywords';
 import { OperationContext } from '../context';
 import { ContextTypeIntrinsics } from '../context/types';
-import { getStringHashCode } from '../utils/hash';
 import { ObjectValue } from '../utils/object-value';
+import { getStringHashCode } from '../utils/string-hash';
 import { uuid } from '../utils/uuid';
 import type { VM } from '../vm';
 import { CustomValue } from './base';

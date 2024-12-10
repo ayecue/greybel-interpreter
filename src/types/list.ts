@@ -1,5 +1,5 @@
 import { ContextTypeIntrinsics } from '../context/types';
-import { getHashCode, rotateBits } from '../utils/hash';
+import { getNumberHashCode, rotateBits } from '../utils/number-hash';
 import { ObjectValue } from '../utils/object-value';
 import { uuid } from '../utils/uuid';
 import { CustomValue } from './base';
@@ -179,7 +179,7 @@ export class CustomList extends CustomObject {
   }
 
   hash(recursionDepth = 0): number {
-    let result = getHashCode(this.value.length);
+    let result = getNumberHashCode(this.value.length);
     if (recursionDepth > 4) return result;
     this.value.forEach((value: CustomValue) => {
       result = rotateBits(result) ^ value.hash(recursionDepth + 1);

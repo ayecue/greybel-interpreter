@@ -1,6 +1,6 @@
 import { CustomValue } from '../types/base';
 import { CustomObject } from '../types/with-intrinsics';
-import { getHashCode, rotateBits } from './hash';
+import { getNumberHashCode, rotateBits } from './number-hash';
 import { ObjectValueKeyPair } from './object-value';
 
 export function deepHash(value: CustomValue): number {
@@ -19,14 +19,14 @@ export function deepHash(value: CustomValue): number {
 
       if (item instanceof CustomObject) {
         if (Array.isArray(item.value)) {
-          result ^= getHashCode(item.value.length);
+          result ^= getNumberHashCode(item.value.length);
           for (let j = item.value.length - 1; j >= 0; j--) {
             const child = item.value[j];
             if (!(child instanceof CustomObject) || !visited.has(child.id))
               stack.push([child]);
           }
         } else {
-          result ^= getHashCode(item.value.length);
+          result ^= getNumberHashCode(item.value.length);
           const chunk: CustomValue[] = [];
           const entries = item.value.entries() as ObjectValueKeyPair[];
           for (let j = 0; j < entries.length; j++) {
