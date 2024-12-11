@@ -25,26 +25,29 @@ export class LRUCache<K, T> {
   }
 
   private moveNodeToHead(node: CacheNode<K, T>): void {
-    if (node[NEXT_INDEX]) {
-      if (node[PREV_INDEX]) {
-        node[NEXT_INDEX][PREV_INDEX] = node[PREV_INDEX];
-      } else {
-        this._head = node[NEXT_INDEX];
-      }
+    if (node === this._head) {
+      return;
     }
 
-    if (node[PREV_INDEX]) {
-      if (node[NEXT_INDEX]) {
-        node[PREV_INDEX][NEXT_INDEX] = node[NEXT_INDEX];
-      } else {
-        this._tail = node[PREV_INDEX];
-      }
+    const prevNode = node[PREV_INDEX];
+    const nextNode = node[NEXT_INDEX];
+
+    if (prevNode != null) {
+      prevNode[NEXT_INDEX] = nextNode;
+    } else {
+      this._head = nextNode;
     }
 
-    const headNode = this._head;
-    this._head = node;
+    if (nextNode != null) {
+      nextNode[PREV_INDEX] = prevNode;
+    } else {
+      this._tail = prevNode;
+    }
+
+    node[NEXT_INDEX] = this._head;
+    this._head[PREV_INDEX] = node;
     node[PREV_INDEX] = null;
-    node[NEXT_INDEX] = headNode;
+    this._head = node;
   }
 
   get(key: K): T | null {
