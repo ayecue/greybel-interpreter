@@ -1,5 +1,5 @@
 import { ContextTypeIntrinsics } from '../context/types';
-import { getHashCode } from '../utils/hash';
+import { getNumberHashCode } from '../utils/number-hash';
 import { ObjectValue } from '../utils/object-value';
 import { uuid } from '../utils/uuid';
 import { CustomValue } from './base';
@@ -235,7 +235,7 @@ export class CustomMap extends CustomObject {
   }
 
   hash(recursionDepth = 0): number {
-    let result = getHashCode(this.value.size);
+    let result = getNumberHashCode(this.value.size);
     if (recursionDepth > 4) return result;
     this.value.forEach((value: CustomValue, key: CustomValue) => {
       result ^= key.hash(recursionDepth + 1);

@@ -7,11 +7,15 @@ import { CustomString } from '../types/string';
 export enum OpCode {
   NOOP,
   HALT,
+
   CALL,
   CALL_INTERNAL,
   CALL_WITH_CONTEXT,
+  CALL_SUPER_PROPERTY,
+
   CONSTRUCT_MAP,
   CONSTRUCT_LIST,
+
   GET_VARIABLE,
   GET_PROPERTY,
   GET_ENVAR,
@@ -21,14 +25,17 @@ export enum OpCode {
   GET_LOCALS,
   GET_SUPER,
   GET_SUPER_PROPERTY,
-  CALL_SUPER_PROPERTY,
+
+  ASSIGN,
+
   FALSIFY,
   NEGATE,
   NEW,
   SLICE,
-  ASSIGN,
+
   PUSH,
   POP,
+
   ISA,
   ADD,
   SUB,
@@ -45,23 +52,29 @@ export enum OpCode {
   COMPARISON_GROUP,
   AND,
   OR,
+
   RETURN,
   FUNCTION_DEFINITION,
+
   GOTO_A,
   GOTO_A_IF_FALSE,
   GOTO_A_IF_FALSE_AND_PUSH,
   GOTO_A_IF_TRUE,
   GOTO_A_IF_TRUE_AND_PUSH,
+
   PUSH_ITERATOR,
   POP_ITERATOR,
   NEXT,
+
   BITWISE_OR,
   BITWISE_AND,
   BITWISE_LEFT_SHIFT,
   BITWISE_RIGHT_SHIFT,
   BITWISE_UNSIGNED_RIGHT_SHIFT,
+
   BREAKPOINT,
   BREAKPOINT_ENABLE,
+
   IMPORT,
   EXPORT
 }
@@ -126,11 +139,11 @@ export interface FunctionDefinitionInstruction extends BaseInstruction {
 
 export interface GotoAInstruction extends BaseInstruction {
   op:
-    | OpCode.GOTO_A
-    | OpCode.GOTO_A_IF_FALSE
-    | OpCode.GOTO_A_IF_FALSE_AND_PUSH
-    | OpCode.GOTO_A_IF_TRUE
-    | OpCode.GOTO_A_IF_TRUE_AND_PUSH;
+  | OpCode.GOTO_A
+  | OpCode.GOTO_A_IF_FALSE
+  | OpCode.GOTO_A_IF_FALSE_AND_PUSH
+  | OpCode.GOTO_A_IF_TRUE
+  | OpCode.GOTO_A_IF_TRUE_AND_PUSH;
   /* eslint-disable no-use-before-define */
   goto: Instruction;
 }

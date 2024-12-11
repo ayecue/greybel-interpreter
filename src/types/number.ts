@@ -1,5 +1,5 @@
 import { ContextTypeIntrinsics } from '../context/types';
-import { getHashCode } from '../utils/hash';
+import { getNumberHashCode } from '../utils/number-hash';
 import { ObjectValue } from '../utils/object-value';
 import { CustomValue } from './base';
 import {
@@ -100,7 +100,7 @@ export class CustomNumber extends CustomValueWithIntrinsics {
   }
 
   hash() {
-    return getHashCode(this.value);
+    return getNumberHashCode(this.value);
   }
 }
 
