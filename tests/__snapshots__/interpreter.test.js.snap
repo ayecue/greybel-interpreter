@@ -304,6 +304,12 @@ exports[`interpreter default scripts imports-within-comments.src 2`] = `"\\"file
 
 exports[`interpreter default scripts imports-within-comments.src 3`] = `"\\"foo included code and sub foo included code\\""`;
 
+exports[`interpreter default scripts index-statement.src 1`] = `"\\"Test\\""`;
+
+exports[`interpreter default scripts index-statement.src 2`] = `"\\"Test\\""`;
+
+exports[`interpreter default scripts index-statement.src 3`] = `"\\"Test\\""`;
+
 exports[`interpreter default scripts inject.src 1`] = `
 "\\"print \\"1..\\"
 print \\"2..\\"

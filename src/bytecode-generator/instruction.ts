@@ -139,11 +139,11 @@ export interface FunctionDefinitionInstruction extends BaseInstruction {
 
 export interface GotoAInstruction extends BaseInstruction {
   op:
-  | OpCode.GOTO_A
-  | OpCode.GOTO_A_IF_FALSE
-  | OpCode.GOTO_A_IF_FALSE_AND_PUSH
-  | OpCode.GOTO_A_IF_TRUE
-  | OpCode.GOTO_A_IF_TRUE_AND_PUSH;
+    | OpCode.GOTO_A
+    | OpCode.GOTO_A_IF_FALSE
+    | OpCode.GOTO_A_IF_FALSE_AND_PUSH
+    | OpCode.GOTO_A_IF_TRUE
+    | OpCode.GOTO_A_IF_TRUE_AND_PUSH;
   /* eslint-disable no-use-before-define */
   goto: Instruction;
 }

@@ -74,13 +74,13 @@ export class BytecodeExpressionGenerator
         );
         return;
       case ASTType.IndexExpression:
-        await this.processIndexExpression(node as ASTIndexExpression);
+        await this.processIndexExpression(node as ASTIndexExpression, context);
         return;
       case ASTType.SliceExpression:
-        await this.processSliceExpression(node as ASTSliceExpression);
+        await this.processSliceExpression(node as ASTSliceExpression, context);
         return;
       case ASTType.Identifier:
-        await this.processIdentifier(node as ASTIdentifier);
+        await this.processIdentifier(node as ASTIdentifier, context);
         return;
       case ASTType.BooleanLiteral:
       case ASTType.StringLiteral:
@@ -114,15 +114,18 @@ export class BytecodeExpressionGenerator
         );
         return;
       case ASTType.ParenthesisExpression:
-        await this.process((node as ASTParenthesisExpression).expression);
+        await this.process(
+          (node as ASTParenthesisExpression).expression,
+          context
+        );
         return;
       case ASTType.BinaryNegatedExpression:
       case ASTType.UnaryExpression:
       case ASTType.NegationExpression:
-        await this.processUnaryExpression(node as ASTUnaryExpression);
+        await this.processUnaryExpression(node as ASTUnaryExpression, context);
         return;
       case ASTType.CallExpression:
-        await this.processCallExpression(node as ASTCallExpression);
+        await this.processCallExpression(node as ASTCallExpression, context);
         return;
       case ASTType.EmptyExpression:
         this.context.pushCode(
@@ -197,7 +200,7 @@ export class BytecodeExpressionGenerator
         node.identifier
       );
     } else {
-      await this.process(base);
+      await this.process(base, { isStatement: !!context?.isStatement });
       await this.processIdentifier(node.identifier as ASTIdentifier, {
         isDescending: true,
         isReference: !!context?.isReference
@@ -205,7 +208,10 @@ export class BytecodeExpressionGenerator
     }
   }
 
-  async processIndexExpression(node: ASTIndexExpression): Promise<void> {
+  async processIndexExpression(
+    node: ASTIndexExpression,
+    context?: LineContext
+  ): Promise<void> {
     const base = unwrap(node.base);
 
     if (base instanceof ASTIdentifier && base.name === RuntimeKeyword.Super) {
@@ -219,12 +225,12 @@ export class BytecodeExpressionGenerator
         node.type
       );
     } else {
-      await this.process(base);
+      await this.process(base, { isStatement: !!context?.isStatement });
       await this.process(node.index);
       this.context.pushCode(
         {
           op: OpCode.GET_PROPERTY,
-          invoke: false
+          invoke: !!context?.isStatement
         },
         node.index,
         node.type
@@ -232,8 +238,11 @@ export class BytecodeExpressionGenerator
     }
   }
 
-  async processSliceExpression(node: ASTSliceExpression): Promise<void> {
-    await this.process(node.base);
+  async processSliceExpression(
+    node: ASTSliceExpression,
+    context?: LineContext
+  ): Promise<void> {
+    await this.process(node.base, { isStatement: !!context?.isStatement });
     await this.process(node.left);
     await this.process(node.right);
 
@@ -533,15 +542,23 @@ export class BytecodeExpressionGenerator
     );
   }
 
-  async processUnaryExpression(node: ASTUnaryExpression): Promise<void> {
+  async processUnaryExpression(
+    node: ASTUnaryExpression,
+    context?: LineContext
+  ): Promise<void> {
     const arg = unwrap(node.argument);
 
     switch (node.operator) {
       case Operator.Reference:
         if (arg instanceof ASTMemberExpression) {
-          await this.processMemberExpression(arg, { isReference: true });
+          await this.processMemberExpression(arg, {
+            isReference: true,
+            isStatement: !!context?.isStatement
+          });
         } else if (arg instanceof ASTIndexExpression) {
-          await this.processIndexExpression(arg);
+          await this.processIndexExpression(arg, {
+            isStatement: !!context?.isStatement
+          });
         } else if (arg instanceof ASTIdentifier) {
           await this.processIdentifier(arg, {
             isDescending: false,
@@ -552,7 +569,7 @@ export class BytecodeExpressionGenerator
         }
         return;
       case Operator.Not: {
-        await this.process(arg);
+        await this.process(arg, { isStatement: !!context?.isStatement });
         this.context.pushCode(
           {
             op: OpCode.FALSIFY
@@ -562,7 +579,7 @@ export class BytecodeExpressionGenerator
         return;
       }
       case Operator.Minus: {
-        await this.process(arg);
+        await this.process(arg, { isStatement: !!context?.isStatement });
         this.context.pushCode(
           {
             op: OpCode.NEGATE
@@ -572,7 +589,7 @@ export class BytecodeExpressionGenerator
         return;
       }
       case Operator.New: {
-        await this.process(arg);
+        await this.process(arg, { isStatement: !!context?.isStatement });
         this.context.pushCode(
           {
             op: OpCode.NEW
@@ -583,7 +600,10 @@ export class BytecodeExpressionGenerator
     }
   }
 
-  async processCallExpression(node: ASTCallExpression): Promise<void> {
+  async processCallExpression(
+    node: ASTCallExpression,
+    context?: LineContext
+  ): Promise<void> {
     const pushArgs = async () => {
       for (let index = 0; index < node.arguments.length; index++) {
         const arg = node.arguments[index];
@@ -612,7 +632,7 @@ export class BytecodeExpressionGenerator
           node.type
         );
       } else {
-        await this.process(base);
+        await this.process(base, { isStatement: !!context?.isStatement });
         this.context.pushCode(
           {
             op: OpCode.PUSH,
@@ -644,7 +664,7 @@ export class BytecodeExpressionGenerator
           node.type
         );
       } else {
-        await this.process(base);
+        await this.process(base, { isStatement: !!context?.isStatement });
         await this.process(left.index);
         await pushArgs();
         this.context.pushCode(

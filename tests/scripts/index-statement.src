@@ -1,0 +1,16 @@
+a = {}
+a.b = function
+	obj = function
+		name = function
+			value = "Test"
+			print(value)
+			return value
+		end function
+		return { "name": @name }
+	end function
+	return { "obj": @obj }
+end function
+
+a.b.obj.name
+a["b"].obj["name"]
+a["b"]["obj"]["name"]
