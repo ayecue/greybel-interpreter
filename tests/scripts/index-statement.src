@@ -14,3 +14,4 @@ end function
 a.b.obj.name
 a["b"].obj["name"]
 a["b"]["obj"]["name"]
+@a["b"]["obj"]["name"]

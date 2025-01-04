@@ -49,8 +49,7 @@ import {
 import { generateCustomValueFromASTLiteral, unwrap } from './utils';
 
 export class BytecodeExpressionGenerator
-  implements IBytecodeExpressionGenerator
-{
+  implements IBytecodeExpressionGenerator {
   protected context: Context;
   protected stmtGenerator: IBytecodeStatementGenerator;
   protected parseCode: ParseCodeFunction;
@@ -210,7 +209,7 @@ export class BytecodeExpressionGenerator
 
   async processIndexExpression(
     node: ASTIndexExpression,
-    context?: LineContext
+    context?: LineCallableContext
   ): Promise<void> {
     const base = unwrap(node.base);
 
@@ -230,7 +229,7 @@ export class BytecodeExpressionGenerator
       this.context.pushCode(
         {
           op: OpCode.GET_PROPERTY,
-          invoke: !!context?.isStatement
+          invoke: !!context?.isStatement && !context?.isReference
         },
         node.index,
         node.type
