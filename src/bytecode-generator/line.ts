@@ -1,6 +1,5 @@
 export interface LineContext {
   includeOuter?: boolean;
-  isStatement?: boolean;
 }
 
 export interface LineCallableContext extends LineContext {
