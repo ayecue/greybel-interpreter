@@ -1,0 +1,13 @@
+myTestProps = {}
+
+foo = function
+    test = function(a, b)
+        print("test")
+        return myTestProps
+    end function
+    return { "test": @test }
+end function
+
+foo["test"].bar = "was"
+
+print foo.test.bar

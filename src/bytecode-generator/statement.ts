@@ -226,7 +226,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         node.identifier
       );
     } else {
-      await this.exprGenerator.process(base, { isStatement: true });
+      await this.exprGenerator.process(base);
       await this.processIdentifier(node.identifier as ASTIdentifier, {
         isDescending: true,
         isReference: !!context?.isReference
@@ -252,7 +252,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         node.type
       );
     } else {
-      await this.exprGenerator.process(base, { isStatement: true });
+      await this.exprGenerator.process(base);
       await this.exprGenerator.process(node.index);
       this.context.pushCode(
         {
@@ -513,13 +513,11 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       case Operator.Reference:
         if (arg instanceof ASTMemberExpression) {
           await this.processMemberExpression(arg, {
-            isReference: true,
-            isStatement: true
+            isReference: true
           });
         } else if (arg instanceof ASTIndexExpression) {
           await this.processIndexExpression(arg, {
-            isReference: true,
-            isStatement: true
+            isReference: true
           });
         } else if (arg instanceof ASTIdentifier) {
           await this.processIdentifier(arg, {
@@ -531,7 +529,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         }
         return;
       case Operator.Not: {
-        await this.exprGenerator.process(arg, { isStatement: true });
+        await this.exprGenerator.process(arg);
         this.context.pushCode(
           {
             op: OpCode.FALSIFY,
@@ -542,7 +540,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       }
       case Operator.Minus: {
-        await this.exprGenerator.process(arg, { isStatement: true });
+        await this.exprGenerator.process(arg);
         this.context.pushCode(
           {
             op: OpCode.NEGATE,
@@ -553,7 +551,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         return;
       }
       case Operator.New: {
-        await this.exprGenerator.process(arg, { isStatement: true });
+        await this.exprGenerator.process(arg);
         this.context.pushCode(
           {
             op: OpCode.NEW,
@@ -595,7 +593,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
           node.type
         );
       } else {
-        await this.exprGenerator.process(base, { isStatement: true });
+        await this.exprGenerator.process(base);
         this.context.pushCode(
           {
             op: OpCode.PUSH,
@@ -629,7 +627,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
           node.type
         );
       } else {
-        await this.exprGenerator.process(base, { isStatement: true });
+        await this.exprGenerator.process(base);
         await this.exprGenerator.process(left.index);
         await pushArgs();
         this.context.pushCode(
@@ -658,7 +656,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         node.type
       );
     } else {
-      await this.exprGenerator.process(left, { isStatement: true });
+      await this.exprGenerator.process(left);
       await pushArgs();
       this.context.pushCode(
         {
