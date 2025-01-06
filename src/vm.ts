@@ -574,7 +574,7 @@ export class VM {
               break;
             }
 
-            this.pushStack(ret);
+            if (!instruction.command) this.pushStack(ret);
             break;
           }
           case OpCode.GET_PROPERTY: {
@@ -603,7 +603,7 @@ export class VM {
               break;
             }
 
-            this.pushStack(ret.value);
+            if (!instruction.command) this.pushStack(ret.value);
             break;
           }
           case OpCode.GET_SUPER_PROPERTY: {
@@ -632,7 +632,7 @@ export class VM {
               break;
             }
 
-            this.pushStack(ret.value);
+            if (!instruction.command) this.pushStack(ret.value);
             break;
           }
           case OpCode.CALL_INTERNAL: {
