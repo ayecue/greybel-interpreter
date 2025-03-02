@@ -227,6 +227,7 @@ exports.setupAPI = function () {
   api.set(new CustomString('remove'), remove);
   api.set(new CustomString('range'), range);
   api.set(new CustomString('sqrt'), sqrt);
+  api.set(new CustomString('len'), len);
 
   CustomString.addIntrinsic(new CustomString('len'), len);
   CustomString.addIntrinsic(new CustomString('split'), split);

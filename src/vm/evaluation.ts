@@ -260,7 +260,7 @@ export function evalEqual(a: CustomValue, b: CustomValue) {
   } else if (a instanceof CustomMap && b instanceof CustomMap) {
     return new CustomBoolean(deepEqual(a, b));
   } else if (a instanceof CustomFunction) {
-    return new CustomBoolean(a === b);
+    return new CustomBoolean(a.value === b.value);
   } else if (a instanceof CustomNil) {
     return new CustomBoolean(b instanceof CustomNil);
   }
@@ -277,7 +277,7 @@ export function evalNotEqual(a: CustomValue, b: CustomValue) {
   } else if (a instanceof CustomMap && b instanceof CustomMap) {
     return new CustomBoolean(!deepEqual(a, b));
   } else if (a instanceof CustomFunction) {
-    return new CustomBoolean(a !== b);
+    return new CustomBoolean(a.value !== b.value);
   } else if (a instanceof CustomNil) {
     return new CustomBoolean(!(b instanceof CustomNil));
   }
