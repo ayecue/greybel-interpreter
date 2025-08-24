@@ -1,12 +1,9 @@
-import { ASTBase } from 'miniscript-core';
-
 import { CustomValue } from './types/base';
 import { CustomMap } from './types/map';
 import { ObjectValue } from './utils/object-value';
 import { ContextTypeIntrinsics } from './context/types';
 import { Instruction } from './bytecode-generator/instruction';
 import { Self, Super } from './types/string';
-import { CustomValueWithIntrinsicsResult } from './types/with-intrinsics';
 import { Stack } from './utils/stack';
 
 export enum ContextType {

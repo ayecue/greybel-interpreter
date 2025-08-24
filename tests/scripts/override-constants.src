@@ -1,0 +1,13 @@
+test = function
+  i = 0
+  arr = range(0, 100)
+  arr[2] = 1
+  outer = []
+  while i < 100
+    outer.push(arr[i])
+    i = i + 1
+  end while
+  print i
+end function
+
+test

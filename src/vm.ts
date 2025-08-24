@@ -14,12 +14,13 @@ import { CustomNumber } from "./types/number";
 import { CustomMap } from "./types/map";
 import { CustomList } from "./types/list";
 import { schedule } from "non-blocking-schedule";
-import { CustomString, Self, Super } from "./types/string";
+import { CustomString, Globals, Locals, Outer, Self, Super } from "./types/string";
 import EventEmitter from "events";
 import { ObjectValue } from "./utils/object-value";
 import { call, callWithContext } from "./vm/call";
 import { LimitedStack } from "./utils/limited-stack";
 import { hasIterator } from "./utils/has-iterator";
+import { RuntimeKeyword } from "./bytecode-generator/keywords";
 
 export class Debugger {
   private breakpoint: boolean = false;
@@ -276,14 +277,29 @@ export class VM {
             break;
           }
           case OpCode.GET_GLOBALS: {
+            if (frame.locals.scope.has(Globals)) {
+              this.pushStack(frame.locals.scope.get(Globals, this.contextTypeIntrinsics));
+              break;
+            }
+
             this.pushStack(frame.globals.scope);
             break;
           }
           case OpCode.GET_OUTER: {
+            if (frame.locals.scope.has(Outer)) {
+              this.pushStack(frame.locals.scope.get(Outer, this.contextTypeIntrinsics));
+              break;
+            }
+
             this.pushStack((frame.outer ?? frame.globals).scope);
             break;
           }
           case OpCode.GET_LOCALS: {
+            if (frame.locals.scope.has(Locals)) {
+              this.pushStack(frame.locals.scope.get(Locals, this.contextTypeIntrinsics));
+              break;
+            }
+
             this.pushStack(frame.locals.scope);
             break;
           }

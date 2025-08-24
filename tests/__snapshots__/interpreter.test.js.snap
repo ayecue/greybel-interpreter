@@ -665,6 +665,8 @@ exports[`interpreter default scripts override.src 5`] = `"\\"number\\""`;
 
 exports[`interpreter default scripts override.src 6`] = `"\\"number\\""`;
 
+exports[`interpreter default scripts override-constants.src 1`] = `"100"`;
+
 exports[`interpreter default scripts print.src 1`] = `"123"`;
 
 exports[`interpreter default scripts reassign-super.src 1`] = `"\\"test\\""`;
