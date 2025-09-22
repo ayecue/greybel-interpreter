@@ -26,9 +26,9 @@ exports[`interpreter default scripts binary-expressions.src 11`] = `"1"`;
 
 exports[`interpreter default scripts binary-expressions.src 12`] = `"1"`;
 
-exports[`interpreter default scripts cast.src 1`] = `"{\\"was\\":1,\\"foo\\":0,\\"bar\\":\\"xxx\\"}"`;
+exports[`interpreter default scripts cast.src 1`] = `"{\\"was\\": 1,\\"foo\\": 0,\\"bar\\": \\"xxx\\"}"`;
 
-exports[`interpreter default scripts cast.src 2`] = `"{\\"was\\":1,\\"foo\\":0,\\"bar\\":\\"xxx\\"}"`;
+exports[`interpreter default scripts cast.src 2`] = `"{\\"was\\": 1,\\"foo\\": 0,\\"bar\\": \\"xxx\\"}"`;
 
 exports[`interpreter default scripts cast.src 3`] = `"[\\"was\\", 0, 4]"`;
 
@@ -40,11 +40,11 @@ exports[`interpreter default scripts cast.src 6`] = `"1"`;
 
 exports[`interpreter default scripts cast.src 7`] = `"null"`;
 
-exports[`interpreter default scripts cast.src 8`] = `"\\"{\\"test\\":2}[\\"test\\"]\\""`;
+exports[`interpreter default scripts cast.src 8`] = `"\\"{\\"test\\": 2}[\\"test\\"]\\""`;
 
 exports[`interpreter default scripts cast.src 9`] = `"[\\"bar\\", \\"foo\\", 0]"`;
 
-exports[`interpreter default scripts cast.src 10`] = `"{\\"foo\\":2,\\"bar\\":123}"`;
+exports[`interpreter default scripts cast.src 10`] = `"{\\"foo\\": 2,\\"bar\\": 123}"`;
 
 exports[`interpreter default scripts cast.src 11`] = `"\\"was321\\""`;
 
@@ -128,7 +128,7 @@ exports[`interpreter default scripts deep-equal.src 6`] = `"0"`;
 
 exports[`interpreter default scripts deep-equal.src 7`] = `"\\"test\\""`;
 
-exports[`interpreter default scripts deep-equal.src 8`] = `"{\\"was\\":1,\\"second\\":2,{\\"foo\\":2}:{\\"was\\":1,\\"second\\":2,{\\"foo\\":2}:{\\"was\\":1,\\"second\\":2,{...}:{...}}}}"`;
+exports[`interpreter default scripts deep-equal.src 8`] = `"{\\"was\\": 1,\\"second\\": 2,{\\"foo\\": 2}: {\\"was\\": 1,\\"second\\": 2,{\\"foo\\": 2}: {\\"was\\": 1,\\"second\\": 2,{...}: {...}}}}"`;
 
 exports[`interpreter default scripts deep-equal.src 9`] = `"0"`;
 
@@ -395,11 +395,11 @@ exports[`interpreter default scripts isa-assign.src 1`] = `"\\"yes\\""`;
 
 exports[`interpreter default scripts isa-assign.src 2`] = `"\\"yes\\""`;
 
-exports[`interpreter default scripts iteration-idx.src 1`] = `"{\\"key\\":\\"a\\",\\"value\\":1}"`;
+exports[`interpreter default scripts iteration-idx.src 1`] = `"{\\"key\\": \\"a\\",\\"value\\": 1}"`;
 
-exports[`interpreter default scripts iteration-idx.src 2`] = `"{\\"key\\":\\"c\\",\\"value\\":1}"`;
+exports[`interpreter default scripts iteration-idx.src 2`] = `"{\\"key\\": \\"c\\",\\"value\\": 1}"`;
 
-exports[`interpreter default scripts iteration-idx.src 3`] = `"{\\"key\\":\\"k\\",\\"value\\":2}"`;
+exports[`interpreter default scripts iteration-idx.src 3`] = `"{\\"key\\": \\"k\\",\\"value\\": 2}"`;
 
 exports[`interpreter default scripts iteration-idx.src 4`] = `"0"`;
 
@@ -473,7 +473,7 @@ exports[`interpreter default scripts lookup-path-opt.src 2`] = `"\\"test\\""`;
 
 exports[`interpreter default scripts lookup-path-opt.src 3`] = `"2"`;
 
-exports[`interpreter default scripts lookup-path-opt.src 4`] = `"{\\"x\\":\\"test\\"}"`;
+exports[`interpreter default scripts lookup-path-opt.src 4`] = `"{\\"x\\": \\"test\\"}"`;
 
 exports[`interpreter default scripts lookup-path-opt.src 5`] = `"\\"te\\""`;
 
@@ -507,11 +507,11 @@ exports[`interpreter default scripts loops.src 11`] = `"456"`;
 
 exports[`interpreter default scripts loops.src 12`] = `"1"`;
 
-exports[`interpreter default scripts manipulation.src 1`] = `"{\\"see\\":\\"124578\\",\\"foo\\":123,\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+exports[`interpreter default scripts manipulation.src 1`] = `"{\\"see\\": \\"124578\\",\\"foo\\": 123,\\"bar\\": 1,\\"lore\\": \\"moo\\"}"`;
 
 exports[`interpreter default scripts manipulation.src 2`] = `"[\\"123456\\", \\"xxx\\", 123, \\"foo\\"]"`;
 
-exports[`interpreter default scripts manipulation.src 3`] = `"{\\"foo\\":123,\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+exports[`interpreter default scripts manipulation.src 3`] = `"{\\"foo\\": 123,\\"bar\\": 1,\\"lore\\": \\"moo\\"}"`;
 
 exports[`interpreter default scripts manipulation.src 4`] = `"[\\"xxx\\", 123, \\"foo\\"]"`;
 
@@ -519,23 +519,23 @@ exports[`interpreter default scripts manipulation.src 5`] = `"123"`;
 
 exports[`interpreter default scripts manipulation.src 6`] = `"\\"foo\\""`;
 
-exports[`interpreter default scripts manipulation.src 7`] = `"{\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+exports[`interpreter default scripts manipulation.src 7`] = `"{\\"bar\\": 1,\\"lore\\": \\"moo\\"}"`;
 
 exports[`interpreter default scripts manipulation.src 8`] = `"[\\"xxx\\", 123]"`;
 
-exports[`interpreter default scripts manipulation.src 9`] = `"{\\"foo\\":123,\\"bar\\":1,\\"lore\\":\\"moo\\"}"`;
+exports[`interpreter default scripts manipulation.src 9`] = `"{\\"foo\\": 123,\\"bar\\": 1,\\"lore\\": \\"moo\\"}"`;
 
 exports[`interpreter default scripts manipulation.src 10`] = `"[\\"xxx\\", 123, \\"foo\\"]"`;
 
-exports[`interpreter default scripts map.src 1`] = `"{{\\"myTest\\":0,1:2}:1}"`;
+exports[`interpreter default scripts map.src 1`] = `"{{\\"myTest\\": 0,1: 2}: 1}"`;
 
-exports[`interpreter default scripts map.src 2`] = `"{[12, 14]:1}"`;
+exports[`interpreter default scripts map.src 2`] = `"{[12, 14]: 1}"`;
 
-exports[`interpreter default scripts map.src 3`] = `"{{{\\"myTest\\":0,1:2}:1}:234}"`;
+exports[`interpreter default scripts map.src 3`] = `"{{{\\"myTest\\": 0,1: 2}: 1}: 234}"`;
 
-exports[`interpreter default scripts map.src 4`] = `"{1:\\"foo\\"}"`;
+exports[`interpreter default scripts map.src 4`] = `"{1: \\"foo\\"}"`;
 
-exports[`interpreter default scripts map.src 5`] = `"{123:\\"bar\\"}"`;
+exports[`interpreter default scripts map.src 5`] = `"{123: \\"bar\\"}"`;
 
 exports[`interpreter default scripts map.src 6`] = `"234"`;
 
@@ -549,11 +549,11 @@ exports[`interpreter default scripts negation.src 2`] = `"[-1, 2, 0]"`;
 
 exports[`interpreter default scripts negation.src 3`] = `"1"`;
 
-exports[`interpreter default scripts new-map.src 1`] = `"{{\\"myTest\\":0,1:2}:1}"`;
+exports[`interpreter default scripts new-map.src 1`] = `"{{\\"myTest\\": 0,1: 2}: 1}"`;
 
-exports[`interpreter default scripts new-map.src 2`] = `"{\\"__isa\\":{{\\"myTest\\":0,1:2}:1},\\"foo\\":\\"bar\\"}"`;
+exports[`interpreter default scripts new-map.src 2`] = `"{\\"__isa\\": {{\\"myTest\\": 0,1: 2}: 1},\\"foo\\": \\"bar\\"}"`;
 
-exports[`interpreter default scripts new-map.src 3`] = `"{\\"__isa\\":{\\"__isa\\":{{...}:1},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"}"`;
+exports[`interpreter default scripts new-map.src 3`] = `"{\\"__isa\\": {\\"__isa\\": {{...}: 1},\\"foo\\": \\"bar\\"},\\"moo\\": \\"123\\"}"`;
 
 exports[`interpreter default scripts new-map.src 4`] = `"1"`;
 
@@ -561,19 +561,19 @@ exports[`interpreter default scripts new-map.src 5`] = `"\\"123\\""`;
 
 exports[`interpreter default scripts new-map.src 6`] = `"\\"bar\\""`;
 
-exports[`interpreter default scripts new-map.src 7`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}"`;
+exports[`interpreter default scripts new-map.src 7`] = `"{\\"__isa\\": {\\"__isa\\": {\\"__isa\\": {...},\\"foo\\": \\"bar\\"},\\"moo\\": \\"123\\"},{\\"myTest\\": 0,1: 2}: \\"change\\"}"`;
 
-exports[`interpreter default scripts new-map.src 8`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}}"`;
+exports[`interpreter default scripts new-map.src 8`] = `"{\\"__isa\\": {\\"__isa\\": {\\"__isa\\": {...},\\"moo\\": \\"123\\"},{\\"myTest\\": 0,1: 2}: \\"change\\"}}"`;
 
-exports[`interpreter default scripts new-map.src 9`] = `"{\\"__isa\\":{{\\"myTest\\":0,1:2}:1},\\"foo\\":\\"bar\\"}"`;
+exports[`interpreter default scripts new-map.src 9`] = `"{\\"__isa\\": {{\\"myTest\\": 0,1: 2}: 1},\\"foo\\": \\"bar\\"}"`;
 
-exports[`interpreter default scripts new-map.src 10`] = `"{\\"__isa\\":{\\"__isa\\":{{...}:1},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"}"`;
+exports[`interpreter default scripts new-map.src 10`] = `"{\\"__isa\\": {\\"__isa\\": {{...}: 1},\\"foo\\": \\"bar\\"},\\"moo\\": \\"123\\"}"`;
 
-exports[`interpreter default scripts new-map.src 11`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}"`;
+exports[`interpreter default scripts new-map.src 11`] = `"{\\"__isa\\": {\\"__isa\\": {\\"__isa\\": {...},\\"foo\\": \\"bar\\"},\\"moo\\": \\"123\\"},{\\"myTest\\": 0,1: 2}: \\"change\\"}"`;
 
-exports[`interpreter default scripts new-map.src 12`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}}"`;
+exports[`interpreter default scripts new-map.src 12`] = `"{\\"__isa\\": {\\"__isa\\": {\\"__isa\\": {...},\\"moo\\": \\"123\\"},{\\"myTest\\": 0,1: 2}: \\"change\\"}}"`;
 
-exports[`interpreter default scripts new-map.src 13`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"foo\\":\\"bar\\"},\\"moo\\":\\"123\\"},{\\"myTest\\":0,1:2}:\\"change\\"}"`;
+exports[`interpreter default scripts new-map.src 13`] = `"{\\"__isa\\": {\\"__isa\\": {\\"__isa\\": {...},\\"foo\\": \\"bar\\"},\\"moo\\": \\"123\\"},{\\"myTest\\": 0,1: 2}: \\"change\\"}"`;
 
 exports[`interpreter default scripts new-map.src 14`] = `"\\"bar\\""`;
 
@@ -641,7 +641,7 @@ exports[`interpreter default scripts number-ops-with-different-types.src 30`] = 
 
 exports[`interpreter default scripts obj-init.src 1`] = `"[\\"123\\", \\"123\\", \\"foo\\"]"`;
 
-exports[`interpreter default scripts obj-init.src 2`] = `"[{\\"another\\":\\"123\\"}, \\"123\\", \\"foo\\"]"`;
+exports[`interpreter default scripts obj-init.src 2`] = `"[{\\"another\\": \\"123\\"}, \\"123\\", \\"foo\\"]"`;
 
 exports[`interpreter default scripts opt-shorthand.src 1`] = `"1"`;
 
@@ -649,7 +649,7 @@ exports[`interpreter default scripts opt-shorthand.src 2`] = `"2"`;
 
 exports[`interpreter default scripts opt-shorthand.src 3`] = `"3"`;
 
-exports[`interpreter default scripts outer.src 1`] = `"{\\"IS_GREYBEL\\":1,\\"params\\":[],\\"foo\\":\\"bar\\"}"`;
+exports[`interpreter default scripts outer.src 1`] = `"{\\"IS_GREYBEL\\": 1,\\"params\\": [],\\"foo\\": \\"bar\\"}"`;
 
 exports[`interpreter default scripts outer.src 2`] = `"1"`;
 
@@ -737,7 +737,7 @@ exports[`interpreter default scripts scopes-in-anonymous-functions.src 1`] = `"\
 
 exports[`interpreter default scripts scopes-in-anonymous-functions.src 2`] = `"\\"wa\\""`;
 
-exports[`interpreter default scripts self-ms-behaviour.src 1`] = `"{\\"bar\\":FUNCTION(actualValue, self, self)}"`;
+exports[`interpreter default scripts self-ms-behaviour.src 1`] = `"{\\"bar\\": FUNCTION(actualValue, self, self)}"`;
 
 exports[`interpreter default scripts self-ms-behaviour.src 2`] = `"\\"test\\""`;
 
@@ -745,7 +745,7 @@ exports[`interpreter default scripts self-ms-behaviour.src 3`] = `"\\"do not ign
 
 exports[`interpreter default scripts self-ms-behaviour.src 4`] = `"\\"bar\\""`;
 
-exports[`interpreter default scripts self-ms-behaviour.src 5`] = `"{\\"bar\\":FUNCTION(was, self, self, last)}"`;
+exports[`interpreter default scripts self-ms-behaviour.src 5`] = `"{\\"bar\\": FUNCTION(was, self, self, last)}"`;
 
 exports[`interpreter default scripts self-ms-behaviour.src 6`] = `"\\"test\\""`;
 
@@ -791,7 +791,7 @@ exports[`interpreter default scripts super.src 6`] = `"10"`;
 
 exports[`interpreter default scripts super.src 7`] = `"\\"test\\""`;
 
-exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\":{\\"__isa\\":{\\"__isa\\":{...},\\"test\\":FUNCTION()},\\"test\\":FUNCTION()},\\"lllbefore\\":\\"moo\\",\\"lll\\":\\"was\\"}"`;
+exports[`interpreter default scripts super.src 8`] = `"{\\"__isa\\": {\\"__isa\\": {\\"__isa\\": {...},\\"test\\": FUNCTION()},\\"test\\": FUNCTION()},\\"lllbefore\\": \\"moo\\",\\"lll\\": \\"was\\"}"`;
 
 exports[`interpreter default scripts super.src 9`] = `"123"`;
 
@@ -837,11 +837,11 @@ exports[`interpreter default scripts super-call-origin.src 15`] = `"\\"hello cla
 
 exports[`interpreter default scripts super-null.src 1`] = `"null"`;
 
-exports[`interpreter default scripts uglified.src 1`] = `"{\\"B\\":{\\"exports\\":{\\"bar\\":123}}}"`;
+exports[`interpreter default scripts uglified.src 1`] = `"{\\"B\\": {\\"exports\\": {\\"bar\\": 123}}}"`;
 
 exports[`interpreter default scripts uglified.src 2`] = `"\\"B\\""`;
 
-exports[`interpreter default scripts uglified.src 3`] = `"{\\"exports\\":{\\"bar\\":123}}"`;
+exports[`interpreter default scripts uglified.src 3`] = `"{\\"exports\\": {\\"bar\\": 123}}"`;
 
 exports[`interpreter default scripts uglified.src 4`] = `"123"`;
 

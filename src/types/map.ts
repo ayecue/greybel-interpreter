@@ -89,7 +89,7 @@ export class CustomMap extends CustomObject {
       fields.push(
         `${
           key instanceof CustomMap ? key.toJSON(depth + 1) : key.toJSON(depth)
-        }:${
+        }: ${
           value instanceof CustomMap
             ? value.toJSON(depth + 1)
             : value.toJSON(depth)
