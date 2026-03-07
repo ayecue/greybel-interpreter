@@ -155,7 +155,6 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         await this.processForGenericStatement(node as ASTForGenericStatement);
         return;
       case ASTType.EmptyExpression:
-      case ASTType.Comment:
         return;
       case ASTTypeExtended.FeatureInjectExpression:
         return;
@@ -173,7 +172,10 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         await this.processDebuggerExpression(node);
         return;
       default: {
-        const range = new ASTRange(node.start, node.end);
+        const range = new ASTRange(
+          [node.startLine, node.startChar],
+          [node.endLine, node.endChar]
+        );
 
         throw new PrepareError(`Unexpected AST type ${node.type}`, {
           target: this.context.target.peek(),
@@ -855,7 +857,10 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         err.message,
         {
           target: path,
-          range: new ASTRange(node.start, node.end)
+          range: new ASTRange(
+            [node.startLine, node.startChar],
+            [node.endLine, node.endChar]
+          )
         },
         err
       );
@@ -874,7 +879,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
     if (this.context.target.includes(importTarget)) {
       console.warn(
-        `Found circular dependency between "${currentTarget}" and "${importTarget}" at line ${node.start.line}. Using noop instead to prevent overflow.`
+        `Found circular dependency between "${currentTarget}" and "${importTarget}" at line ${node.startLine}. Using noop instead to prevent overflow.`
       );
       return;
     }
@@ -883,7 +888,10 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
       const code = await this.context.handler.resourceHandler.get(importTarget);
 
       if (code == null) {
-        const range = new ASTRange(node.start, node.end);
+        const range = new ASTRange(
+          [node.startLine, node.startChar],
+          [node.endLine, node.endChar]
+        );
 
         throw new PrepareError(`Cannot find import "${currentTarget}"`, {
           target: currentTarget,
@@ -932,6 +940,10 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
   async processIncludeExpression(
     node: ASTFeatureIncludeExpression
   ): Promise<void> {
+    if (node.typeOnly) {
+      return;
+    }
+
     const currentTarget = this.context.target.peek();
     const importTarget =
       await this.context.handler.resourceHandler.getTargetRelativeTo(
@@ -941,7 +953,7 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
 
     if (this.context.target.includes(importTarget)) {
       console.warn(
-        `Found circular dependency between "${currentTarget}" and "${importTarget}" at line ${node.start.line}. Using noop instead to prevent overflow.`
+        `Found circular dependency between "${currentTarget}" and "${importTarget}" at line ${node.startLine}. Using noop instead to prevent overflow.`
       );
       return;
     }
@@ -949,7 +961,10 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
     const code = await this.context.handler.resourceHandler.get(importTarget);
 
     if (code == null) {
-      const range = new ASTRange(node.start, node.end);
+      const range = new ASTRange(
+        [node.startLine, node.startChar],
+        [node.endLine, node.endChar]
+      );
 
       throw new PrepareError(`Cannot find import "${currentTarget}"`, {
         target: currentTarget,
@@ -973,7 +988,10 @@ export class BytecodeStatementGenerator implements IBytecodeStatementGenerator {
         err.message,
         {
           target: importTarget,
-          range: new ASTRange(node.start, node.end)
+          range: new ASTRange(
+            [node.startLine, node.startChar],
+            [node.endLine, node.endChar]
+          )
         },
         err
       );

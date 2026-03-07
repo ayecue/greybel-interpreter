@@ -1,5 +1,3 @@
-import { ASTPosition } from 'miniscript-core';
-
 import { CustomValue } from '../types/base';
 import { CustomFunctionCallback } from '../types/function';
 import { CustomString } from '../types/string';
@@ -87,8 +85,8 @@ export interface FunctionDefinitionInstructionArgument {
 export type SourceLocation = {
   name: string;
   path: string;
-  start: ASTPosition;
-  end: ASTPosition;
+  start: { line: number; character: number };
+  end: { line: number; character: number };
 };
 
 export interface BaseInstruction {

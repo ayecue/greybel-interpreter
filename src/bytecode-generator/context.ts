@@ -66,8 +66,8 @@ export class Context {
     return {
       name: name ?? node.type,
       path: target,
-      start: node.start,
-      end: node.end
+      start: { line: node.startLine, character: node.startChar },
+      end: { line: node.endLine, character: node.endChar }
     };
   }
 
