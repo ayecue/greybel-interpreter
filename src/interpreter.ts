@@ -29,6 +29,7 @@ export interface InterpreterOptions {
   debugger?: Debugger;
   debugMode?: boolean;
   environmentVariables?: Map<string, string>;
+  strictMode?: boolean;
 }
 
 export interface InterpreterRunOptions {
@@ -41,6 +42,7 @@ export class Interpreter extends EventEmitter {
   api: ObjectValue;
   params: Array<string>;
   environmentVariables: Map<string, string>;
+  strictMode: boolean;
   handler: HandlerContainer;
   debugger: Debugger;
   debugMode: boolean;
@@ -58,6 +60,7 @@ export class Interpreter extends EventEmitter {
     this.api = options.api ?? new ObjectValue();
     this.params = options.params ?? [];
     this.environmentVariables = options.environmentVariables ?? new Map();
+    this.strictMode = options.strictMode ?? false;
 
     this.debugMode = options.debugMode ?? false;
     this.apiContext = null;
@@ -109,7 +112,9 @@ export class Interpreter extends EventEmitter {
   async inject(code: string, context?: OperationContext): Promise<Interpreter> {
     const bytecodeGenerator = new BytecodeGenerator({
       target: 'injected',
-      handler: this.handler
+      handler: this.handler,
+      environmentVariables: this.environmentVariables,
+      strictMode: this.strictMode
     });
     const result = await bytecodeGenerator.compile(code);
     const vm = new VM({
@@ -228,7 +233,9 @@ export class Interpreter extends EventEmitter {
     const bytecodeConverter = new BytecodeGenerator({
       target: this.target,
       handler: this.handler,
-      debugMode: this.debugMode
+      debugMode: this.debugMode,
+      environmentVariables: this.environmentVariables,
+      strictMode: this.strictMode
     });
     const bytecode = await bytecodeConverter.compile(code);
 

@@ -7,7 +7,10 @@ import { PrepareError } from './utils/error';
 
 const parse = function (this: BytecodeGenerator, code: string) {
   try {
-    const parser = new Parser(code);
+    const parser = new Parser(code, {
+      environmentVariables: this.environmentVariables,
+      strictMode: this.strictMode
+    });
     return parser.parseChunk();
   } catch (err: any) {
     if (err instanceof PrepareError) {
@@ -33,10 +36,14 @@ export interface BytecodeConverterOptions {
   handler: HandlerContainer;
   debugMode?: boolean;
   context?: Context;
+  environmentVariables?: Map<string, string>;
+  strictMode?: boolean;
 }
 
 export class BytecodeGenerator {
   protected context: Context;
+  protected environmentVariables: Map<string, string>;
+  protected strictMode: boolean;
 
   constructor(options: BytecodeConverterOptions) {
     this.context = options.context ?? new Context({
@@ -44,6 +51,8 @@ export class BytecodeGenerator {
       handler: options.handler,
       debugMode: options.debugMode
     });
+    this.environmentVariables = options.environmentVariables ?? new Map();
+    this.strictMode = options.strictMode ?? false;
   }
 
   async compile(code: string): Promise<BytecodeCompileResult> {

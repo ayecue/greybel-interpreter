@@ -146,7 +146,7 @@ export class BytecodeExpressionGenerator
         this.context.pushCode(
           {
             op: OpCode.PUSH,
-            value: new CustomNumber(node.start.line)
+            value: new CustomNumber(node.startLine)
           },
           node
         );
@@ -160,15 +160,16 @@ export class BytecodeExpressionGenerator
           node
         );
         return;
-      case ASTType.Comment:
-        return;
       case ASTType.ComparisonGroupExpression:
         await this.processComparisonGroupExpression(
           node as ASTComparisonGroupExpression
         );
         return;
       default: {
-        const range = new ASTRange(node.start, node.end);
+        const range = new ASTRange(
+          [node.startLine, node.startChar],
+          [node.endLine, node.endChar]
+        );
 
         throw new PrepareError(`Unexpected AST type ${node.type}`, {
           target: this.context.target.peek(),
@@ -411,7 +412,7 @@ export class BytecodeExpressionGenerator
     [Operator.GreaterThanOrEqual]: OpCode.GREATER_THAN_OR_EQUAL,
     [Operator.Plus]: OpCode.ADD,
     [Operator.Minus]: OpCode.SUB,
-    [Operator.Asterik]: OpCode.MUL,
+    [Operator.Asterisk]: OpCode.MUL,
     [Operator.Slash]: OpCode.DIV,
     [Operator.Modulo]: OpCode.MOD,
     [Operator.Power]: OpCode.POW,
@@ -707,7 +708,10 @@ export class BytecodeExpressionGenerator
     );
 
     if (content == null) {
-      const range = new ASTRange(node.start, node.end);
+      const range = new ASTRange(
+        [node.startLine, node.startChar],
+        [node.endLine, node.endChar]
+      );
 
       throw new PrepareError(`Cannot find injection "${currentTarget}"`, {
         target: currentTarget,
